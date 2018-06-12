@@ -2,16 +2,31 @@ ampelos
 ================
 
 ``` r
-plotRidges <- function(data, bugs, where, when, caption) {
+plotRidges <- function(data, bugs, where, when, wk, caption) {
   
-  if (when != "am" & when != "pm") {
-      filteredBugs.df <- filter(data, transect== where)
-  } else {
-    filteredBugs.df <- filter(data, transect== where & time== when)
+  if (wk < 23 | wk > 52) {  # we don't have a valid week
+    
+      if (when != "am" & when != "pm") {    # use all the data for each day
+        filteredBugs.df <- filter(data, transect== where)
+      } else {                              # use partial daily data
+        filteredBugs.df <- filter(data, transect== where & time== when)
+      }
+    
+  } else {  # maybe we have a valid week....
+    
+      if (when != "am" & when != "pm") {   # use all the data for each day
+        filteredBugs.df <- filter(data, transect== where & week== wk)
+      } else {                             # use partial daily data
+        filteredBugs.df <- filter(data, transect== where & time== when & week== wk)
+      }
+    
+    
   }
+  
+
 
   # simplify to include the trap position and the bug in the list
-  newBugs.df <- subset(filteredBugs.df, select= c("position", bugs))
+  newBugs.df <- subset(filteredBugs.df, select= c("positionX", bugs))
 
   spider_rows <- count(newBugs.df)
   trapsWithSpiders <- count(add_count(newBugs.df) %>% filter(spider>0))
@@ -25,21 +40,22 @@ plotRidges <- function(data, bugs, where, when, caption) {
     #newBugs.df$position <- as.character(position.list)
   newBugs.df$spider <- as.factor(spider.list)
   
-  gg2 <- ggplot(newBugs.df,aes(x=position, y=spider, fill=spider))+
+  #gg2 <- ggplot(newBugs.df,aes(x=positionX, y=spider, fill=spider))+
+  gg2 <- ggplot(newBugs.df,aes_string(x="positionX", y=bugs[1], fill=bugs[1])) +
   geom_density_ridges(
     #aes(point_color = spider, point_fill=spider, point_shape=spider),
     # https://stackoverflow.com/questions/22309285/how-to-use-a-variable-to-specify-column-name-in-ggplot
     aes_string(point_color = bugs[1], point_fill=bugs[1], point_shape=bugs[1]),
-    alpha = .2, jittered_points = TRUE, show.legend=F) +
+    alpha = .2, jittered_points = FALSE, show.legend=F) +
     scale_point_color_hue(l = 40)  +
     scale_discrete_manual(aesthetics = "point_shape", values = c(21, 22, 23)) +
     xlim(1,10) +
-    scale_x_continuous(breaks=seq(1,10,1))  +
+    scale_x_continuous(breaks=seq(-12,200,16))  +
     labs(title= paste("Apparent Probability Density, ", 
                       "transect: ", where, sep=""), 
-         subtitle = paste("traps with ", bugs[1], ": ", percentOcurrance, 
+         subtitle = paste("traps with ", bugs[1], "s: ", percentOcurrance, 
                         " %", sep=""),
-       x="trap position",
+       x="trap distance from row edge (ft)",
        y= paste(bugs[1], " counts\nper trap", sep=""),
        #caption="10 June 2018")
        caption=caption) +
@@ -164,9 +180,7 @@ gg1 <- ggplot(newBugs.df,aes(y=position, x=spider, fill=position))+
 print(gg1)
 ```
 
-    ## Picking joint bandwidth of 0.356
-
-    ## Warning: Removed 1 rows containing non-finite values (stat_density_ridges).
+    ## Picking joint bandwidth of 0.386
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
@@ -174,13 +188,13 @@ print(gg1)
 speciesList <- c("spider")
 
 print(plotRidges(data=bugs.df, bugs=speciesList, 
-                 where="oakMargin", when="pm", caption=Sys.Date()))
+                 where="oakMargin", when="pm", wk=23, caption=Sys.Date()))
 ```
 
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 1.23
+    ## Picking joint bandwidth of 24.3
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
