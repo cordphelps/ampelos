@@ -4,19 +4,21 @@ ampelos
 ``` r
 plotRidges <- function(data, bugs, where, when, wk, caption) {
   
-  if (wk < 23 | wk > 52) {  # we don't have a valid week
+  if (wk < 23 | wk > 52) {  # we definitely don't have a valid week
+                            # this case indicates 'use data from all weeks'
     
-      if (when != "am" & when != "pm") {    # use all the data for each day
+      if (when != "am" & when != "pm") {    # use all the data (am and pm) for each day
         filteredBugs.df <- filter(data, transect== where)
-      } else {                              # use partial daily data
+      } else {                              # use partial data (am or pm) for each day
         filteredBugs.df <- filter(data, transect== where & time== when)
       }
     
-  } else {  # maybe we have a valid week....
+  } else {  #  we might have a 'valid' week (data for the specified week could be
+            #  missing....)
     
-      if (when != "am" & when != "pm") {   # use all the data for each day
+      if (when != "am" & when != "pm") {   # use all the data (am and pm) for each day
         filteredBugs.df <- filter(data, transect== where & week== wk)
-      } else {                             # use partial daily data
+      } else {                             # use partial data (am or pm) for each day
         filteredBugs.df <- filter(data, transect== where & time== when & week== wk)
       }
     
@@ -41,21 +43,27 @@ plotRidges <- function(data, bugs, where, when, wk, caption) {
   newBugs.df$spider <- as.factor(spider.list)
   
   #gg2 <- ggplot(newBugs.df,aes(x=positionX, y=spider, fill=spider))+
-  gg2 <- ggplot(newBugs.df,aes_string(x="positionX", y=bugs[1], fill=bugs[1])) +
+  gg2 <- ggplot(newBugs.df, aes_string(x="positionX", y=bugs[1], fill=bugs[1])) +
   geom_density_ridges(
     #aes(point_color = spider, point_fill=spider, point_shape=spider),
     # https://stackoverflow.com/questions/22309285/how-to-use-a-variable-to-specify-column-name-in-ggplot
     aes_string(point_color = bugs[1], point_fill=bugs[1], point_shape=bugs[1]),
-    alpha = .2, jittered_points = FALSE, show.legend=F) +
+    alpha = .2, jittered_points = TRUE, show.legend=F) +
     scale_point_color_hue(l = 40)  +
     scale_discrete_manual(aesthetics = "point_shape", values = c(21, 22, 23)) +
+    #stat_density_ridges(quantile_lines = TRUE, quantiles = 2, alpha = .2, jittered_points = TRUE) +
+    
     xlim(1,10) +
-    scale_x_continuous(breaks=seq(-12,200,16))  +
+    # http://ggplot2.tidyverse.org/reference/sec_axis.html
+    scale_x_continuous(breaks=seq(4,200,16), 
+                       sec.axis = sec_axis(~.*.3048,
+                                           breaks= seq(0, 80, 10),
+                                           name= "trap distance from row end (m)"))  +
     labs(title= paste("Apparent Probability Density, ", 
                       "transect: ", where, sep=""), 
          subtitle = paste("traps with ", bugs[1], "s: ", percentOcurrance, 
                         " %", sep=""),
-       x="trap distance from row edge (ft)",
+       x="trap distance from row end (ft)",
        y= paste(bugs[1], " counts\nper trap", sep=""),
        #caption="10 June 2018")
        caption=caption) +
@@ -103,7 +111,7 @@ total <- bugCount()
 print(total)
 ```
 
-    ## [1] 399
+    ## [1] 640
 
 ``` r
 # https://github.com/zonination/perceptions
@@ -150,53 +158,32 @@ library(scales)
     ##     col_factor
 
 ``` r
-filteredBugs.df <- filter(bugs.df, transect=="oakMargin" & time== "pm")
-#speciesFactors <- factor(bugs.df, levels=species)
-
-newBugs.df <- subset(filteredBugs.df, select= c("position", speciesList))
-# http://tidyr.tidyverse.org/articles/tidy-data.html
-#newBugs.df <- newBugs.df %>% gather(species, count, spider)
-
-position.list <- newBugs.df$position   #     
-newBugs.df$position <- NULL                        
-#newBugs.df$position <- as.character(position.list)
-newBugs.df$position <- as.factor(position.list)
-
-#row.list <- newBugs.df$row   # convert numeric to char    
-#newBugs.df$row <- NULL                        
-#newBugs.df$row <- as.character(row.list)
-
-gg1 <- ggplot(newBugs.df,aes(y=position, x=spider, fill=position))+
-  geom_density_ridges(
-    aes(point_color = position),
-                      alpha = .2, jittered_points = TRUE) +
-  scale_point_color_hue(l = 40)  +
-  xlim(0,4) +
-  labs(title="Perceptions of Probability: oakMargin transect",
-       y="trap position",
-       x="bug counts",
-       caption="10 June 2018")
-
-print(gg1)
-```
-
-    ## Picking joint bandwidth of 0.386
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-3-1.png)
-
-``` r
 speciesList <- c("spider")
 
 print(plotRidges(data=bugs.df, bugs=speciesList, 
-                 where="oakMargin", when="pm", wk=23, caption=Sys.Date()))
+                 where="oakMargin", when="pm", wk=1, caption=Sys.Date()))
 ```
 
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 24.3
+    ## Picking joint bandwidth of 25.2
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-4-1.png)
+
+``` r
+speciesList <- c("spider")
+
+print(plotRidges(data=bugs.df, bugs=speciesList, 
+                 where="control", when="pm", wk=1, caption=Sys.Date()))
+```
+
+    ## Scale for 'x' is already present. Adding another scale for 'x', which
+    ## will replace the existing scale.
+
+    ## Picking joint bandwidth of 21.5
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 ``` r
 # grid.arrange(gg1, gg2, ncol=1, nrow=2)
