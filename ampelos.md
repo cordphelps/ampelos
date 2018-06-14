@@ -67,14 +67,14 @@ plotRidges <- function(data, bugs, where, when, wk, caption) {
     scale_x_continuous(breaks=seq(4,200,16), 
                        sec.axis = sec_axis(~.*.3048,
                                            breaks= seq(0, 80, 10),
-                                           name= "trap distance from row end (m)"))  +
+                                           name= "trap distance from row start (m)"))  +
     labs(title= paste("Apparent Probability Density, ", 
                       "transect: ", where, sep=""), 
          subtitle = paste("week: ", cumulative, ", collection time: ", when, 
                           "\ntraps with ", bugs[1], "s: ", percentOcurrance, " %", 
                           
                           sep=""),
-       x="trap distance from row end (ft)",
+       x="trap distance from row start (ft)",
        y= paste(bugs[1], " counts\nper trap", sep=""),
        #caption="10 June 2018")
        caption=paste(caption, 
@@ -110,6 +110,25 @@ bugCount <- function() {
   
 }
 
+bugNames <- function(df) {
+  #column names to be ignored
+  ignore <- c("transect", "row", "position",
+              "date", "time", "julian", "week",
+              "positionX")
+  df[ignore] <- NULL
+  return(as.list(colnames(df)))
+}
+
+bigTable <- function(df) {
+  # https://rdrr.io/cran/dplyr/man/summarise_all.html 
+  # https://stackoverflow.com/questions/9723208/aggregate-summarize-multiple-variables-per-group-e-g-sum-mean
+  list <- as.character(bugNames(df))
+  charVector <- as.character(c("sum", "max"))
+  df2 <- df  %>% summarise_at(list, funs(sum, max))
+  
+  return(df2)
+}
+
 # ggsave("joy1.png", height=8, width=8, dpi=120, type="cairo-png")
 ```
 
@@ -132,14 +151,14 @@ print(total)
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ─────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 2.2.1     ✔ purrr   0.2.4
     ## ✔ tibble  1.4.2     ✔ dplyr   0.7.4
     ## ✔ tidyr   0.7.2     ✔ stringr 1.3.1
     ## ✔ readr   1.1.1     ✔ forcats 0.2.0
 
-    ## ── Conflicts ────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ───────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
