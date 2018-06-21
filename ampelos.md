@@ -14,10 +14,9 @@ ampelos
 
     ## ── Attaching packages ──────────────────────────────────────────────── tidyverse 1.2.1 ──
 
-    ## ✔ ggplot2 2.2.1     ✔ readr   1.1.1
     ## ✔ tibble  1.4.2     ✔ purrr   0.2.4
     ## ✔ tidyr   0.7.2     ✔ stringr 1.3.1
-    ## ✔ ggplot2 2.2.1     ✔ forcats 0.2.0
+    ## ✔ readr   1.1.1     ✔ forcats 0.2.0
 
     ## ── Conflicts ─────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
@@ -26,18 +25,18 @@ ampelos
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 25.1
+    ## Picking joint bandwidth of 24.7
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-2-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-1.png)
 
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 31.7
+    ## Picking joint bandwidth of 30.1
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-2-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-2.png)
 
-    ## [1] 1247
+    ## [1] 1487
 
 <table>
 <caption>
@@ -56,10 +55,10 @@ new
 <tbody>
 <tr>
 <td style="text-align:right;">
-368
+470
 </td>
 <td style="text-align:right;">
-1840
+2350
 </td>
 </tr>
 <tr>
@@ -72,26 +71,26 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
-48
+63
 </td>
 <td style="text-align:right;">
-240
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-24
-</td>
-<td style="text-align:right;">
-120
+315
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-13
+30
 </td>
 <td style="text-align:right;">
-65
+150
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+100
 </td>
 </tr>
 <tr>
@@ -104,74 +103,50 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
-106
+126
 </td>
 <td style="text-align:right;">
-530
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-88
-</td>
-<td style="text-align:right;">
-440
+630
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-329
+105
 </td>
 <td style="text-align:right;">
-1645
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-50
+525
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-12
+369
 </td>
 <td style="text-align:right;">
-60
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-18
-</td>
-<td style="text-align:right;">
-90
+1845
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-5
+11
 </td>
 <td style="text-align:right;">
-25
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-214
-</td>
-<td style="text-align:right;">
-1070
+55
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-22
+13
 </td>
 <td style="text-align:right;">
-110
+65
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:right;">
+95
 </td>
 </tr>
 <tr>
@@ -184,6 +159,22 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
+249
+</td>
+<td style="text-align:right;">
+1245
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:right;">
+115
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
 7
 </td>
 <td style="text-align:right;">
@@ -196,6 +187,14 @@ new
 </td>
 <td style="text-align:right;">
 35
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+40
 </td>
 </tr>
 <tr>
