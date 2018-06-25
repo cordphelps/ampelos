@@ -25,18 +25,18 @@ ampelos
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 24.7
+    ## Picking joint bandwidth of 31.1
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-1-1.png)
 
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 30.1
+    ## Picking joint bandwidth of 29.9
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-1-2.png)
 
-    ## [1] 1487
+    ## [1] 1601
 
 <table>
 <caption>
@@ -55,10 +55,10 @@ new
 <tbody>
 <tr>
 <td style="text-align:right;">
-470
+493
 </td>
 <td style="text-align:right;">
-2350
+2465
 </td>
 </tr>
 <tr>
@@ -71,18 +71,18 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
-63
+76
 </td>
 <td style="text-align:right;">
-315
+380
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-30
+31
 </td>
 <td style="text-align:right;">
-150
+155
 </td>
 </tr>
 <tr>
@@ -95,42 +95,42 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
-8
+9
 </td>
 <td style="text-align:right;">
-40
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-126
-</td>
-<td style="text-align:right;">
-630
+45
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-105
+157
 </td>
 <td style="text-align:right;">
-525
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-369
-</td>
-<td style="text-align:right;">
-1845
+785
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-11
+116
 </td>
 <td style="text-align:right;">
-55
+580
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+383
+</td>
+<td style="text-align:right;">
+1915
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:right;">
+65
 </td>
 </tr>
 <tr>
@@ -159,18 +159,18 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
-249
+267
 </td>
 <td style="text-align:right;">
-1245
+1335
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-23
+24
 </td>
 <td style="text-align:right;">
-115
+120
 </td>
 </tr>
 <tr>
