@@ -4,6 +4,10 @@ ampelos
     ## 
     ## Attaching package: 'dplyr'
 
+    ## The following object is masked from 'package:gridExtra':
+    ## 
+    ##     combine
+
     ## The following objects are masked from 'package:stats':
     ## 
     ##     filter, lag
@@ -12,31 +16,35 @@ ampelos
     ## 
     ##     intersect, setdiff, setequal, union
 
-    ## ── Attaching packages ─────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ───────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ tibble  1.4.2     ✔ purrr   0.2.4
     ## ✔ tidyr   0.7.2     ✔ stringr 1.3.1
     ## ✔ readr   1.1.1     ✔ forcats 0.2.0
 
-    ## ── Conflicts ────────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
-
-    ## Scale for 'x' is already present. Adding another scale for 'x', which
-    ## will replace the existing scale.
-
-    ## Picking joint bandwidth of 31.1
+    ## ── Conflicts ──────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ purrr::%@%()         masks rlang::%@%()
+    ## ✖ purrr::%||%()        masks rlang::%||%()
+    ## ✖ purrr::as_function() masks rlang::as_function()
+    ## ✖ dplyr::combine()     masks gridExtra::combine()
+    ## ✖ dplyr::filter()      masks stats::filter()
+    ## ✖ purrr::flatten()     masks rlang::flatten()
+    ## ✖ purrr::flatten_chr() masks rlang::flatten_chr()
+    ## ✖ purrr::flatten_dbl() masks rlang::flatten_dbl()
+    ## ✖ purrr::flatten_int() masks rlang::flatten_int()
+    ## ✖ purrr::flatten_lgl() masks rlang::flatten_lgl()
+    ## ✖ purrr::invoke()      masks rlang::invoke()
+    ## ✖ dplyr::lag()         masks stats::lag()
+    ## ✖ purrr::list_along()  masks rlang::list_along()
+    ## ✖ purrr::modify()      masks rlang::modify()
+    ## ✖ purrr::rep_along()   masks rlang::rep_along()
+    ## ✖ purrr::splice()      masks rlang::splice()
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-1-1.png)
 
-    ## Scale for 'x' is already present. Adding another scale for 'x', which
-    ## will replace the existing scale.
+    ## NULL
 
-    ## Picking joint bandwidth of 29.9
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-1-2.png)
-
-    ## [1] 1601
+    ## [1] 408
 
 <table>
 <caption>
@@ -55,114 +63,34 @@ new
 <tbody>
 <tr>
 <td style="text-align:right;">
-493
+582
 </td>
 <td style="text-align:right;">
-2465
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-16
-</td>
-<td style="text-align:right;">
-80
+2910
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-76
+21
 </td>
 <td style="text-align:right;">
-380
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-31
-</td>
-<td style="text-align:right;">
-155
+105
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-20
+109
 </td>
 <td style="text-align:right;">
-100
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-9
-</td>
-<td style="text-align:right;">
-45
+545
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-157
+35
 </td>
 <td style="text-align:right;">
-785
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-116
-</td>
-<td style="text-align:right;">
-580
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-383
-</td>
-<td style="text-align:right;">
-1915
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-13
-</td>
-<td style="text-align:right;">
-65
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-13
-</td>
-<td style="text-align:right;">
-65
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-19
-</td>
-<td style="text-align:right;">
-95
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:right;">
-30
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-267
-</td>
-<td style="text-align:right;">
-1335
+175
 </td>
 </tr>
 <tr>
@@ -175,10 +103,82 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
+22
+</td>
+<td style="text-align:right;">
+110
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+200
+</td>
+<td style="text-align:right;">
+1000
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+145
+</td>
+<td style="text-align:right;">
+725
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+432
+</td>
+<td style="text-align:right;">
+2160
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+120
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:right;">
+75
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+22
+</td>
+<td style="text-align:right;">
+110
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
 7
 </td>
 <td style="text-align:right;">
 35
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+369
+</td>
+<td style="text-align:right;">
+1845
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:right;">
+125
 </td>
 </tr>
 <tr>
@@ -199,6 +199,38 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+40
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+25
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+30
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
 5
 </td>
 <td style="text-align:right;">
@@ -215,26 +247,10 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-25
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
 2
 </td>
 <td style="text-align:right;">
 10
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-5
 </td>
 </tr>
 <tr>
@@ -323,6 +339,14 @@ new
 </td>
 <td style="text-align:right;">
 10
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+5
 </td>
 </tr>
 </tbody>
