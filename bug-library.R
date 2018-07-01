@@ -20,14 +20,20 @@ library(tidyverse)
 library(knitr)
 library(kableExtra)
 
-plotRidges <- function(data, bugs, where, when, wk, caption) {
-  # https://stackoverflow.com/questions/9726705/assign-multiple-objects-to-globalenv-from-within-a-function
-  assign("data", data, envir=.GlobalEnv)
-  assign("bugs", bugs, envir=.GlobalEnv)
-  assign("where", where, envir=.GlobalEnv)
-  assign("when", when, envir=.GlobalEnv)
-  assign("wk", wk, envir=.GlobalEnv)
-  assign("caption", caption, envir=.GlobalEnv)
+plotRidges <- function(data, combined, bugs, speciesText, where, when, wk, caption) {
+
+
+  # https://stackoverflow.com/questions/7310186/function-in-r-passing-a-dataframe-and-a-column-name
+
+  if (FALSE) {   # available for debug
+    # https://stackoverflow.com/questions/9726705/assign-multiple-objects-to-globalenv-from-within-a-function
+    assign("data", data, envir=.GlobalEnv)
+    assign("bugs", bugs, envir=.GlobalEnv)
+    assign("where", where, envir=.GlobalEnv)
+    assign("when", when, envir=.GlobalEnv)
+    assign("wk", wk, envir=.GlobalEnv)
+    assign("caption", caption, envir=.GlobalEnv)
+  }
   
   # https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html
   
@@ -58,13 +64,22 @@ plotRidges <- function(data, bugs, where, when, wk, caption) {
   # simplify to include the trap position and the bug in the list
   newBugs.df <- subset(filteredBugs.df, select= c("positionX", bugs))
   
+  ################################################################################################
   # get some stats to add to the plot
-  spider_rows <- count(newBugs.df)
-  # https://stackoverflow.com/questions/7310186/function-in-r-passing-a-dataframe-and-a-column-name
-  trapsWithSpiders <- sum(newBugs.df[,bugs])
+
+  # note: nuance of using the > operator and sum()
+  # As a result you can SUM over this to find the number of values which are TRUE (>2000), 
+  # ie Count. While you may have been expecting this input to SUM the actual values themselves
+  # https://stackoverflow.com/questions/22690255/count-observations-greater-than-a-particular-value
+
+  spider_rows <- nrow(newBugs.df)
+  trapsWithSpiders <- nrow(newBugs.df[newBugs.df[,bugs] > 0, ])
+  # trapsWithSpiders <- sum(newBugs.df[,bugs])
   percentOcurrence <- (trapsWithSpiders / spider_rows) * 100
   # https://stackoverflow.com/questions/3443687/formatting-decimal-places-in-r
   percentOcurrence <- format(round(percentOcurrence, 2), nsmall = 2)
+
+  ################################################################################################
   
   # get factors for geom_density_ridges
   # (grouping by "count")
@@ -81,7 +96,8 @@ plotRidges <- function(data, bugs, where, when, wk, caption) {
   #possible strategies; qualitatively the particular strategy rarely matters.
   # https://homepage.divms.uiowa.edu/~luke/classes/STAT4580/histdens.html
   
-  #gg2 <- ggplot(newBugs.df,aes(x=positionX, y=spider, fill=spider))+    fill=newBugs.df[,bugs]
+  if (combined == FALSE) {
+    # the x axis data is multi-level
   gg2 <- ggplot(newBugs.df, aes_string(x="positionX", y="geomFactors", fill="geomFactors")) +
     geom_density_ridges(
       #aes(point_color = spider, point_fill=spider, point_shape=spider),
@@ -98,20 +114,54 @@ plotRidges <- function(data, bugs, where, when, wk, caption) {
                        sec.axis = sec_axis(~.*.3048,
                                            breaks= seq(0, 80, 10),
                                            name= "trap distance from row start (m)"))  +
-    labs(title= paste("Apparent Probability Density, ", 
+    labs(title= paste(speciesText, " Probability Density\n", 
                       "transect: ", where, sep=""), 
          subtitle = paste("week: ", cumulative, ", collection time: ", when, 
-                          "\ntraps with ", bugs, "s: ", percentOcurrence, " %", 
+                          "\ntotal observations: ", spider_rows,
+                          "\ntraps with ", speciesText, "s: ", percentOcurrence, " %", 
                           
                           sep=""),
          x="trap distance from row start (ft)",
-         y= paste(bugs, " counts\nper trap", sep=""),
+         y= paste(speciesText, "\ncounts per trap", sep=""),
          #caption="10 June 2018")
          caption=paste(caption, 
                        "\nhttps://en.wikipedia.org/wiki/Kernel_density_estimation", 
                        sep="")) +
     theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 0, vjust=.5))
+    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+
+  } else {   # the x axis data combined for values > 0 ; adjust labels with scale_y_discrete()
+
+    gg2 <- ggplot(newBugs.df, aes_string(x="positionX", y="geomFactors", fill="geomFactors")) +
+    geom_density_ridges(
+      aes_string(point_color = "geomFactors", point_fill="geomFactors", point_shape="geomFactors"),
+      alpha = .2, jittered_points = TRUE, show.legend=F) +
+    scale_point_color_hue(l = 40)  +
+    scale_discrete_manual(aesthetics = "point_shape", values = c(21, 22, 23, 24, 25)) +
+    xlim(1,10) +
+    # http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels#change-tick-mark-labels
+    scale_y_discrete(labels=c("0" = "none", "1" = "multiple")) +
+    scale_x_continuous(breaks=seq(4,200,16), 
+                       sec.axis = sec_axis(~.*.3048,
+                                           breaks= seq(0, 80, 10),
+                                           name= "trap distance from row start (m)"))  +
+    labs(title= paste(speciesText, " Probability Density\n", 
+                      "transect: ", where, sep=""), 
+         subtitle = paste("week: ", cumulative, ", collection time: ", when, 
+                          "\ntotal observations: ", spider_rows,
+                          "\ntraps with ", speciesText, "s: ", percentOcurrence, " %", 
+                          
+                          sep=""),
+         x="trap distance from row start (ft)",
+         y= paste(speciesText, "\ncounts per trap", sep=""),
+         #caption="10 June 2018")
+         caption=paste(caption, 
+                       "\nhttps://en.wikipedia.org/wiki/Kernel_density_estimation", 
+                       sep="")) +
+    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
+    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+
+  }
   
   # grid.arrange(gg1, gg2, ncol=1, nrow=2)
   # ggsave("joy1.png", height=8, width=8, dpi=120, type="cairo-png")
@@ -132,10 +182,7 @@ plotSpeciesTrend <- function(data, bugs, speciesText, where, when, caption) {
   # assign("wk", wk, envir=.GlobalEnv)
   # assign("caption", caption, envir=.GlobalEnv)
   
-  
-# plceholders
-  cumulative <- "placeholder "
-  percentOcurrence <- "placeholder "
+
   
   # https://stackoverflow.com/questions/1660124/how-to-sum-a-variable-by-group
   # dyplr group: https://stackoverflow.com/questions/48714625/error-in-data-frame-unused-argument
@@ -151,12 +198,18 @@ plotSpeciesTrend <- function(data, bugs, speciesText, where, when, caption) {
       mutate(ave_per_week = sp_by_week / (n / 30))
 
       sp_percent <- sum(temp.df$sp_by_week) / sum(temp.df$n)
+
+    new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
+
+
+
   }
   ########### end stand-alone dplyr test code ##########
 
 
   temp.df <- bugs.df %>%
-    filter( time == "pm",  transect == "oakMargin") %>%
+    #filter( time == "pm",  transect == "oakMargin") %>%
+    filter(transect == "oakMargin") %>%
     group_by( week ) %>%
     summarise( sp_by_week = sum( !!bugs , na.rm = TRUE ) , n=n()) %>%
     mutate(ave_per_week = sp_by_week / (n / 30))
@@ -212,7 +265,7 @@ plotSpeciesTrend <- function(data, bugs, speciesText, where, when, caption) {
     geom_point(aes(x=week, y=oakAMtotal), shape=22) +
     geom_line(aes(x=week, y=oakAMtotal, colour="morning")) +   
     ylim(0,100) +
-    labs(title= paste(speciesText, " Population Counts, ", 
+    labs(title= paste(speciesText, " Population Counts", 
                       "\ntransect: oakMargin", sep=""), 
          subtitle = paste("\ntraps with ", speciesText, "s: ", sp_percentOak, " %", 
                           sep=""),
@@ -236,7 +289,7 @@ plotSpeciesTrend <- function(data, bugs, speciesText, where, when, caption) {
       geom_point(aes(x=week, y=controlAMtotal), shape=22) +
       geom_line(aes(x=week, y=controlAMtotal, colour="morning")) +   
       ylim(0,100) +
-      labs(title= paste(speciesText, " Population Counts, ",
+      labs(title= paste(speciesText, " Population Counts",
                         "\ntransect: control", sep=""), 
            subtitle = paste("\ntraps with ", speciesText, "s: ", sp_percentControl, " %", 
                            sep=""),
@@ -255,6 +308,98 @@ plotSpeciesTrend <- function(data, bugs, speciesText, where, when, caption) {
     theme(axis.title.y = element_text(angle = 90, vjust=.5))
     
   grid.arrange(ggOAK, ggCONTROL, ncol=2, nrow=1)
+
+
+
+  ######################################################################################
+  ######################################################################################
+  ######################################################################################
+
+  ######## develop the same graphs, but by day (not week)
+
+  oakPM.df <- data %>%
+    filter( time == "pm",  transect == "oakMargin") %>%
+    group_by( julian ) %>%
+    summarise( oakPMtotal = sum( !!bugs , na.rm = TRUE ) ) 
+  
+  controlPM.df <- data %>%
+    filter( time == "pm",  transect == "control") %>%
+    group_by( julian ) %>%
+    summarise( controlPMtotal = sum( !!bugs , na.rm = TRUE ) ) 
+  
+  # join the data frames
+  pm.df <- merge(oakPM.df, controlPM.df)
+  
+  oakAM.df <- data %>%
+    filter( time == "am",  transect == "oakMargin") %>%
+    group_by( julian ) %>%
+    summarise( oakAMtotal = sum( !!bugs , na.rm = TRUE ) ) 
+  
+  controlAM.df <- data %>%
+    filter( time == "am",  transect == "control") %>%
+    group_by( julian ) %>%
+    summarise( controlAMtotal = sum( !!bugs , na.rm = TRUE ) )  
+  
+  # join the data frames
+  am.df <- merge(oakAM.df, controlAM.df)
+  
+  sliced.df <- merge(am.df, pm.df)
+    
+  assign("sliced.df", sliced.df, envir=.GlobalEnv)
+  
+  ggOAK <- ggplot(sliced.df, aes(x=julian, y=oakPMtotal)) +
+    geom_point(shape=21) +
+    geom_line(aes(x=julian, y=oakPMtotal, colour="afternoon")) +
+    geom_point(aes(x=julian, y=oakAMtotal), shape=22) +
+    geom_line(aes(x=julian, y=oakAMtotal, colour="morning")) +   
+    ylim(0,100) +
+    labs(title= paste(speciesText, " Population Counts", 
+                      "\ntransect: oakMargin", sep=""), 
+         subtitle = paste("\ntraps with ", speciesText, "s: ", sp_percentOak, " %", 
+                          sep=""),
+         x="julian day",
+         y= "daily total",
+         caption=paste(caption, "\n(NO CAPTION)", sep="")) +
+    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
+    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
+    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
+    theme(legend.title=element_blank(), 
+          legend.box.background = element_rect(colour = "black"),
+          panel.border = element_rect(colour = "black", fill=NA)) + 
+    # Put bottom-right corner of legend box in bottom-right corner of graph
+    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
+    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
+    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+
+    ggCONTROL <- ggplot(sliced.df, aes(x=julian, y=controlPMtotal)) +
+      geom_point(shape=21) +
+      geom_line(aes(x=julian, y=controlPMtotal, colour="afternoon")) +
+      geom_point(aes(x=julian, y=controlAMtotal), shape=22) +
+      geom_line(aes(x=julian, y=controlAMtotal, colour="morning")) +   
+      ylim(0,100) +
+      labs(title= paste(speciesText, " Population Counts",
+                        "\ntransect: control", sep=""), 
+           subtitle = paste("\ntraps with ", speciesText, "s: ", sp_percentControl, " %", 
+                           sep=""),
+         x="julian day",
+         y= "daily total",
+         caption=paste(caption, "\n(NO CAPTION)", sep="")) +
+    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
+    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
+    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
+    theme(legend.title=element_blank(), 
+          legend.box.background = element_rect(colour = "black"),
+          panel.border = element_rect(colour = "black", fill=NA)) + 
+    # Put bottom-right corner of legend box in bottom-right corner of graph
+    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
+    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
+    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+    
+  grid.arrange(ggOAK, ggCONTROL, ncol=2, nrow=1)
+
+
+
+
   # ggsave("joy1.png", height=8, width=8, dpi=120, type="cairo-png")
   
   return()

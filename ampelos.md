@@ -1,6 +1,8 @@
 ampelos
 ================
 
+    ## ABC
+
     ## 
     ## Attaching package: 'dplyr'
 
@@ -16,13 +18,13 @@ ampelos
     ## 
     ##     intersect, setdiff, setequal, union
 
-    ## ── Attaching packages ───────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ──────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ tibble  1.4.2     ✔ purrr   0.2.4
     ## ✔ tidyr   0.7.2     ✔ stringr 1.3.1
     ## ✔ readr   1.1.1     ✔ forcats 0.2.0
 
-    ## ── Conflicts ──────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ─────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ purrr::%@%()         masks rlang::%@%()
     ## ✖ purrr::%||%()        masks rlang::%||%()
     ## ✖ purrr::as_function() masks rlang::as_function()
@@ -40,7 +42,26 @@ ampelos
     ## ✖ purrr::rep_along()   masks rlang::rep_along()
     ## ✖ purrr::splice()      masks rlang::splice()
 
+    ## Scale for 'x' is already present. Adding another scale for 'x', which
+    ## will replace the existing scale.
+
+    ## Picking joint bandwidth of 29.4
+
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-1-1.png)
+
+    ## Scale for 'x' is already present. Adding another scale for 'x', which
+    ## will replace the existing scale.
+
+    ## Picking joint bandwidth of 20.2
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-2.png)
+
+    ## Scale for 'x' is already present. Adding another scale for 'x', which
+    ## will replace the existing scale.
+
+    ## Picking joint bandwidth of 21
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-3.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-4.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-5.png)
 
     ## NULL
 
