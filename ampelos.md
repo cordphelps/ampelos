@@ -18,13 +18,13 @@ ampelos
     ## 
     ##     intersect, setdiff, setequal, union
 
-    ## ── Attaching packages ──────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ──────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ tibble  1.4.2     ✔ purrr   0.2.4
     ## ✔ tidyr   0.7.2     ✔ stringr 1.3.1
     ## ✔ readr   1.1.1     ✔ forcats 0.2.0
 
-    ## ── Conflicts ─────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ─────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ purrr::%@%()         masks rlang::%@%()
     ## ✖ purrr::%||%()        masks rlang::%||%()
     ## ✖ purrr::as_function() masks rlang::as_function()
@@ -45,27 +45,27 @@ ampelos
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 29.4
+    ## Picking joint bandwidth of 29.2
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-1-1.png)
 
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 20.2
+    ## Picking joint bandwidth of 19.8
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-1-2.png)
 
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 21
+    ## Picking joint bandwidth of 20.2
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-1-3.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-4.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-5.png)
 
     ## NULL
 
-    ## [1] 408
+    ## [1] 452
 
 <table>
 <caption>
@@ -84,114 +84,34 @@ new
 <tbody>
 <tr>
 <td style="text-align:right;">
-582
+603
 </td>
 <td style="text-align:right;">
-2910
+3015
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-21
+23
 </td>
 <td style="text-align:right;">
-105
+115
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-109
+124
 </td>
 <td style="text-align:right;">
-545
+620
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-35
+40
 </td>
-<td style="text-align:right;">
-175
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-24
-</td>
-<td style="text-align:right;">
-120
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-22
-</td>
-<td style="text-align:right;">
-110
-</td>
-</tr>
-<tr>
 <td style="text-align:right;">
 200
-</td>
-<td style="text-align:right;">
-1000
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-145
-</td>
-<td style="text-align:right;">
-725
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-432
-</td>
-<td style="text-align:right;">
-2160
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-24
-</td>
-<td style="text-align:right;">
-120
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-15
-</td>
-<td style="text-align:right;">
-75
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-22
-</td>
-<td style="text-align:right;">
-110
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:right;">
-35
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-369
-</td>
-<td style="text-align:right;">
-1845
 </td>
 </tr>
 <tr>
@@ -204,10 +124,58 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
-7
+44
 </td>
 <td style="text-align:right;">
-35
+220
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+222
+</td>
+<td style="text-align:right;">
+1110
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+160
+</td>
+<td style="text-align:right;">
+800
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+458
+</td>
+<td style="text-align:right;">
+2290
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+29
+</td>
+<td style="text-align:right;">
+145
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:right;">
+75
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:right;">
+115
 </td>
 </tr>
 <tr>
@@ -220,10 +188,42 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
-2
+408
 </td>
 <td style="text-align:right;">
-10
+2040
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:right;">
+125
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+55
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+40
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+15
 </td>
 </tr>
 <tr>
@@ -348,10 +348,10 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
-1
+2
 </td>
 <td style="text-align:right;">
-5
+10
 </td>
 </tr>
 <tr>
