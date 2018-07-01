@@ -45,27 +45,27 @@ ampelos
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 29.2
+    ## Picking joint bandwidth of 29.1
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-1-1.png)
 
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 19.8
+    ## Picking joint bandwidth of 19.6
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-1-2.png)
 
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 20.2
+    ## Picking joint bandwidth of 19.9
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-1-3.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-4.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-5.png)
 
     ## NULL
 
-    ## [1] 452
+    ## [1] 490
 
 <table>
 <caption>
@@ -84,26 +84,26 @@ new
 <tbody>
 <tr>
 <td style="text-align:right;">
-603
+617
 </td>
 <td style="text-align:right;">
-3015
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-23
-</td>
-<td style="text-align:right;">
-115
+3085
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-124
+24
 </td>
 <td style="text-align:right;">
-620
+120
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+159
+</td>
+<td style="text-align:right;">
+795
 </td>
 </tr>
 <tr>
@@ -116,50 +116,50 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
-25
+26
 </td>
 <td style="text-align:right;">
-125
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-44
-</td>
-<td style="text-align:right;">
-220
+130
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-222
+58
 </td>
 <td style="text-align:right;">
-1110
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-160
-</td>
-<td style="text-align:right;">
-800
+290
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-458
+248
 </td>
 <td style="text-align:right;">
-2290
+1240
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-29
+171
 </td>
 <td style="text-align:right;">
-145
+855
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+465
+</td>
+<td style="text-align:right;">
+2325
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+36
+</td>
+<td style="text-align:right;">
+180
 </td>
 </tr>
 <tr>
@@ -172,26 +172,26 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
-23
+26
 </td>
 <td style="text-align:right;">
-115
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:right;">
-40
+130
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-408
+9
 </td>
 <td style="text-align:right;">
-2040
+45
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+439
+</td>
+<td style="text-align:right;">
+2195
 </td>
 </tr>
 <tr>
@@ -204,18 +204,18 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
-11
+13
 </td>
 <td style="text-align:right;">
-55
+65
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-8
+9
 </td>
 <td style="text-align:right;">
-40
+45
 </td>
 </tr>
 <tr>
@@ -268,10 +268,10 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
-2
+3
 </td>
 <td style="text-align:right;">
-10
+15
 </td>
 </tr>
 <tr>
