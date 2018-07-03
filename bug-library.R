@@ -405,6 +405,151 @@ plotSpeciesTrend <- function(data, bugs, speciesText, where, when, caption) {
   return()
 }
 
+transect <- function () {
+
+  oak.df <- bugs.df %>% 
+    dplyr::filter(position<7, time=="pm", transect=="oakMargin") %>% 
+    dplyr::group_by(julian) %>% 
+    dplyr::summarise(oakEdgeMean=mean(Thomisidae..crab.spider.))
+
+  center.df <- bugs.df %>% 
+    dplyr::filter(position<7, time=="pm", transect=="control") %>% 
+    dplyr::group_by(julian) %>% 
+    dplyr::summarise(controlEdgeMean=mean(Thomisidae..crab.spider.))
+
+    combo.df <- merge(oak.df, center.df)
+
+  combo.df <- combo.df %>% 
+    dplyr::mutate(deltaMean=(oakEdgeMean-controlEdgeMean)/controlEdgeMean)
+
+  assign("combo.df", combo.df, envir=.GlobalEnv)
+
+
+    # https://stackoverflow.com/questions/37688887/plotting-multiple-variables-from-same-data-frame-in-ggplot
+  ggOAK <- ggplot(combo.df, aes(x=julian, y=oakEdgeMean)) +
+      geom_point(shape=21) + 
+      geom_smooth(method=lm) +  
+      ylim(0,1.1) +
+      labs(title= paste(" Population Counts",
+                        "\ntransect: control", sep=""), 
+           subtitle = paste("\ntraps with ", " hoser",sep=""),
+         x="julian day",
+         y= "daily total",
+         caption=paste("caption", "\n(NO CAPTION)", sep="")) +
+    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
+    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
+    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
+    theme(legend.title=element_blank(), 
+          legend.box.background = element_rect(colour = "black"),
+          panel.border = element_rect(colour = "black", fill=NA)) + 
+    # Put bottom-right corner of legend box in bottom-right corner of graph
+    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
+    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
+    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+
+
+
+    ggCONTROL <- ggplot(combo.df, aes(x=julian, y=controlEdgeMean)) +
+      geom_point(shape=21) + 
+      geom_smooth(method=lm) +  
+      ylim(0,1.1) +
+      labs(title= paste(" Population Counts",
+                        "\ntransect: control", sep=""), 
+           subtitle = paste("\ntraps with ", " hoser",sep=""),
+         x="julian day",
+         y= "daily total",
+         caption=paste("caption", "\n(NO CAPTION)", sep="")) +
+    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
+    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
+    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
+    theme(legend.title=element_blank(), 
+          legend.box.background = element_rect(colour = "black"),
+          panel.border = element_rect(colour = "black", fill=NA)) + 
+    # Put bottom-right corner of legend box in bottom-right corner of graph
+    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
+    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
+    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+
+
+    grid.arrange(ggOAK, ggCONTROL, ncol=2, nrow=1)
+
+
+
+
+#####################################################
+
+  ggCompare <- ggplot(combo.df, aes(x=julian, y=deltaMean)) +
+      geom_point(shape=21) + 
+      geom_smooth(method=lm) +  
+      geom_hline(yintercept=0) +
+      ylim(-1.1,1.1) +
+      labs(title= paste("average spiders per trap ",
+                        "\ntransect positions 7 - 10",
+                        "\noakMargin compared to control", sep=""), 
+           subtitle = paste("(95% confidence interval)", sep=""),
+         x="julian day",
+         y= "oakMargin percent of control",
+         caption=paste("120 observations per day", "\npositions 1 - 10 inclusive", sep="")) +
+    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
+    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
+    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
+    theme(legend.title=element_blank(), 
+          legend.box.background = element_rect(colour = "black"),
+          panel.border = element_rect(colour = "black", fill=NA)) + 
+    # Put bottom-right corner of legend box in bottom-right corner of graph
+    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
+    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
+    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+    
+  grid.arrange(ggCompare, ncol=1, nrow=1)
+
+
+    oak.df <- bugs.df %>% 
+    dplyr::filter(position>6, time=="pm", transect=="oakMargin") %>% 
+    dplyr::group_by(julian) %>% 
+    dplyr::summarise(oakEdgeMean=mean(Thomisidae..crab.spider.))
+
+  center.df <- bugs.df %>% 
+    dplyr::filter(position>6, time=="pm", transect=="control") %>% 
+    dplyr::group_by(julian) %>% 
+    dplyr::summarise(controlEdgeMean=mean(Thomisidae..crab.spider.))
+
+    combo.df <- merge(oak.df, center.df)
+
+  combo.df <- combo.df %>% 
+    dplyr::mutate(deltaMean=(oakEdgeMean-controlEdgeMean)/controlEdgeMean)
+
+  assign("combo.df", combo.df, envir=.GlobalEnv)
+
+    ggCompare <- ggplot(combo.df, aes(x=julian, y=deltaMean)) +
+      geom_point(shape=21) + 
+      geom_smooth(method=lm) +  
+      geom_hline(yintercept=0) +
+      ylim(-1.1,1.1) +
+      labs(title= paste("average spiders per trap ",
+                        "\ntransect positions 7 - 10",
+                        "\noakMargin compared to control", sep=""), 
+           subtitle = paste("(95% confidence interval)", sep=""),
+         x="julian day",
+         y= "oakMargin percent of control",
+         caption=paste("120 observations per day", "\npositions 1 - 10 inclusive", sep="")) +
+    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
+    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
+    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
+    theme(legend.title=element_blank(), 
+          legend.box.background = element_rect(colour = "black"),
+          panel.border = element_rect(colour = "black", fill=NA)) + 
+    # Put bottom-right corner of legend box in bottom-right corner of graph
+    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
+    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
+    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+    
+  grid.arrange(ggCompare, ncol=1, nrow=1)
+
+
+
+}
+
 bugCount <- function() {
   
   total <- sum(bugs.df$DBfly, na.rm=TRUE) +

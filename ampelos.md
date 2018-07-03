@@ -65,7 +65,15 @@ ampelos
 
     ## NULL
 
-    ## [1] 490
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-6.png)
+
+    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 1 rows containing missing values (geom_point).
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-7.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-8.png)
+
+    ## [1] 492
 
 <table>
 <caption>
@@ -84,10 +92,10 @@ new
 <tbody>
 <tr>
 <td style="text-align:right;">
-617
+638
 </td>
 <td style="text-align:right;">
-3085
+3190
 </td>
 </tr>
 <tr>
@@ -156,10 +164,10 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
-36
+37
 </td>
 <td style="text-align:right;">
-180
+185
 </td>
 </tr>
 <tr>
@@ -188,10 +196,10 @@ new
 </tr>
 <tr>
 <td style="text-align:right;">
-439
+440
 </td>
 <td style="text-align:right;">
-2195
+2200
 </td>
 </tr>
 <tr>
