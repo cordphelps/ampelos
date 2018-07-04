@@ -1,13 +1,62 @@
 ampelos
 ================
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-1-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-2.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-3.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-4.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-5.png)
+``` r
+# https://tex.stackexchange.com/questions/152488/suppress-library-comments-from-output-with-knitr
+
+##################### QA #############################
+# QA : bugs.df %>% dplyr::group_by(julian) %>% skim() 
+# bugs.df %>% dplyr::filter(julian==158) %>% skim() 
+# https://stackoverflow.com/questions/22353633/filter-for-complete-cases-in-data-frame-using-dplyr-case-wise-deletion
+# bugs.df %>% dplyr::filter(complete.cases(.))
+# bugs.df %>% dplyr::filter(!complete.cases(.))
+######################################################
+
+
+#setwd("./code/thesis/ampelos/")
+source("./bug-library.R")
+
+source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/bugs.csv")
+bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
+
+assign("bugs.df", bugs.df, envir=.GlobalEnv)
+
+g <- compareTransect()
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-2.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-3.png)
+
+``` r
+newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = "")
+ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
+
+# pass variables to dyplr pipes
+# https://stackoverflow.com/questions/27975124/pass-arguments-to-dplyr-functions
+plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-4.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-5.png)
 
     ## NULL
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-1-6.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-7.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-8.png)
+``` r
+plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", speciesText="Crab Spider", where="control", when="pm", wk=1, caption=Sys.Date())
+```
 
-    ## [1] 492
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-6.png)
+
+``` r
+new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
+plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="control", when="pm", wk=1, caption=Sys.Date())
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-7.png)
+
+``` r
+plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="oakMargin", when="pm", wk=1, caption=Sys.Date())
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-8.png)
 
 <table>
 <caption>
