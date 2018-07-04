@@ -42,36 +42,42 @@ ampelos
     ## ✖ purrr::rep_along()   masks rlang::rep_along()
     ## ✖ purrr::splice()      masks rlang::splice()
 
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-1.png)
+
+    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 2 rows containing missing values (geom_point).
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-2.png)
+
+    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 2 rows containing missing values (geom_point).
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-3.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-4.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-5.png)
+
+    ## NULL
+
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
     ## Picking joint bandwidth of 29.1
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-1-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-6.png)
 
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
     ## Picking joint bandwidth of 19.6
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-1-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-7.png)
 
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
     ## Picking joint bandwidth of 19.9
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-1-3.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-4.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-5.png)
-
-    ## NULL
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-1-6.png)
-
-    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
-
-    ## Warning: Removed 1 rows containing missing values (geom_point).
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-1-7.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-1-8.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-1-8.png)
 
     ## [1] 492
 
