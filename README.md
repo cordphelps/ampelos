@@ -1,6 +1,8 @@
 ampelos
 ================
 
+[![transect layout](https://raw.githubusercontent.com/cordphelps/ampelos/master/transectLayout.JPG)]()
+
 ``` r
 # https://tex.stackexchange.com/questions/152488/suppress-library-comments-from-output-with-knitr
 
