@@ -23,7 +23,9 @@ source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/bug
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 
 assign("bugs.df", bugs.df, envir=.GlobalEnv)
+```
 
+```{r}
 g <- compareTransect()
 newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = "")
 ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
