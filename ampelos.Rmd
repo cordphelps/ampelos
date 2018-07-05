@@ -5,27 +5,19 @@ output: github_document
 
 
 ```{r, echo=T, message=F, warning=F}
-# https://tex.stackexchange.com/questions/152488/suppress-library-comments-from-output-with-knitr
 
-##################### QA #############################
-# QA : bugs.df %>% dplyr::group_by(julian) %>% skim() 
-# bugs.df %>% dplyr::filter(julian==158) %>% skim() 
-# https://stackoverflow.com/questions/22353633/filter-for-complete-cases-in-data-frame-using-dplyr-case-wise-deletion
-# bugs.df %>% dplyr::filter(complete.cases(.))
-# bugs.df %>% dplyr::filter(!complete.cases(.))
-######################################################
-
-
-#setwd("./code/thesis/ampelos/")
 source("./bug-library.R")
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 
-assign("bugs.df", bugs.df, envir=.GlobalEnv)
+
 ```
 
+
+
 ```{r, echo=TRUE, include=TRUE}
+
 g <- compareTransect()
 newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = "")
 ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
@@ -45,28 +37,18 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 ```
 
 
-
-
-
-
 ```{r kable, results='asis', echo=FALSE}
 
-# kable(bugs.df, format = "html", booktabs = F, caption= "transpose prior")
+bugList <- colnames(bugs.df[,5:22])
+trim.tbl <- bugs.df %>% select(5:22) %>% colSums() %>% t()
+# https://stackoverflow.com/questions/9623763/in-r-how-can-i-compute-percentage-statistics-on-a-column-in-a-dataframe-tabl
+#trim.tbl <- table(trim.df)
+trim.tbl <- t(trim.tbl)
+trim.tbl <- cbind(trim.tbl,round(prop.table(trim.tbl)*100,2))
+colnames(trim.tbl) <- c('count','percentage')
 
-# 'transpose' = swap rows and columns
-bugsOnly.df <- t(bigTable(bugs.df))
-# define a column name
-colnames(bugsOnly.df)[1] <- "total"
-# convert matrix to dataframe
-bugsOnly.df <- data.frame(bugsOnly.df)
-# add a new column
-bugsOnly.df <- mutate(bugsOnly.df, new=total*5)
+knitr::kable(trim.tbl)
 
-kable(bugsOnly.df, format = "html", booktabs = F, caption= "this is a caption") # %>% kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
-
-#bugsOnly.df %>% kable() %>% kable_styling() 
-#kable(bugsOnly.df, ) %>%
-#  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 
 ```
 

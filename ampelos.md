@@ -2,24 +2,10 @@ ampelos
 ================
 
 ``` r
-# https://tex.stackexchange.com/questions/152488/suppress-library-comments-from-output-with-knitr
-
-##################### QA #############################
-# QA : bugs.df %>% dplyr::group_by(julian) %>% skim() 
-# bugs.df %>% dplyr::filter(julian==158) %>% skim() 
-# https://stackoverflow.com/questions/22353633/filter-for-complete-cases-in-data-frame-using-dplyr-case-wise-deletion
-# bugs.df %>% dplyr::filter(complete.cases(.))
-# bugs.df %>% dplyr::filter(!complete.cases(.))
-######################################################
-
-
-#setwd("./code/thesis/ampelos/")
 source("./bug-library.R")
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
-
-assign("bugs.df", bugs.df, envir=.GlobalEnv)
 ```
 
 ``` r
@@ -88,306 +74,215 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-2-8.png)
 
 <table>
-<caption>
-this is a caption
-</caption>
 <thead>
 <tr>
-<th style="text-align:right;">
-total
+<th style="text-align:left;">
 </th>
 <th style="text-align:right;">
-new
+count
+</th>
+<th style="text-align:right;">
+percentage
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td style="text-align:left;">
+Diptera..Agromyzidae..leafminer..
+</td>
 <td style="text-align:right;">
 638
 </td>
 <td style="text-align:right;">
-3190
+26.52
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+Braconid.wasp
+</td>
 <td style="text-align:right;">
 24
 </td>
 <td style="text-align:right;">
-120
+1.00
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+Halictus.sp....3.part..native.bee.
+</td>
 <td style="text-align:right;">
 159
 </td>
 <td style="text-align:right;">
-795
+6.61
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+pencilBug
+</td>
 <td style="text-align:right;">
 40
 </td>
 <td style="text-align:right;">
-200
+1.66
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+Agapostemon.sp....green..native.bee.
+</td>
 <td style="text-align:right;">
 26
 </td>
 <td style="text-align:right;">
-130
+1.08
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+Osmia.sp...native.bee.
+</td>
 <td style="text-align:right;">
 58
 </td>
 <td style="text-align:right;">
-290
+2.41
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+Honey.Bee
+</td>
 <td style="text-align:right;">
 248
 </td>
 <td style="text-align:right;">
-1240
+10.31
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+Bombus.californicus..bumble.
+</td>
 <td style="text-align:right;">
 171
 </td>
 <td style="text-align:right;">
-855
+7.11
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+Thomisidae..crab.spider.
+</td>
 <td style="text-align:right;">
 465
 </td>
 <td style="text-align:right;">
-2325
+19.33
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+spider.other
+</td>
 <td style="text-align:right;">
 37
 </td>
 <td style="text-align:right;">
-185
+1.54
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+ladyBug
+</td>
 <td style="text-align:right;">
 15
 </td>
 <td style="text-align:right;">
-75
+0.62
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+Lygus.hesperus..western.tarnished.plant.bug.
+</td>
 <td style="text-align:right;">
 26
 </td>
 <td style="text-align:right;">
-130
+1.08
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+pentamonidae...stinkBug.
+</td>
 <td style="text-align:right;">
 9
 </td>
 <td style="text-align:right;">
-45
+0.37
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+other
+</td>
 <td style="text-align:right;">
 440
 </td>
 <td style="text-align:right;">
-2200
+18.29
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+checkerspot.butterfly
+</td>
 <td style="text-align:right;">
 25
 </td>
 <td style="text-align:right;">
-125
+1.04
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+Pyralidae..Snout.Moth.
+</td>
 <td style="text-align:right;">
 13
 </td>
 <td style="text-align:right;">
-65
+0.54
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+Diabrotica.undecimpunctata..Cucumber.Beetle.
+</td>
 <td style="text-align:right;">
 9
 </td>
 <td style="text-align:right;">
-45
+0.37
 </td>
 </tr>
 <tr>
+<td style="text-align:left;">
+Orius..pirate.bug.
+</td>
 <td style="text-align:right;">
 3
 </td>
 <td style="text-align:right;">
-15
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:right;">
-40
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-25
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:right;">
-30
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-25
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-10
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-15
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-20
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:right;">
-30
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-20
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-5
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-5
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-10
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-10
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:right;">
-30
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-10
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-10
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-10
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-5
+0.12
 </td>
 </tr>
 </tbody>
