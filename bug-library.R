@@ -418,7 +418,7 @@ compareTransect <- function () {
     dplyr::summarise(oakEdgeMean=mean(Thomisidae..crab.spider.))
 
   center.df <- bugs.df %>% 
-    dplyr::filter(position>6, time=="pm", transect=="control") %>% 
+    dplyr::filter(position<3, time=="pm", transect=="control") %>% 
     dplyr::group_by(julian) %>% 
     dplyr::summarise(controlEdgeMean=mean(Thomisidae..crab.spider.))
 
@@ -461,7 +461,7 @@ compareTransect <- function () {
     dplyr::summarise(oakEdgeMean=mean(Thomisidae..crab.spider.))
 
   center.df <- bugs.df %>% 
-    dplyr::filter(position>6, time=="pm", transect=="control") %>% 
+    dplyr::filter(position>3, position<7, time=="pm", transect=="control") %>% 
     dplyr::group_by(julian) %>% 
     dplyr::summarise(controlEdgeMean=mean(Thomisidae..crab.spider.))
 
