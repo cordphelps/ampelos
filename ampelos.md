@@ -18,7 +18,9 @@ g <- compareTransect()
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
-    ## Warning: Removed 1 rows containing non-finite values (stat_smooth).
+    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 1 rows containing missing values (geom_point).
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-2-2.png)
 
@@ -30,7 +32,9 @@ g <- compareTransect()
 
     ## Warning: Removed 3 rows containing missing values (geom_point).
 
-    ## Warning: Removed 1 rows containing non-finite values (stat_smooth).
+    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 1 rows containing missing values (geom_point).
 
     ## Warning: Removed 1 rows containing non-finite values (stat_smooth).
 
