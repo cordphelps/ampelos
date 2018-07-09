@@ -598,7 +598,7 @@ bigTable <- function(df) {
 
 compareTransectUsingQuosure <- function (data, species, operator, initialPosition, secondaryPosition, positionText) {
 
-  # Programming with dplyr, Different input variable
+  # Programming with dplyr, Different input variable (how and when to quote/unquote)
   # https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
 
   # This function provides the flexibility to configure the dplyr::filter() position argument on-the-fly,
@@ -642,12 +642,14 @@ compareTransectUsingQuosure <- function (data, species, operator, initialPositio
     if (operator == "LT") {
 
       oak.df <- data %>% 
-      dplyr::filter(position < !! initialPosition, time=="pm", transect=="oakMargin") %>% 
+      # dplyr::filter(position < !! initialPosition, time=="pm", transect=="oakMargin") %>% 
+      dplyr::filter(position < !! initialPosition, transect=="oakMargin") %>% 
       dplyr::group_by(julian) %>% 
       dplyr::summarise(oakEdgeMean=mean(!!species))
 
       center.df <- data %>% 
-      dplyr::filter(position < !! initialPosition, time=="pm", transect=="control") %>% 
+      # dplyr::filter(position < !! initialPosition, time=="pm", transect=="control") %>% 
+      dplyr::filter(position < !! initialPosition, transect=="control") %>% 
       dplyr::group_by(julian) %>% 
       dplyr::summarise(controlEdgeMean=mean(!!species))
 
@@ -657,12 +659,12 @@ compareTransectUsingQuosure <- function (data, species, operator, initialPositio
     } else if (operator == "GT") {
 
       oak.df <- data %>% 
-      dplyr::filter(position > !! initialPosition, time=="pm", transect=="oakMargin") %>% 
+      dplyr::filter(position > !! initialPosition, transect=="oakMargin") %>% 
       dplyr::group_by(julian) %>% 
       dplyr::summarise(oakEdgeMean=mean(!! species))
 
       center.df <- data %>% 
-      dplyr::filter(position > !! initialPosition, time=="pm", transect=="control") %>% 
+      dplyr::filter(position > !! initialPosition, transect=="control") %>% 
       dplyr::group_by(julian) %>% 
       dplyr::summarise(controlEdgeMean=mean(!! species))
 

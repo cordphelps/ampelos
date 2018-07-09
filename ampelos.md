@@ -22,7 +22,7 @@ g3 <- compareTransectUsingQuosure(data=bugs.df,
                                  positionText)
 ```
 
-    ## Warning: Removed 3 rows containing non-finite values (stat_smooth).
+    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
 
     ## Warning: Removed 1 rows containing missing values (geom_point).
 
@@ -54,7 +54,7 @@ g7 <- compareTransectUsingQuosure(data=bugs.df,
                                  positionText)
 ```
 
-    ## Warning: Removed 1 rows containing non-finite values (stat_smooth).
+    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
 
     ## Warning: Removed 1 rows containing missing values (geom_point).
 
