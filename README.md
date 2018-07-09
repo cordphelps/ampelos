@@ -3,6 +3,7 @@ ampelos
 
 [![transect layout](https://raw.githubusercontent.com/cordphelps/ampelos/master/transectLayout.jpg)]()
 
+
 ``` r
 source("./bug-library.R")
 
@@ -11,28 +12,50 @@ bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 ```
 
 ``` r
-g <- compareTransect()
+# g <- compareTransect()
+# newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = "")
+# ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
+
+positionText <- paste("\ntransect positions ", "1-3", sep="")
+g3 <- compareTransectUsingQuosure(data=bugs.df, 
+                                 species=quo(Thomisidae..crab.spider.), 
+                                 operator="LT",
+                                 initialPosition=quo(4), 
+                                 secondaryPosition=quo(0),
+                                 positionText)
 ```
 
-    ## Warning: Removed 5 rows containing non-finite values (stat_smooth).
-
-    ## Warning: Removed 3 rows containing missing values (geom_point).
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-2-1.png)
-
-    ## Warning: Removed 1 rows containing non-finite values (stat_smooth).
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-2-2.png)
-
-    ## Warning: Removed 1 rows containing non-finite values (stat_smooth).
+    ## Warning: Removed 3 rows containing non-finite values (stat_smooth).
 
     ## Warning: Removed 1 rows containing missing values (geom_point).
 
-    ## Warning: Removed 5 rows containing non-finite values (stat_smooth).
+![](ampelos_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
-    ## Warning: Removed 3 rows containing missing values (geom_point).
+``` r
+positionText <- paste("\ntransect positions ", "4-6", sep="")
+g46 <- compareTransectUsingQuosure(data=bugs.df, 
+                                 species=quo(Thomisidae..crab.spider.), 
+                                 operator="BETWEEN",
+                                 initialPosition=quo(3), 
+                                 secondaryPosition=quo(7),
+                                 positionText)
+```
 
-    ## Warning: Removed 1 rows containing non-finite values (stat_smooth).
+    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 1 rows containing missing values (geom_point).
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-2-2.png)
+
+``` r
+positionText <- paste("\ntransect positions ", "7-10", sep="")
+g7 <- compareTransectUsingQuosure(data=bugs.df, 
+                                 species=quo(Thomisidae..crab.spider.), 
+                                 operator="GT",
+                                 initialPosition=quo(6), 
+                                 secondaryPosition=quo(0),
+                                 positionText)
+```
 
     ## Warning: Removed 1 rows containing non-finite values (stat_smooth).
 
@@ -41,6 +64,7 @@ g <- compareTransect()
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-2-3.png)
 
 ``` r
+g <- arrangeGrob(g3, g46, g7, nrow=3)
 newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = "")
 ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
 
