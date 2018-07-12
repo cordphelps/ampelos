@@ -1,6 +1,8 @@
 ampelos
 ================
 
+[![transect layout](https://raw.githubusercontent.com/cordphelps/ampelos/master/transectLayout.jpg)]()
+
 ``` r
 source("./bug-library.R")
 
