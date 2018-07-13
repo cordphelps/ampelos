@@ -695,7 +695,7 @@ compareTransectUsingQuosure <- function (data, species, operator, initialPositio
       ylim(-1.1,1.1) +
       labs(title= paste("average spiders per trap ",
                         positionText,
-                        "\noakMargin as a fraction of control", sep=""), 
+                        "\n(oak average - control average) / control average", sep=""), 
            subtitle = paste("(95% confidence interval)", sep=""),
          x="julian day",
          y= "oakMargin fraction of control",
