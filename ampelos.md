@@ -71,15 +71,6 @@ ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #save
 simPair <- simMatrix(data=bugs.df)
 ```
 
-    ## 
-    ## Attaching package: 'reshape2'
-
-    ## The following object is masked from 'package:tidyr':
-    ## 
-    ##     smiths
-
-    ## Warning in cor(sim.matrix): the standard deviation is zero
-
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 ``` r
@@ -96,11 +87,6 @@ plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="
 plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", speciesText="Crab Spider", where="control", when="pm", wk=1, caption=Sys.Date())
 ```
 
-    ## Scale for 'x' is already present. Adding another scale for 'x', which
-    ## will replace the existing scale.
-
-    ## Picking joint bandwidth of 28.6
-
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-4-3.png)
 
 ``` r
@@ -108,21 +94,11 @@ new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1,
 plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="control", when="pm", wk=1, caption=Sys.Date())
 ```
 
-    ## Scale for 'x' is already present. Adding another scale for 'x', which
-    ## will replace the existing scale.
-
-    ## Picking joint bandwidth of 18.7
-
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-4-4.png)
 
 ``` r
 plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="oakMargin", when="pm", wk=1, caption=Sys.Date())
 ```
-
-    ## Scale for 'x' is already present. Adding another scale for 'x', which
-    ## will replace the existing scale.
-
-    ## Picking joint bandwidth of 19
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-4-5.png)
 

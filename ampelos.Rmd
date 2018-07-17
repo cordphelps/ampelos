@@ -51,13 +51,13 @@ ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #save
 
 ```
 
-```{r, echo=TRUE, include=TRUE, fig.width=35,fig.height=35 }
+```{r, echo=TRUE, include=TRUE, message=F, warning=F, fig.width=50, fig.height=50 }
 
 simPair <- simMatrix(data=bugs.df)
 
 ```
 
-```{r, echo=TRUE, include=TRUE}
+```{r, echo=TRUE, include=TRUE, message=F, warning=F}
 
 # pass variables to dyplr pipes
 # https://stackoverflow.com/questions/27975124/pass-arguments-to-dplyr-functions
@@ -74,7 +74,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 ```
 
 
-```{r kable, results='asis', echo=FALSE}
+```{r kable, results='asis', echo=FALSE, message=F, warning=F}
 
 bugList <- colnames(bugs.df[,5:22])
 trim.tbl <- bugs.df %>% select(5:22) %>% colSums() %>% t()
