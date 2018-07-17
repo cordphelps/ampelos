@@ -22,6 +22,7 @@ simMatrix <- function(data) {
     library("reshape2")
     library("ggplot2")
     library("gridExtra")
+    library("grid")
   
   	## get the insect data by transect and by week
   
@@ -59,19 +60,32 @@ simMatrix <- function(data) {
     name="Spearman\nCorrelation") +
     labs(title= paste("Species Correlation Matrix (Spearman)\n", 
                       "transect: Oak Margin", sep="")) +
-    theme_minimal()+ 
+    # theme_minimal()+ 
     theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1, size = 36)) +
     theme(axis.text.y = element_text(size = 36)) +
     theme(plot.title = element_text(size=36)) +
     theme(
       axis.title.x = element_blank(),
       axis.title.y = element_blank()) +
-    theme(
+    theme(  # https://www.r-graph-gallery.com/239-custom-layout-legend-ggplot2/
     legend.position = c(.2, .8),
     legend.justification = c(0, 1),
     legend.box.just = "left",
-    legend.margin = margin(6, 6, 6, 6)
+    legend.margin = margin(6, 6, 6, 6),
+    legend.key.size = unit(2, "cm")      # changes the size of the spectrum
     ) +
+    theme(
+      legend.title = element_text(
+                            size = 30,
+                            face = "italic",
+                            colour = "black",
+                            angle = 0
+                          ),
+      legend.text = element_text(
+                            size = 30
+                          )
+
+      ) +
     coord_fixed()
 
     # Reorder the correlation matrix
@@ -126,13 +140,26 @@ simMatrix <- function(data) {
     theme(
       axis.title.x = element_blank(),
       axis.title.y = element_blank()) +
-    theme(
+    theme(  # https://www.r-graph-gallery.com/239-custom-layout-legend-ggplot2/
     legend.position = c(.2, .8),
     legend.justification = c(0, 1),
     legend.box.just = "left",
-    legend.margin = margin(6, 6, 6, 6)
+    legend.margin = margin(6, 6, 6, 6),
+    legend.key.size = unit(2, "cm")      # changes the size of the spectrum
     ) +
-    guides(color = guide_legend(override.aes = list(size = 5))) +
+    theme(
+      legend.title = element_text(
+                            size = 30,
+                            face = "italic",
+                            colour = "black",
+                            angle = 0
+                          ),
+      legend.text = element_text(
+                            size = 30
+                          )
+
+      ) +
+    #guides(color = guide_legend(override.aes = list(size = 5))) +
     coord_fixed()
 
 
