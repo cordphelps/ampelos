@@ -4,9 +4,10 @@ ampelos
 [![transect layout](https://raw.githubusercontent.com/cordphelps/ampelos/master/transectLayout.jpg)]()
 
 ``` r
-source("./bug-library.R")
+source("./code/bug-library.R")
+source("./code/similarity.R")
 
-source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/bugs.csv")
+source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 ```
 
@@ -66,13 +67,30 @@ g7 <- compareTransectUsingQuosure(data=bugs.df,
 g <- arrangeGrob(g3, g46, g7, nrow=3)
 newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = "")
 ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
+```
 
+``` r
+simPair <- simMatrix(data=bugs.df)
+```
+
+    ## 
+    ## Attaching package: 'reshape2'
+
+    ## The following object is masked from 'package:tidyr':
+    ## 
+    ##     smiths
+
+    ## Warning in cor(sim.matrix): the standard deviation is zero
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-3-1.png)
+
+``` r
 # pass variables to dyplr pipes
 # https://stackoverflow.com/questions/27975124/pass-arguments-to-dplyr-functions
 plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-2-4.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-2-5.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-4-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-4-2.png)
 
     ## NULL
 
@@ -85,7 +103,7 @@ plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", specie
 
     ## Picking joint bandwidth of 28.6
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-2-6.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-4-3.png)
 
 ``` r
 new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
@@ -97,7 +115,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 
     ## Picking joint bandwidth of 18.7
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-2-7.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-4-4.png)
 
 ``` r
 plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="oakMargin", when="pm", wk=1, caption=Sys.Date())
@@ -108,7 +126,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 
     ## Picking joint bandwidth of 19
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-2-8.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-4-5.png)
 
 <table>
 <thead>
