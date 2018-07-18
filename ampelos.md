@@ -4,6 +4,7 @@ ampelos
 ``` r
 source("./code/bug-library.R")
 source("./code/similarity.R")
+source("./code/jaccard-similarity.R")
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
@@ -68,10 +69,16 @@ ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #save
 ```
 
 ``` r
-simPair <- simMatrix(data=bugs.df)
+plot(compareJaccardMultiWeek())
 ```
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-3-1.png)
+
+``` r
+simPair <- simMatrix(data=bugs.df)
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 ``` r
 # pass variables to dyplr pipes
@@ -79,7 +86,7 @@ simPair <- simMatrix(data=bugs.df)
 plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-4-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-4-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-5-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-5-2.png)
 
     ## NULL
 
@@ -87,20 +94,20 @@ plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="
 plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", speciesText="Crab Spider", where="control", when="pm", wk=1, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-4-3.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-5-3.png)
 
 ``` r
 new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
 plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="control", when="pm", wk=1, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-4-4.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-5-4.png)
 
 ``` r
 plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="oakMargin", when="pm", wk=1, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-4-5.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-5-5.png)
 
 <table>
 <thead>
