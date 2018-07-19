@@ -24,10 +24,6 @@ g3 <- compareTransectUsingQuosure(data=bugs.df,
                                  positionText)
 ```
 
-    ## Warning: Removed 3 rows containing non-finite values (stat_smooth).
-
-    ## Warning: Removed 2 rows containing missing values (geom_point).
-
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
 ``` r
@@ -39,10 +35,6 @@ g46 <- compareTransectUsingQuosure(data=bugs.df,
                                  secondaryPosition=quo(7),
                                  positionText)
 ```
-
-    ## Warning: Removed 3 rows containing non-finite values (stat_smooth).
-
-    ## Warning: Removed 1 rows containing missing values (geom_point).
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-2-2.png)
 
@@ -56,10 +48,6 @@ g7 <- compareTransectUsingQuosure(data=bugs.df,
                                  positionText)
 ```
 
-    ## Warning: Removed 3 rows containing non-finite values (stat_smooth).
-
-    ## Warning: Removed 2 rows containing missing values (geom_point).
-
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-2-3.png)
 
 ``` r
@@ -69,10 +57,24 @@ ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #save
 ```
 
 ``` r
-plot(compareJaccardMultiWeek())
+gOak <- compareJaccardMultiWeekV2(data=bugs.df, 
+                                  transect=quo("oakMargin"),
+                                  transectText="oakMargin")
 ```
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-3-1.png)
+
+``` r
+gControl <- compareJaccardMultiWeekV2(data=bugs.df, 
+                                      transect=quo("control"),
+                                      transectText="control")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-3-2.png)
+
+``` r
+g <- arrangeGrob(gOak, gControl, nrow=2)
+```
 
 ``` r
 simPair <- simMatrix(data=bugs.df)

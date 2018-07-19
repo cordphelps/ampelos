@@ -2,7 +2,7 @@
 # https://tex.stackexchange.com/questions/152488/suppress-library-comments-from-output-with-knitr
 
 ############### add to README ##########################
-# [![transect layout](https://raw.githubusercontent.com/cordphelps/ampelos/master/transectLayout.jpg)]()
+# [![transect layout](https://raw.githubusercontent.com/cordphelps/ampelos/master/images/transectLayout.jpg)]()
 ################ add to README #######################
 
 ##################### QA #############################
