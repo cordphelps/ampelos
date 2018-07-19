@@ -66,10 +66,17 @@ g <- arrangeGrob(gOak, gControl, nrow=2)
 ```
 
 
-```{r, echo=TRUE, include=TRUE, message=F, warning=F, fig.width=50, fig.height=50 }
+```{r, echo=TRUE, include=TRUE, message=F, warning=F }
 
-simPair <- simMatrix(data=bugs.df)
+# , fig.width=50, fig.height=50
+# simPair <- simMatrix(data=bugs.df)
 
+m1 <- simMatrixV2(data=bugs.df, transect=quo("oakMargin"),
+                                transectText="oakMargin")
+m2 <- simMatrixV2(data=bugs.df, transect=quo("control"),
+                                transectText="control")
+
+g <- arrangeGrob(m1, m2, nrow=2)
 ```
 
 

@@ -77,10 +77,25 @@ g <- arrangeGrob(gOak, gControl, nrow=2)
 ```
 
 ``` r
-simPair <- simMatrix(data=bugs.df)
+# , fig.width=50, fig.height=50
+# simPair <- simMatrix(data=bugs.df)
+
+m1 <- simMatrixV2(data=bugs.df, transect=quo("oakMargin"),
+                                transectText="oakMargin")
 ```
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-4-1.png)
+
+``` r
+m2 <- simMatrixV2(data=bugs.df, transect=quo("control"),
+                                transectText="control")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-4-2.png)
+
+``` r
+g <- arrangeGrob(m1, m2, nrow=2)
+```
 
 ``` r
 # pass variables to dyplr pipes
