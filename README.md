@@ -12,11 +12,10 @@ source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/dat
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 ```
 
-``` r
-# g <- compareTransect()
-# newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = "")
-# ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
+is there a difference in the spider populations of the two transects?
+---------------------------------------------------------------------
 
+``` r
 positionText <- paste("\ntransect positions ", "1-3", sep="")
 g3 <- compareTransectUsingQuosure(data=bugs.df, 
                                  species=quo(Thomisidae..crab.spider.), 
@@ -58,6 +57,13 @@ newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = 
 ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
 ```
 
+each of the two transects consists of 3 rows of 10 traps in each row. Is the total insect population relatively uniform among the 3 rows of a transect? Does this uniformity change over time? Compute the Jaccard Index for each week: the index *'is a statistic used for comparing the similarity and diversity of sample sets.'*
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### Note that *'the Jaccard index only counts mutual presence as matches and compares it to the number of attributes that have been chosen by at least one of the two sets.'* (<https://en.wikipedia.org/wiki/Jaccard_index>)
+
+### TODO: evaluate the Simple matching coefficient (which also counts mutual absence): <https://en.wikipedia.org/wiki/Simple_matching_coefficient>
+
 ``` r
 gOak <- compareJaccardMultiWeekV2(data=bugs.df, 
                                   transect=quo("oakMargin"),
@@ -78,10 +84,10 @@ gControl <- compareJaccardMultiWeekV2(data=bugs.df,
 g <- arrangeGrob(gOak, gControl, nrow=2)
 ```
 
-``` r
-# , fig.width=50, fig.height=50
-# simPair <- simMatrix(data=bugs.df)
+how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
+-------------------------------------------------------------------------------------------------------------------------------------------
 
+``` r
 m1 <- simMatrixV2(data=bugs.df, transect=quo("oakMargin"),
                                 transectText="oakMargin")
 ```
@@ -99,6 +105,9 @@ m2 <- simMatrixV2(data=bugs.df, transect=quo("control"),
 g <- arrangeGrob(m1, m2, nrow=2)
 ```
 
+does the crab spider population appear to change over time? Is there a difference between the two transects?
+------------------------------------------------------------------------------------------------------------
+
 ``` r
 # pass variables to dyplr pipes
 # https://stackoverflow.com/questions/27975124/pass-arguments-to-dplyr-functions
@@ -109,24 +118,45 @@ plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="
 
     ## NULL
 
+the crab spider is a dominant species in the vineyard. How are they distributed along the length of the row?
+------------------------------------------------------------------------------------------------------------
+
 ``` r
 plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", speciesText="Crab Spider", where="control", when="pm", wk=1, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-5-3.png)
+    ## Scale for 'x' is already present. Adding another scale for 'x', which
+    ## will replace the existing scale.
+
+    ## Picking joint bandwidth of 28.6
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
 ``` r
 new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
 plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="control", when="pm", wk=1, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-5-4.png)
+    ## Scale for 'x' is already present. Adding another scale for 'x', which
+    ## will replace the existing scale.
+
+    ## Picking joint bandwidth of 18.7
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-6-2.png)
 
 ``` r
 plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="oakMargin", when="pm", wk=1, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-5-5.png)
+    ## Scale for 'x' is already present. Adding another scale for 'x', which
+    ## will replace the existing scale.
+
+    ## Picking joint bandwidth of 19
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-6-3.png)
+
+what are the species counts?
+----------------------------
 
 <table>
 <thead>
