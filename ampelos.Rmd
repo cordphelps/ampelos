@@ -3,6 +3,7 @@ title: "ampelos"
 output: github_document
 ---
 
+![landscape](./photos/landscapeOak.JPG)
 
 ```{r, echo=T, message=F, warning=F}
 
@@ -115,5 +116,27 @@ knitr::kable(trim.tbl)
 
 
 ```
+
+## bird repellant streamers indicating the prevailing wind direction
+
+![landscape](./photos/windDirection.JPG)
+
+## top of the control transect
+
+![landscape](./photos/topOfControl.JPG)
+
+## bottom of the control transect with bird repellant streamers 
+
+![landscape](./photos/bottomOfControl.JPG)
+
+## typical trap positioning; bowl in the fruit zone, vanes intersecting the canopy
+
+![landscape](./photos/typicalTrap.JPG)
+
+## example trap sequence
+
+![landscape](./photos/trapSequence.JPG)
+
+
 
 
