@@ -57,15 +57,20 @@ newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = 
 ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
 ```
 
+transect design
+---------------
+
+![transect layout](./images/transectLayout.jpg)
+
 each of the two transects consists of 3 rows of 10 traps in each row. Is the total insect population relatively uniform among the 3 rows of a transect? Does this uniformity change over time? Compute the Jaccard Index for each week: the index *'is a statistic used for comparing the similarity and diversity of sample sets.'*
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ### Note that *'the Jaccard index only counts mutual presence as matches and compares it to the number of attributes that have been chosen by at least one of the two sets.'* (<https://en.wikipedia.org/wiki/Jaccard_index>)
 
-### TODO: evaluate the Simple matching coefficient (which also counts mutual absence): <https://en.wikipedia.org/wiki/Simple_matching_coefficient>
+### TO-DO: compare Jaccard to the Simple Matching Coefficient (which also counts mutual absence): <https://en.wikipedia.org/wiki/Simple_matching_coefficient>
 
 ``` r
-gOak <- compareJaccardMultiWeekV2(data=bugs.df, 
+gOak <- compareJaccardMultiWeekV3(data=bugs.df, 
                                   transect=quo("oakMargin"),
                                   transectText="oakMargin")
 ```
@@ -73,7 +78,7 @@ gOak <- compareJaccardMultiWeekV2(data=bugs.df,
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 ``` r
-gControl <- compareJaccardMultiWeekV2(data=bugs.df, 
+gControl <- compareJaccardMultiWeekV3(data=bugs.df, 
                                       transect=quo("control"),
                                       transectText="control")
 ```
@@ -155,8 +160,8 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-6-3.png)
 
-what are the species counts?
-----------------------------
+and the species counts?
+-----------------------
 
 <table>
 <thead>
@@ -372,11 +377,6 @@ Orius..pirate.bug.
 </tr>
 </tbody>
 </table>
-transect design
----------------
-
-\[![transect layout](./images/transectLayout.jpg)
-
 bottom of the Oak Transect; bird repellant streamers indicating the prevailing wind direction
 ---------------------------------------------------------------------------------------------
 

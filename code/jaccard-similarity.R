@@ -95,8 +95,33 @@ bugRowsJaccardSimilarity <- function(df, t, w) {
     key_pairs <- expand.grid(row.names(test.df), row.names(test.df))
     key_pair <- key_pairs %>% mutate(pair = paste(Var1,"_",Var2,sep=""))   # pair-ID in the form "row1-row2"
     results <- t(apply(key_pairs, 1, function(row) jaccard(test.df[c(row[1], row[2]),], margin=2)))
+
+		#    > results
+		#           JSim      JDist
+		# [1,] 1.0000000 0.00000000
+		# [2,] 0.9230769 0.07692308
+		# [3,] 0.7857143 0.21428571
+		# [4,] 0.9230769 0.07692308
+		# [5,] 1.0000000 0.00000000
+		# [6,] 0.8461538 0.15384615
+		# [7,] 0.7857143 0.21428571
+		# [8,] 0.8461538 0.15384615
+		# [9,] 1.0000000 0.00000000
+
    	results <- data.frame(results)
    	row.names(results) <- key_pair$pair
+
+		# > results
+		#           JSim      JDist
+		# 83_83 1.0000000 0.00000000
+		# 85_83 0.9230769 0.07692308
+		# 87_83 0.7857143 0.21428571
+		# 83_85 0.9230769 0.07692308
+		# 85_85 1.0000000 0.00000000
+		# 87_85 0.8461538 0.15384615
+		# 83_87 0.7857143 0.21428571
+		# 85_87 0.8461538 0.15384615
+		# 87_87 1.0000000 0.00000000
 
    	# results is a df of 2 columns, JSim and JDist.
    	# row names represent the similarity of all possible row combinations
@@ -104,13 +129,13 @@ bugRowsJaccardSimilarity <- function(df, t, w) {
    	# remove duplicates and mirrored data
    	cleanResults.df <- simplifyJaccardSimilarityResults(results)
 
-   	# cleanResults.df is a simplified similarity table
-   	#
-   	# > results.df
-  	#   left right      JSim      JDist
-	# 1   83    85 0.9230769 0.07692308
-	# 2   83    87 0.7857143 0.21428571
-	# 3   85    87 0.8461538 0.15384615
+   		# cleanResults.df is a simplified similarity table
+   		#
+   		# > results.df
+  		#   left right      JSim      JDist
+		# 1   83    85 0.9230769 0.07692308
+		# 2   83    87 0.7857143 0.21428571
+		# 3   85    87 0.8461538 0.15384615
 
 	cleanResults.df <- cleanResults.df %>% 
         dplyr::select(-left, -right, -JDist) %>%
@@ -306,3 +331,91 @@ compareJaccardMultiWeekV2 <- function(data, transect, transectText) {
 	return(grid.arrange(gg, ncol=1, nrow=1))
 
 }
+
+getWeeks <- function(data) {
+
+	# return a list of the weeks occurring in the dataset
+	# https://stackoverflow.com/questions/29832411/use-dplyr-to-get-values-of-a-column
+
+	library(dplyr)
+	weeks <- data %>%
+   				select(week) %>%
+   				unique() %>% 
+   				.$week
+
+   	return(weeks)
+
+}
+
+buildIndexByWeek <- function(data, transect) {
+
+	output.df <- NULL
+	accumulated.df <- NULL
+
+	weeks.vector <- getWeeks(data)
+
+	output.df <- bugRowsJaccardSimilarity(df=data, t=transect, w=weeks.vector[1])
+	accumulated.df <- tibble(week = weeks.vector[1], JSim = output.df$mean, JSimSD = output.df$sd)  # initialize the df
+	weeks.vector <- weeks.vector[-(1)]  # delete the first element as it was just used.....
+
+		# output.df is a simplified similarity table
+   		#
+   		# > output.df
+		#        mean         sd
+		# 1 0.8516484 0.06884596
+
+	for(i in weeks.vector){
+		# print(paste("week: ", i, sep=""))
+		output.df <- bugRowsJaccardSimilarity(df=bugs.df, t=transect, w=i)
+		accumulated.df <- accumulated.df %>% tibble::add_row(week = i, JSim = output.df$mean, JSimSD = output.df$sd)
+	}
+
+	return(accumulated.df)
+
+}
+
+compareJaccardMultiWeekV3 <- function(data, transect, transectText) {
+
+	output.df <- NULL
+	accumulated.df <- NULL
+
+	weeks.vector <- getWeeks(data)
+
+	output.df <- bugRowsJaccardSimilarity(df=data, t=transect, w=weeks.vector[1])
+	accumulated.df <- tibble(week = weeks.vector[1], JSim = output.df$mean, JSimSD = output.df$sd)  # initialize the df
+	weeks.vector <- weeks.vector[-(1)]  # delete the first element as it was just used.....
+
+		# output.df is a simplified similarity table
+   		#
+   		# > output.df
+		#        mean         sd
+		# 1 0.8516484 0.06884596
+
+	for(i in weeks.vector){
+		# print(paste("week: ", i, sep=""))
+		output.df <- bugRowsJaccardSimilarity(df=bugs.df, t=transect, w=i)
+		accumulated.df <- accumulated.df %>% tibble::add_row(week = i, JSim = output.df$mean, JSimSD = output.df$sd)
+	}
+
+
+	gg <- ggplot(accumulated.df, aes(x=week, y=JSim)) + 
+  		geom_point(aes(col=JSimSD, size=JSimSD*2)) + 
+  		geom_smooth(method="loess", se=F) + 
+  		geom_hline(yintercept=.8) +
+  		ylim(c(0, 1)) + 
+  		# scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +
+  		expand_limits(y=c(0,1)) + 
+  		labs(title=paste(transectText, " transect: row triad population similarity", sep=""),
+  			subtitle=paste("dot size/color represents 2X standard deviation", sep=""), 
+       		y="jaccard index", 
+       		x="week", 
+       		caption = "https://en.wikipedia.org/wiki/Jaccard_index") +
+  		theme(legend.position="none") +
+  		coord_fixed(ratio=3) # control the aspect ratio of the output
+  		# https://stackoverflow.com/questions/7056836/how-to-fix-the-aspect-ratio-in-ggplot
+
+	rm("output.df")
+
+	return(grid.arrange(gg, ncol=1, nrow=1))
+
+	}
