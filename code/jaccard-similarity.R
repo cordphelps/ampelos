@@ -178,6 +178,8 @@ compareJaccardMultiWeek <- function() {
 	accumulated.df <- accumulated.df %>% tibble::add_row(week = 27, JSim = output.df$mean, JSimSD = output.df$sd)
     output.df <- bugRowsJaccardSimilarity(bugs.df, t=quo("oakMargin"), w=quo(28))
 	accumulated.df <- accumulated.df %>% tibble::add_row(week = 28, JSim = output.df$mean, JSimSD = output.df$sd)
+    output.df <- bugRowsJaccardSimilarity(bugs.df, t=quo("oakMargin"), w=quo(29))
+	accumulated.df <- accumulated.df %>% tibble::add_row(week = 29, JSim = output.df$mean, JSimSD = output.df$sd)
 
 
 	ggOak <- ggplot(accumulated.df, aes(x=week, y=JSim)) + 

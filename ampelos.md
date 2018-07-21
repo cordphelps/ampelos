@@ -128,7 +128,7 @@ plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", specie
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 28.6
+    ## Picking joint bandwidth of 28.5
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
@@ -140,7 +140,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 18.7
+    ## Picking joint bandwidth of 18.4
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-6-2.png)
 
@@ -151,7 +151,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 19
+    ## Picking joint bandwidth of 18.7
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-6-3.png)
 
@@ -177,10 +177,10 @@ percentage
 Diptera..Agromyzidae..leafminer..
 </td>
 <td style="text-align:right;">
-695
+703
 </td>
 <td style="text-align:right;">
-22.18
+21.41
 </td>
 </tr>
 <tr>
@@ -188,10 +188,10 @@ Diptera..Agromyzidae..leafminer..
 Braconid.wasp
 </td>
 <td style="text-align:right;">
-32
+37
 </td>
 <td style="text-align:right;">
-1.02
+1.13
 </td>
 </tr>
 <tr>
@@ -199,10 +199,10 @@ Braconid.wasp
 Halictus.sp....3.part..native.bee.
 </td>
 <td style="text-align:right;">
-220
+234
 </td>
 <td style="text-align:right;">
-7.02
+7.13
 </td>
 </tr>
 <tr>
@@ -210,10 +210,10 @@ Halictus.sp....3.part..native.bee.
 pencilBug
 </td>
 <td style="text-align:right;">
-45
+50
 </td>
 <td style="text-align:right;">
-1.44
+1.52
 </td>
 </tr>
 <tr>
@@ -221,10 +221,10 @@ pencilBug
 Agapostemon.sp....green..native.bee.
 </td>
 <td style="text-align:right;">
-37
+39
 </td>
 <td style="text-align:right;">
-1.18
+1.19
 </td>
 </tr>
 <tr>
@@ -235,7 +235,7 @@ Osmia.sp...native.bee.
 59
 </td>
 <td style="text-align:right;">
-1.88
+1.80
 </td>
 </tr>
 <tr>
@@ -243,10 +243,10 @@ Osmia.sp...native.bee.
 Honey.Bee
 </td>
 <td style="text-align:right;">
-341
+351
 </td>
 <td style="text-align:right;">
-10.88
+10.69
 </td>
 </tr>
 <tr>
@@ -254,10 +254,10 @@ Honey.Bee
 Bombus.californicus..bumble.
 </td>
 <td style="text-align:right;">
-207
+216
 </td>
 <td style="text-align:right;">
-6.61
+6.58
 </td>
 </tr>
 <tr>
@@ -265,10 +265,10 @@ Bombus.californicus..bumble.
 Thomisidae..crab.spider.
 </td>
 <td style="text-align:right;">
-550
+567
 </td>
 <td style="text-align:right;">
-17.56
+17.27
 </td>
 </tr>
 <tr>
@@ -276,10 +276,10 @@ Thomisidae..crab.spider.
 spider.other
 </td>
 <td style="text-align:right;">
-62
+75
 </td>
 <td style="text-align:right;">
-1.98
+2.28
 </td>
 </tr>
 <tr>
@@ -287,10 +287,10 @@ spider.other
 ladyBug
 </td>
 <td style="text-align:right;">
-24
+27
 </td>
 <td style="text-align:right;">
-0.77
+0.82
 </td>
 </tr>
 <tr>
@@ -301,7 +301,7 @@ Lygus.hesperus..western.tarnished.plant.bug.
 31
 </td>
 <td style="text-align:right;">
-0.99
+0.94
 </td>
 </tr>
 <tr>
@@ -309,10 +309,10 @@ Lygus.hesperus..western.tarnished.plant.bug.
 pentamonidae...stinkBug.
 </td>
 <td style="text-align:right;">
-10
+14
 </td>
 <td style="text-align:right;">
-0.32
+0.43
 </td>
 </tr>
 <tr>
@@ -320,10 +320,10 @@ pentamonidae...stinkBug.
 other
 </td>
 <td style="text-align:right;">
-762
+822
 </td>
 <td style="text-align:right;">
-24.32
+25.03
 </td>
 </tr>
 <tr>
@@ -334,7 +334,7 @@ checkerspot.butterfly
 25
 </td>
 <td style="text-align:right;">
-0.80
+0.76
 </td>
 </tr>
 <tr>
@@ -345,7 +345,7 @@ Pyralidae..Snout.Moth.
 15
 </td>
 <td style="text-align:right;">
-0.48
+0.46
 </td>
 </tr>
 <tr>
@@ -353,10 +353,10 @@ Pyralidae..Snout.Moth.
 Diabrotica.undecimpunctata..Cucumber.Beetle.
 </td>
 <td style="text-align:right;">
-10
+11
 </td>
 <td style="text-align:right;">
-0.32
+0.33
 </td>
 </tr>
 <tr>
@@ -367,22 +367,27 @@ Orius..pirate.bug.
 8
 </td>
 <td style="text-align:right;">
-0.26
+0.24
 </td>
 </tr>
 </tbody>
 </table>
-bird repellant streamers indicating the prevailing wind direction
------------------------------------------------------------------
+transect design
+---------------
+
+\[![transect layout](./images/transectLayout.jpg)
+
+bottom of the Oak Transect; bird repellant streamers indicating the prevailing wind direction
+---------------------------------------------------------------------------------------------
 
 ![landscape](./photos/windDirection.JPG)
 
-top of the control transect
+top of the Control Transect
 ---------------------------
 
 ![landscape](./photos/topOfControl.JPG)
 
-bottom of the control transect with bird repellant streamers
+bottom of the Control Transect with bird repellant streamers
 ------------------------------------------------------------
 
 ![landscape](./photos/bottomOfControl.JPG)

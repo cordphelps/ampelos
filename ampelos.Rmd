@@ -117,15 +117,19 @@ knitr::kable(trim.tbl)
 
 ```
 
-## bird repellant streamers indicating the prevailing wind direction
+## transect design
+
+[![transect layout](./images/transectLayout.jpg)
+
+## bottom of the Oak Transect; bird repellant streamers indicating the prevailing wind direction
 
 ![landscape](./photos/windDirection.JPG)
 
-## top of the control transect
+## top of the Control Transect
 
 ![landscape](./photos/topOfControl.JPG)
 
-## bottom of the control transect with bird repellant streamers 
+## bottom of the Control Transect with bird repellant streamers 
 
 ![landscape](./photos/bottomOfControl.JPG)
 
