@@ -5,6 +5,13 @@ output: github_document
 
 ![landscape](./photos/landscapeOak.JPG)
 
+## the Crab Spider is an active predator in the vineyard
+
+![landscape](./photos/predator0.JPG)
+![landscape](./photos/predator01.JPG)
+![landscape](./photos/predator1.JPG)
+
+
 ```{r, echo=T, message=F, warning=F}
 
 source("./code/bug-library.R")
