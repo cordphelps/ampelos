@@ -7,10 +7,6 @@ output: github_document
 
 ## the Crab Spider is an active predator in the vineyard
 
-![landscape](./photos/predator0.JPG)
-![landscape](./photos/predator01.JPG)
-![landscape](./photos/predator1.JPG)
-
 
 ```{r, echo=T, message=F, warning=F}
 
