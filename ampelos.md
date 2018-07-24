@@ -136,7 +136,7 @@ plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", specie
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 28.4
+    ## Picking joint bandwidth of 28.2
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
@@ -148,7 +148,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 18.4
+    ## Picking joint bandwidth of 18
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-6-2.png)
 
@@ -159,7 +159,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 18.3
+    ## Picking joint bandwidth of 17.9
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-6-3.png)
 
@@ -185,10 +185,10 @@ percentage
 Diptera..Agromyzidae..leafminer..
 </td>
 <td style="text-align:right;">
-711
+725
 </td>
 <td style="text-align:right;">
-20.77
+19.75
 </td>
 </tr>
 <tr>
@@ -196,10 +196,10 @@ Diptera..Agromyzidae..leafminer..
 Braconid.wasp
 </td>
 <td style="text-align:right;">
-46
+48
 </td>
 <td style="text-align:right;">
-1.34
+1.31
 </td>
 </tr>
 <tr>
@@ -207,10 +207,10 @@ Braconid.wasp
 Halictus.sp....3.part..native.bee.
 </td>
 <td style="text-align:right;">
-252
+291
 </td>
 <td style="text-align:right;">
-7.36
+7.93
 </td>
 </tr>
 <tr>
@@ -221,7 +221,7 @@ pencilBug
 54
 </td>
 <td style="text-align:right;">
-1.58
+1.47
 </td>
 </tr>
 <tr>
@@ -229,10 +229,10 @@ pencilBug
 Agapostemon.sp....green..native.bee.
 </td>
 <td style="text-align:right;">
-41
+45
 </td>
 <td style="text-align:right;">
-1.20
+1.23
 </td>
 </tr>
 <tr>
@@ -243,7 +243,7 @@ Osmia.sp...native.bee.
 59
 </td>
 <td style="text-align:right;">
-1.72
+1.61
 </td>
 </tr>
 <tr>
@@ -251,10 +251,10 @@ Osmia.sp...native.bee.
 Honey.Bee
 </td>
 <td style="text-align:right;">
-365
+384
 </td>
 <td style="text-align:right;">
-10.66
+10.46
 </td>
 </tr>
 <tr>
@@ -262,10 +262,10 @@ Honey.Bee
 Bombus.californicus..bumble.
 </td>
 <td style="text-align:right;">
-220
+230
 </td>
 <td style="text-align:right;">
-6.43
+6.27
 </td>
 </tr>
 <tr>
@@ -273,10 +273,10 @@ Bombus.californicus..bumble.
 Thomisidae..crab.spider.
 </td>
 <td style="text-align:right;">
-579
+614
 </td>
 <td style="text-align:right;">
-16.91
+16.73
 </td>
 </tr>
 <tr>
@@ -284,10 +284,10 @@ Thomisidae..crab.spider.
 spider.other
 </td>
 <td style="text-align:right;">
-88
+110
 </td>
 <td style="text-align:right;">
-2.57
+3.00
 </td>
 </tr>
 <tr>
@@ -295,10 +295,10 @@ spider.other
 ladyBug
 </td>
 <td style="text-align:right;">
-27
+28
 </td>
 <td style="text-align:right;">
-0.79
+0.76
 </td>
 </tr>
 <tr>
@@ -306,10 +306,10 @@ ladyBug
 Lygus.hesperus..western.tarnished.plant.bug.
 </td>
 <td style="text-align:right;">
-32
+33
 </td>
 <td style="text-align:right;">
-0.93
+0.90
 </td>
 </tr>
 <tr>
@@ -317,7 +317,7 @@ Lygus.hesperus..western.tarnished.plant.bug.
 pentamonidae...stinkBug.
 </td>
 <td style="text-align:right;">
-14
+15
 </td>
 <td style="text-align:right;">
 0.41
@@ -328,10 +328,10 @@ pentamonidae...stinkBug.
 other
 </td>
 <td style="text-align:right;">
-876
+973
 </td>
 <td style="text-align:right;">
-25.58
+26.51
 </td>
 </tr>
 <tr>
@@ -342,7 +342,7 @@ checkerspot.butterfly
 25
 </td>
 <td style="text-align:right;">
-0.73
+0.68
 </td>
 </tr>
 <tr>
@@ -353,7 +353,7 @@ Pyralidae..Snout.Moth.
 15
 </td>
 <td style="text-align:right;">
-0.44
+0.41
 </td>
 </tr>
 <tr>
@@ -361,7 +361,7 @@ Pyralidae..Snout.Moth.
 Diabrotica.undecimpunctata..Cucumber.Beetle.
 </td>
 <td style="text-align:right;">
-12
+13
 </td>
 <td style="text-align:right;">
 0.35
@@ -372,10 +372,10 @@ Diabrotica.undecimpunctata..Cucumber.Beetle.
 Orius..pirate.bug.
 </td>
 <td style="text-align:right;">
-8
+9
 </td>
 <td style="text-align:right;">
-0.23
+0.25
 </td>
 </tr>
 </tbody>
