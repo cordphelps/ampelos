@@ -117,9 +117,8 @@ plotRidges <- function(data, combined, bugs, speciesText, where, when, wk, capti
     labs(title= paste(speciesText, " Probability Density\n", 
                       "transect: ", where, sep=""), 
          subtitle = paste("week: ", cumulative, ", collection time: ", when, 
-                          "\ntotal observations: ", spider_rows,
+                          "\ntotal ", speciesText,  " observations: ", spider_rows,
                           "\ntraps with ", speciesText, "s: ", percentOcurrence, " %", 
-                          
                           sep=""),
          x="trap distance from row start (ft)",
          y= paste(speciesText, "\ncounts per trap", sep=""),
@@ -148,9 +147,8 @@ plotRidges <- function(data, combined, bugs, speciesText, where, when, wk, capti
     labs(title= paste(speciesText, " Probability Density\n", 
                       "transect: ", where, sep=""), 
          subtitle = paste("week: ", cumulative, ", collection time: ", when, 
-                          "\ntotal observations: ", spider_rows,
+                          "\ntotal ", speciesText,  " observations: ", spider_rows,
                           "\ntraps with ", speciesText, "s: ", percentOcurrence, " %", 
-                          
                           sep=""),
          x="trap distance from row start (ft)",
          y= paste(speciesText, "\ncounts per trap", sep=""),
@@ -715,3 +713,68 @@ compareTransectUsingQuosure <- function (data, species, operator, initialPositio
 
 }
 
+bugGG <- function (df, x, y, dataPoints, title, legend) {
+
+    test.df <- bugs.df %>% 
+        dplyr::filter(week == 26)  %>%
+        dplyr::select(positionX, week, row, Thomisidae..crab.spider.) %>%
+        dplyr::group_by(positionX, row) %>%
+        summarize(totalSpiders = sum(Thomisidae..crab.spider., na.rm = T))
+
+        
+        
+        # dplyr::select(-position, -date, -time, -julian) %>%  
+        
+        
+        
+
+
+        #dplyr::group_by(row) %>%
+        #dplyr::summarise_all(funs(sum)) 
+
+        #dplyr::filter(transect == UQ(t), week == UQ(w)) # last comment
+        # https://www.reddit.com/r/rstats/comments/6zu5od/when_writing_functions_involving_dplyr_how_do_you/
+
+
+      
+  
+  # http://t-redactyl.io/blog/2016/02/creating-plots-in-r-using-ggplot2-part-6-weighted-scatterplots.html
+  ggplotObject <- ggplot(test.df, aes(positionX, row, size=totalSpiders)) +
+    geom_point(shape=21, colour = "purple", fill = "plum", alpha=0.6) +
+    #scale_size_area(max_size = 20) +
+    # geom_count() probably more appropriate http://ggplot2.tidyverse.org/reference/scale_size.html
+    scale_size(range = c(1, 10)) +
+    scale_fill_continuous(low = "plum1", high = "purple4") +
+    #annotate("rect", xmin=-5, xmax=0, ymin=0,ymax=10, alpha=0.2, fill="red") +
+    #annotate("rect", xmin=0, xmax=15, ymin=0,ymax=10, alpha=0.2, fill="green") +
+    scale_y_reverse(breaks = seq(30, 100, 5),
+                    sec.axis = sec_axis(~. - 43 ,         ####################### WRONG
+                                           breaks= seq(0, 80, 10),
+                                           name= "distance (ft)")
+      ) +
+    expand_limits(y=c(30,100)) + 
+    scale_x_continuous(breaks=seq(-12,200,16), 
+                       sec.axis = sec_axis(~.*.3048,
+                                           breaks= seq(0, 80, 10),
+                                           name= "trap distance from field margin (m)"))  +
+    ggtitle("title") +
+    labs(x = "trap distance from field margin (ft)", y = "row") +
+    annotate("rect", xmin=4, xmax=210, ymin=42,ymax=54, alpha=0.2, fill="blue") +
+    annotate("rect", xmin=4, xmax=210, ymin=78,ymax=90, alpha=0.2, fill="blue") +
+    annotate("rect", xmin=-12, xmax=5, ymin=42,ymax=54, alpha=0.2, fill="red") +
+    annotate("rect", xmin=-12, xmax=5, ymin=78,ymax=90, alpha=0.2, fill="red") +
+    geom_point(aes(x=-20, y=83), size=10, shape=21, alpha=0.1, colour="blue", fill="springgreen") +  # (tree)
+    geom_point(aes(x=10, y=75), size=10, shape=21, alpha=0.1, colour="blue", fill="springgreen") +  # (tree)
+    geom_point(aes(x=5, y=95), size=10, shape=21, alpha=0.1, colour="blue", fill="springgreen") +  # (tree)
+    annotate("segment", x = 12, xend = 36, y = 98, yend = 100, colour = "black") +
+    annotate("text", x = 47, y = 100, label = "oak tree", fill="white", colour="black") +
+    annotate("text", x = 84, y = 93, label = "oak transect", fill="white", colour="black") +
+    annotate("text", x = 84, y = 57, label = "control transect", fill="white", colour="black") +
+    theme_bw() +
+    theme() + 
+    # theme(legend.position = "bottom", legend.direction = "horizontal") +
+    theme(legend.position = "none", legend.direction = "horizontal") +
+    theme(legend.box = "horizontal", legend.key.size = unit(1, "cm")) 
+  
+  return(ggplotObject)
+}
