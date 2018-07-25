@@ -55,7 +55,8 @@ simMatrix <- function(data) {
   # Heatmap
   simOak <- ggplot(data = melted_cormat, aes(Var2, Var1, fill = value))+
     geom_tile(color = "white")+
-    scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+    # scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+    scale_fill_gradient2(low = "plum1", high = "purple4",  
     midpoint = 0, limit = c(-1,1), space = "Lab", 
     name="Spearman\nCorrelation") +
     labs(title= paste("Species Correlation Matrix (Spearman)\n", 
@@ -247,7 +248,8 @@ simMatrixV2 <- function(data, transect, transectText) {
   # Heatmap
   sim <- ggplot(data = melted_cormat, aes(Var2, Var1, fill = value))+
     geom_tile(color = "white")+
-    scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+    # scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+    scale_fill_gradient2(low = "darkolivegreen", high = "darkmagenta", 
     midpoint = 0, limit = c(-1,1), space = "Lab", 
     name="correlation") +
     labs(title= paste("Species Correlation Matrix (Spearman)\n", 

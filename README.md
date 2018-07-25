@@ -3,8 +3,8 @@ ampelos
 
 ![landscape](./photos/landscapeOak.JPG)
 
-the Crab Spider is an active predator in the vineyard
------------------------------------------------------
+how does a 'natural' field margin influence the population of beneficial insects?
+---------------------------------------------------------------------------------
 
 ``` r
 source("./code/bug-library.R")
@@ -15,8 +15,32 @@ source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/dat
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 ```
 
-is there a difference in the spider populations of the two transects?
----------------------------------------------------------------------
+is there a difference in the spider populations for the two transects?
+----------------------------------------------------------------------
+
+``` r
+reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(26), species=quo(Thomisidae..crab.spider.))
+
+g1 <- plotBugDistribution(data=reducedData.df, 
+                          title=paste("crab spider occurrences", "\nweek 26", sep=""), 
+                          caption="stuff")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-2-1.png)
+
+``` r
+reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(30), species=quo(Thomisidae..crab.spider.))
+
+g2 <- plotBugDistribution(data=reducedData.df, 
+                          title=paste("crab spider occurrences", "\nweek 30", sep=""), 
+                          caption="stuff")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-2-2.png)
+
+``` r
+g <- arrangeGrob(g1, g2, nrow=1)
+```
 
 ``` r
 positionText <- paste("\ntransect positions ", "1-3", sep="")
@@ -28,7 +52,7 @@ g3 <- compareTransectUsingQuosure(data=bugs.df,
                                  positionText)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-2-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 ``` r
 positionText <- paste("\ntransect positions ", "4-6", sep="")
@@ -40,7 +64,7 @@ g46 <- compareTransectUsingQuosure(data=bugs.df,
                                  positionText)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-2-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-3-2.png)
 
 ``` r
 positionText <- paste("\ntransect positions ", "7-10", sep="")
@@ -52,7 +76,7 @@ g7 <- compareTransectUsingQuosure(data=bugs.df,
                                  positionText)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-2-3.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-3-3.png)
 
 ``` r
 g <- arrangeGrob(g3, g46, g7, nrow=3)
@@ -78,7 +102,7 @@ gOak <- compareJaccardMultiWeekV3(data=bugs.df,
                                   transectText="oakMargin")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 ``` r
 gControl <- compareJaccardMultiWeekV3(data=bugs.df, 
@@ -86,7 +110,7 @@ gControl <- compareJaccardMultiWeekV3(data=bugs.df,
                                       transectText="control")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-3-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-4-2.png)
 
 ``` r
 g <- arrangeGrob(gOak, gControl, nrow=2)
@@ -100,14 +124,14 @@ m1 <- simMatrixV2(data=bugs.df, transect=quo("oakMargin"),
                                 transectText="oakMargin")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 ``` r
 m2 <- simMatrixV2(data=bugs.df, transect=quo("control"),
                                 transectText="control")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-4-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-5-2.png)
 
 ``` r
 g <- arrangeGrob(m1, m2, nrow=2)
@@ -122,7 +146,7 @@ does the crab spider population appear to change over time? Is there a differenc
 plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-5-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-5-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-6-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-6-2.png)
 
     ## NULL
 
@@ -138,7 +162,7 @@ plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", specie
 
     ## Picking joint bandwidth of 28.2
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 ``` r
 new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
@@ -150,7 +174,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 
     ## Picking joint bandwidth of 17.8
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-6-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-7-2.png)
 
 ``` r
 plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="oakMargin", when="pm", wk=1, caption=Sys.Date())
@@ -161,7 +185,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 
     ## Picking joint bandwidth of 17.7
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-6-3.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-7-3.png)
 
 and the species counts?
 -----------------------
