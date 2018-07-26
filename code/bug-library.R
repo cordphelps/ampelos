@@ -103,9 +103,10 @@ plotRidges <- function(data, combined, bugs, speciesText, where, when, wk, capti
       #aes(point_color = spider, point_fill=spider, point_shape=spider),
       # https://stackoverflow.com/questions/22309285/how-to-use-a-variable-to-specify-column-name-in-ggplot
       aes_string(point_color = "geomFactors", point_fill="geomFactors", point_shape="geomFactors"),
-      alpha = .2, jittered_points = TRUE, show.legend=F) +
+      alpha = .2, jittered_points = TRUE, show.legend=F, scale = 0.9) +
+
     scale_point_color_hue(l = 40)  +
-    scale_discrete_manual(aesthetics = "point_shape", values = c(21, 22, 23, 24, 25)) +
+    scale_discrete_manual(aesthetics = "point_shape", values = c(21, 22, 23, 24, 25) ) +
     #stat_density_ridges(quantile_lines = TRUE, quantiles = 2, alpha = .2, jittered_points = TRUE) +
     
     xlim(1,10) +
@@ -134,7 +135,7 @@ plotRidges <- function(data, combined, bugs, speciesText, where, when, wk, capti
     gg2 <- ggplot(newBugs.df, aes_string(x="positionX", y="geomFactors", fill="geomFactors")) +
     geom_density_ridges(
       aes_string(point_color = "geomFactors", point_fill="geomFactors", point_shape="geomFactors"),
-      alpha = .2, jittered_points = TRUE, show.legend=F) +
+      alpha = .2, jittered_points = TRUE, show.legend=F, scale = 0.9) +
     scale_point_color_hue(l = 40)  +
     scale_discrete_manual(aesthetics = "point_shape", values = c(21, 22, 23, 24, 25)) +
     xlim(1,10) +

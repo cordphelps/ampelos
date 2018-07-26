@@ -42,6 +42,12 @@ g2 <- plotBugDistribution(data=reducedData.df,
 g <- arrangeGrob(g1, g2, nrow=1)
 ```
 
+using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (segments are traps 1-3, 4-6, and 7-10)
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TO-DO: refine normalization method
+----------------------------------
+
 ``` r
 positionText <- paste("\ntransect positions ", "1-3", sep="")
 g3 <- compareTransectUsingQuosure(data=bugs.df, 
@@ -153,6 +159,9 @@ plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="
 the crab spider is a dominant species in the vineyard. How are they distributed along the length of the row?
 ------------------------------------------------------------------------------------------------------------
 
+TO-DO: develop and apply normalization method
+---------------------------------------------
+
 ``` r
 plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", speciesText="Crab Spider", where="control", when="pm", wk=1, caption=Sys.Date())
 ```
@@ -160,7 +169,7 @@ plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", specie
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 28.2
+    ## Picking joint bandwidth of 28.1
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
@@ -172,7 +181,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 17.8
+    ## Picking joint bandwidth of 17.7
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-7-2.png)
 
@@ -183,7 +192,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 17.7
+    ## Picking joint bandwidth of 17.5
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-7-3.png)
 
@@ -209,10 +218,10 @@ percentage
 Diptera..Agromyzidae..leafminer..
 </td>
 <td style="text-align:right;">
-746
+761
 </td>
 <td style="text-align:right;">
-19.74
+19.73
 </td>
 </tr>
 <tr>
@@ -220,10 +229,10 @@ Diptera..Agromyzidae..leafminer..
 Braconid.wasp
 </td>
 <td style="text-align:right;">
-50
+52
 </td>
 <td style="text-align:right;">
-1.32
+1.35
 </td>
 </tr>
 <tr>
@@ -231,10 +240,10 @@ Braconid.wasp
 Halictus.sp....3.part..native.bee.
 </td>
 <td style="text-align:right;">
-313
+327
 </td>
 <td style="text-align:right;">
-8.28
+8.48
 </td>
 </tr>
 <tr>
@@ -245,7 +254,7 @@ pencilBug
 54
 </td>
 <td style="text-align:right;">
-1.43
+1.40
 </td>
 </tr>
 <tr>
@@ -253,10 +262,10 @@ pencilBug
 Agapostemon.sp....green..native.bee.
 </td>
 <td style="text-align:right;">
-49
+54
 </td>
 <td style="text-align:right;">
-1.30
+1.40
 </td>
 </tr>
 <tr>
@@ -267,7 +276,7 @@ Osmia.sp...native.bee.
 59
 </td>
 <td style="text-align:right;">
-1.56
+1.53
 </td>
 </tr>
 <tr>
@@ -275,10 +284,10 @@ Osmia.sp...native.bee.
 Honey.Bee
 </td>
 <td style="text-align:right;">
-404
+411
 </td>
 <td style="text-align:right;">
-10.69
+10.65
 </td>
 </tr>
 <tr>
@@ -286,10 +295,10 @@ Honey.Bee
 Bombus.californicus..bumble.
 </td>
 <td style="text-align:right;">
-231
+235
 </td>
 <td style="text-align:right;">
-6.11
+6.09
 </td>
 </tr>
 <tr>
@@ -297,10 +306,10 @@ Bombus.californicus..bumble.
 Thomisidae..crab.spider.
 </td>
 <td style="text-align:right;">
-623
+627
 </td>
 <td style="text-align:right;">
-16.49
+16.25
 </td>
 </tr>
 <tr>
@@ -308,10 +317,10 @@ Thomisidae..crab.spider.
 spider.other
 </td>
 <td style="text-align:right;">
-117
+118
 </td>
 <td style="text-align:right;">
-3.10
+3.06
 </td>
 </tr>
 <tr>
@@ -319,10 +328,10 @@ spider.other
 ladyBug
 </td>
 <td style="text-align:right;">
-30
+34
 </td>
 <td style="text-align:right;">
-0.79
+0.88
 </td>
 </tr>
 <tr>
@@ -333,7 +342,7 @@ Lygus.hesperus..western.tarnished.plant.bug.
 33
 </td>
 <td style="text-align:right;">
-0.87
+0.86
 </td>
 </tr>
 <tr>
@@ -344,7 +353,7 @@ pentamonidae...stinkBug.
 15
 </td>
 <td style="text-align:right;">
-0.40
+0.39
 </td>
 </tr>
 <tr>
@@ -352,10 +361,10 @@ pentamonidae...stinkBug.
 other
 </td>
 <td style="text-align:right;">
-993
+1015
 </td>
 <td style="text-align:right;">
-26.28
+26.31
 </td>
 </tr>
 <tr>
@@ -366,7 +375,7 @@ checkerspot.butterfly
 25
 </td>
 <td style="text-align:right;">
-0.66
+0.65
 </td>
 </tr>
 <tr>
@@ -377,7 +386,7 @@ Pyralidae..Snout.Moth.
 15
 </td>
 <td style="text-align:right;">
-0.40
+0.39
 </td>
 </tr>
 <tr>
@@ -385,10 +394,10 @@ Pyralidae..Snout.Moth.
 Diabrotica.undecimpunctata..Cucumber.Beetle.
 </td>
 <td style="text-align:right;">
-13
+14
 </td>
 <td style="text-align:right;">
-0.34
+0.36
 </td>
 </tr>
 <tr>
@@ -399,7 +408,7 @@ Orius..pirate.bug.
 9
 </td>
 <td style="text-align:right;">
-0.24
+0.23
 </td>
 </tr>
 </tbody>
