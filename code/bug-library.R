@@ -754,10 +754,13 @@ plotBugDistribution <- function (data, title, caption) {
     labs( x = "trap distance from field margin (ft)", 
           y = "row",
           caption = paste(caption, sep="")) +
-    annotate("rect", xmin=4, xmax=210, ymin=42,ymax=54, alpha=0.2, fill="blue") +
+
+    annotate("rect", xmin=4, xmax=210, ymin=42.5,ymax=54.5, alpha=0.2, fill="blue") +
+    annotate("rect", xmin=-12, xmax=5, ymin=42.5,ymax=54.5, alpha=0.2, fill="red") +
+
     annotate("rect", xmin=4, xmax=210, ymin=78,ymax=90, alpha=0.2, fill="blue") +
-    annotate("rect", xmin=-12, xmax=5, ymin=42,ymax=54, alpha=0.2, fill="red") +
     annotate("rect", xmin=-12, xmax=5, ymin=78,ymax=90, alpha=0.2, fill="red") +
+
     #geom_point(aes(x=-20, y=83), size=10, shape=21, alpha=0.1, colour="blue", fill="yellowgreen") +  # (tree)
     #geom_point(aes(x=10, y=75), size=10, shape=21, alpha=0.1, colour="blue", fill="yellowgreen") +  # (tree)
     #geom_point(aes(x=5, y=95), size=10, shape=21, alpha=0.1, colour="blue", fill="yellowgreen") +  # (tree)

@@ -41,7 +41,9 @@ g <- arrangeGrob(g1, g2, nrow=1)
 
 ```
 
+## using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (segments are traps 1-3, 4-6, and 7-10)
 
+## TO-DO: elevate normalization to the next level
 
 
 ```{r, echo=TRUE, include=TRUE, message=F, warning=F}
