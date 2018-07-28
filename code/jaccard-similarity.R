@@ -1,6 +1,7 @@
 
 # https://stats.stackexchange.com/questions/176613/jaccard-similarity-in-r
 
+
 library(dplyr)
 
 # https://stat.ethz.ch/R-manual/R-devel/library/base/html/apply.html
@@ -419,3 +420,296 @@ compareJaccardMultiWeekV3 <- function(data, transect, transectText) {
 	return(grid.arrange(gg, ncol=1, nrow=1))
 
 	}
+
+
+
+  ade4Similarity <- function(data) {
+
+    # checking the logic by hand
+    # for a matrix
+    #
+    #      1 obs1   1   0   1
+    #      2 obs2   0   0   0
+    #      3 obs3   0   0   1
+    #      4 obs4   1   0   1
+    #      5 obs5   1   1   0
+    #      6 obs6   1   1   1
+    #      7 obs7   1   0   0
+    #      8 obs8   1   0   0
+    #      9 obs9   1   0   1
+    #
+    # the jaccard distance between observation 1 and observation 3 is:
+    #
+    # - shared = count the number of matches (where a 1 in the first member matches a 1 in the second) :  1
+    # - total = count the number of 1 vs 0 and 0 vs 1 : 1
+    # - similarity coefficient : divide shared by (total plus shared) : .5
+    # - distance : square root of 1 minus the similarity coefficient : .707
+    #
+    #
+    # the jaccard distance between observation 5 and observation 6 is:
+    #
+    # - shared = count the number of matches (where a 1 in the first member matches a 1 in the second) :  2
+    # - total = count the number of 1 vs 0 and 0 vs 1 : 1
+    # - similarity coefficient : divide shared by (total plus shared) : .666
+    # - distance : square root of 1 minus the similarity coefficient :  .577
+
+    # R> # remove non-numeric values (the row names)
+    # R> test.df <- test.df %>% dplyr::select(-X)
+    # R> ade4::dist.binary(test.df, method=1, diag=F, upper=F)  
+    # 
+#          1         2         3         4         5         6         7         8         9
+#1 0.0000000                                                                                
+#2 1.0000000 0.0000000                                                                      
+#3 0.7071068 1.0000000 0.0000000                                                            
+#4 0.0000000 1.0000000 0.7071068 0.0000000                                                  
+#5 0.8164966 1.0000000 1.0000000 0.8164966 0.0000000                                        
+#6 0.5773503 1.0000000 0.8164966 0.5773503 0.5773503 0.0000000                              
+#7 0.7071068 1.0000000 1.0000000 0.7071068 0.7071068 0.8164966 0.0000000                    
+#8 0.7071068 1.0000000 1.0000000 0.7071068 0.7071068 0.8164966 0.0000000 0.0000000          
+#9 0.0000000 1.0000000 0.7071068 0.0000000 0.8164966 0.5773503 0.7071068 0.7071068 0.0000000
+
+    # https://pbil.univ-lyon1.fr/ade4/ade4-html/dist.binary.html
+    # 
+#> data
+#  sp1 sp2 sp3
+#1   1   0   1
+#2   0   0   0
+#3   0   0   1
+#4   1   0   1
+#5   1   1   0
+#6   1   1   1
+#7   1   0   0
+#8   1   0   0
+#9   1   0   1
+
+    # add row numbers to the df
+    # https://stackoverflow.com/questions/23518605/add-an-index-numeric-id-column-to-large-data-frame
+    data <- tibble::rowid_to_column(data, "rowID")
+
+#> data
+#  rowID sp1 sp2 sp3
+#1     1   1   0   1
+#2     2   0   0   0
+#3     3   0   0   1
+#4     4   1   0   1
+#5     5   1   1   0
+#6     6   1   1   1
+#7     7   1   0   0
+#8     8   1   0   0
+#9     9   1   0   1
+
+    # save the list
+    name.list <- data.frame(data$rowID)
+
+#> name.list
+#  data.rowID
+#1          1
+#2          2
+#3          3
+#4          4
+#5          5
+#6          6
+#7          7
+#8          8
+#9          9
+
+    # values > 1 re-written at 1
+    data[data > 0] <- 1
+
+    row.names(data) <- name.list$data.row   # NOTE: apparently deprecated
+
+    key_pairs <- expand.grid(name.list$data.row, name.list$data.row)  # column names are Var1 and Var2
+
+    key_pair <- key_pairs %>% mutate(pair = paste(Var1,"_",Var2,sep=""))  # column names are Var1 and Var2
+                                                                          # plus pair-ID in the form "row1-row2"
+
+
+        # for each combination, make a 2 row matrix 
+        for (i in 1:nrow(key_pairs)) {   # 9 rows of 2 variables expands to 81 pairs
+          print(i)
+          print(key_pairs$Var1[i])
+          print(paste( slice ( data, key_pairs$Var1[i]   )) )
+        }
+
+#> key_pairs
+#........
+#79    7    9
+#80    8    9
+#81    9    9
+#> key_pairs$Var1[81]
+#[1] 9
+#> key_pairs$Var1[80]
+#[1] 8
+#> key_pairs$Var2[80]
+#[1] 9
+
+    # remove duplicates and mirrored data
+    # walk through rows deleting all rows that are compared to themselves
+
+    results <-  tibble::rownames_to_column(key_pair, var = "rowname")  # added a column "rowname",
+                                                                            # contents are : "rowA_rowB"
+
+    results2 <- key_pair %>% tidyr::separate("pair", c("left", "right"), "_") # replace column 'rowname' with two new rows
+                                                                                    # contains 'rowA' and 'rowB'
+    results3 <- results2 %>% dplyr::filter(results2$left != results2$right)  # remove self comparisons
+    results4 <- results3 %>% dplyr::filter(results3$left < results3$right)   # remove duplicates (mirror images)
+
+#> nrow(results4)
+#[1] 36
+#> results4
+#   Var1 Var2 left right
+#1     1    2    1     2
+#2     1    3    1     3
+#3     2    3    2     3
+#4     1    4    1     4
+#5     2    4    2     4
+#6     3    4    3     4
+#7     1    5    1     5
+
+
+    data.matrix <- as.matrix(dplyr::select(data, -rowID))
+
+#> data.matrix
+#  sp1 sp2 sp3
+#1   1   0   1
+#2   0   0   0
+#3   0   0   1
+#4   1   0   1
+#5   1   1   0
+#6   1   1   1
+#7   1   0   0
+#8   1   0   0
+#9   1   0   1
+
+    for (i in 1:nrow(results4)) {   # 9 rows of 2 variables expands to 81 pairs; reduced to 36 unique pairs
+
+          #print(key_pairs$Var1[i])
+
+          print(paste(  " sliceA ", data.matrix[ as.integer(results4$left[i]), ]  , 
+                        " sliceB ", data.matrix[ as.integer(results4$right[i]), ] , sep="") )
+
+          leftData.matrix <- data.matrix[ as.integer(results4$left[2]), ]
+          rightData.matrix <- data.matrix[ as.integer(results4$right[2]), ]
+
+          # ! matrix filled column by column, not row by row !
+          #join.matrix <- matrix(c(leftData.matrix, rightData.matrix), 2, 3)
+          leftData.df <- slice(data.frame(t(data.frame(leftData.matrix, row.names=NULL))),1)   #
+          rightData.df <- slice(data.frame(t(data.frame(rightData.matrix, row.names=NULL))),1)  # 
+
+          test.df <- bind_rows(leftData.df, rightData.df)
+#> test.df
+# A tibble: 2 x 3
+#     X1    X2    X3
+#  <int> <int> <int>
+#1     1     0     1
+#2     0     0     1
+
+          dist.binary(test.df, method=1, diag=F, upper=F) 
+          dist.binary(test.df, method=2, diag=F, upper=F) 
+
+
+          join.matrix <- matrix(c(leftData.matrix[, rightData.matrix), 2, 3)
+
+    }
+
+
+
+    results <- t(apply(key_pairs, 1, function(row) measuresOfSimilarity( data[c(row[1], row[2]),] ) ) )
+
+
+
+    #    > results
+    #           JSim      JDist
+    # [1,] 1.0000000 0.00000000
+    # [2,] 0.9230769 0.07692308
+    # [3,] 0.7857143 0.21428571
+    # [4,] 0.9230769 0.07692308
+    # [5,] 1.0000000 0.00000000
+    # [6,] 0.8461538 0.15384615
+    # [7,] 0.7857143 0.21428571
+    # [8,] 0.8461538 0.15384615
+    # [9,] 1.0000000 0.00000000
+
+    results <- data.frame(results)
+    row.names(results) <- key_pair$pair
+
+    # > results
+    #           JSim      JDist
+    # 83_83 1.0000000 0.00000000
+    # 85_83 0.9230769 0.07692308
+    # 87_83 0.7857143 0.21428571
+    # 83_85 0.9230769 0.07692308
+    # 85_85 1.0000000 0.00000000
+    # 87_85 0.8461538 0.15384615
+    # 83_87 0.7857143 0.21428571
+    # 85_87 0.8461538 0.15384615
+    # 87_87 1.0000000 0.00000000
+
+    # results is a df of 2 columns, JSim and JDist.
+    # row names represents the similarity of all possible row combinations
+
+
+
+      # cleanResults.df is a simplified similarity table
+      #
+      # > results.df
+      #   left right      JSim      JDist
+    # 1   83    85 0.9230769 0.07692308
+    # 2   83    87 0.7857143 0.21428571
+    # 3   85    87 0.8461538 0.15384615
+
+  results <- results %>% 
+        dplyr::select(-left, -right, -JDist) %>%
+        dplyr::summarise_all(funs(mean, sd))
+
+    # > cleanResults.df
+  #        mean         sd
+  # 1 0.8516484 0.06884596
+    
+    return(results)
+
+
+
+  }
+
+  measuresOfSimilarity <- function(inbound.df) {
+
+
+    # note regarding class(dist) : https://stackoverflow.com/questions/9879608/how-do-i-manipulate-access-elements-of-an-instance-of-dist-class-using-core-r
+    #temp1.df <- as.data.frame ( as.matrix ( dist.binary(inbound.df, method=1, diag=F, upper=F) ) ) # Jaccard
+
+    print(inbound.df %>% row_number() )
+
+    #print(dplyr::row_number(inbound.df[1,]))
+    #print(dplyr::row_number(inbound.df[2,]))
+
+  
+
+    rowPair <- which(inbound.df[,1]>=0)
+
+    #print(paste("row pair: ", rowPair, "\n",  sep=""))
+
+    #return ( dist())
+
+    #dist.binary(inbound.df, method=2, diag=F, upper=F) 
+
+    #print(temp2.df)
+
+    # return( dplyr::bind_cols(temp1.df, temp2.df) )
+
+  }
+
+  distXY <- function(X,Y,n){ # @NandaDorea 
+  # https://stackoverflow.com/questions/9879608/how-do-i-manipulate-access-elements-of-an-instance-of-dist-class-using-core-r
+  # provide X and Y, the original rows of the elements in the matrix from which you calculated dist, 
+  # and n is the total number of elements in that matrix. The result is the position in the dist vector 
+  # where the distance will be.
+  A=min(X,Y)
+  B=max(X,Y)
+
+  d=eval(parse(text=
+               paste0("(A-1)*n  -",paste0((1:(A-1)),collapse="-"),"+ B-A")))
+
+  return(d)
+
+}
