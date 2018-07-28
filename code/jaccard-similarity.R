@@ -513,7 +513,7 @@ compareJaccardMultiWeekV3 <- function(data, transect, transectText) {
 #8          8
 #9          9
 
-    # values > 1 re-written at 1
+    # values > 1 re-written as 1
     data[data > 0] <- 1
 
     row.names(data) <- name.list$data.row   # NOTE: apparently deprecated
@@ -525,11 +525,11 @@ compareJaccardMultiWeekV3 <- function(data, transect, transectText) {
 
 
         # for each combination, make a 2 row matrix 
-        for (i in 1:nrow(key_pairs)) {   # 9 rows of 2 variables expands to 81 pairs
-          print(i)
-          print(key_pairs$Var1[i])
-          print(paste( slice ( data, key_pairs$Var1[i]   )) )
-        }
+        #for (i in 1:nrow(key_pairs)) {   # 9 rows of 2 variables expands to 81 pairs
+          #print(i)
+          #print(key_pairs$Var1[i])
+          #print(paste( slice ( data, key_pairs$Var1[i]   )) )
+        #}
 
 #> key_pairs
 #........
@@ -581,90 +581,65 @@ compareJaccardMultiWeekV3 <- function(data, transect, transectText) {
 #8   1   0   0
 #9   1   0   1
 
-    for (i in 1:nrow(results4)) {   # 9 rows of 2 variables expands to 81 pairs; reduced to 36 unique pairs
+    
+    new_column_val1.vector <- vector()   # init an empty vector to contain a distance measurement (from dist.ade4() )
 
-          #print(key_pairs$Var1[i])
+    for (i in 1:nrow(results4)) {   # 9 rows of 2 variables expands to 81 pairs; reduces to 36 unique pairs
 
-          print(paste(  " sliceA ", data.matrix[ as.integer(results4$left[i]), ]  , 
-                        " sliceB ", data.matrix[ as.integer(results4$right[i]), ] , sep="") )
+          #print(paste(  " sliceA ", data.matrix[ as.integer(results4$left[i]), ]  , 
+          #              " sliceB ", data.matrix[ as.integer(results4$right[i]), ] , sep="") )
 
-          leftData.matrix <- data.matrix[ as.integer(results4$left[2]), ]
-          rightData.matrix <- data.matrix[ as.integer(results4$right[2]), ]
+          leftData.matrix <- data.matrix[ as.integer(results4$left[i]), ]   # get data by a row number
+          rightData.matrix <- data.matrix[ as.integer(results4$right[i]), ]  # get data by a row number
 
           # ! matrix filled column by column, not row by row !
-          #join.matrix <- matrix(c(leftData.matrix, rightData.matrix), 2, 3)
-          leftData.df <- slice(data.frame(t(data.frame(leftData.matrix, row.names=NULL))),1)   #
-          rightData.df <- slice(data.frame(t(data.frame(rightData.matrix, row.names=NULL))),1)  # 
+          # join.matrix <- matrix(c(leftData.matrix, rightData.matrix), 2, 3)
 
-          test.df <- bind_rows(leftData.df, rightData.df)
-#> test.df
-# A tibble: 2 x 3
-#     X1    X2    X3
-#  <int> <int> <int>
-#1     1     0     1
-#2     0     0     1
+          # (so work with data frames....)
 
-          dist.binary(test.df, method=1, diag=F, upper=F) 
-          dist.binary(test.df, method=2, diag=F, upper=F) 
+          temp.df <- bind_rows(data.frame(leftData.matrix, row.names=NULL), data.frame(rightData.matrix, row.names=NULL))
 
+#>temp.df
+#   V1 V2 V3
+# 1  1  0  1
+# 2  0  0  0
+#   V1 V2 V3
+# 1  1  0  1
+# 2  0  0  1
+#   V1 V2 V3
+# 1  0  0  0
+# 2  0  0  1
 
-          join.matrix <- matrix(c(leftData.matrix[, rightData.matrix), 2, 3)
+          #dist.binary(temp.df, method=1, diag=F, upper=F)  # output: 0.7071068   class='dist'
+          #dist.binary(temp.df, method=2, diag=F, upper=F)  # output: 0.5773503
+
+          # object dist is coerced to a matrix with as.matrix()
+          row1.row2.matrix <- as.matrix(dist.binary(temp.df, method=1, diag=F, upper=F))
+
+#> row1.row2.matrix
+#          1         2
+#1 0.0000000 0.7071068
+#2 0.7071068 0.0000000
+
+          # get the distance values
+          val1 <- row1.row2.matrix[1,2]
+
+          # add them to the vector
+          if (length(new_column_val1.vector)>0) {
+            new_column_val1.vector <- c(new_column_val1.vector, val1)
+          } else {
+            new_column_val1.vector <- val1 
+          }
 
     }
 
+    # new_column_val1.vector now contains distance data for each 'unique' row conbination
+    # a new column (for each distance value) that can be bound to result4 with dplyr::bind_cols()
+
+    # add the vector(s) to the result4.df as a new column(s)
+    results5 <- dplyr::bind_cols(results4, data.frame(new_column_val1.vector))
 
 
-    results <- t(apply(key_pairs, 1, function(row) measuresOfSimilarity( data[c(row[1], row[2]),] ) ) )
-
-
-
-    #    > results
-    #           JSim      JDist
-    # [1,] 1.0000000 0.00000000
-    # [2,] 0.9230769 0.07692308
-    # [3,] 0.7857143 0.21428571
-    # [4,] 0.9230769 0.07692308
-    # [5,] 1.0000000 0.00000000
-    # [6,] 0.8461538 0.15384615
-    # [7,] 0.7857143 0.21428571
-    # [8,] 0.8461538 0.15384615
-    # [9,] 1.0000000 0.00000000
-
-    results <- data.frame(results)
-    row.names(results) <- key_pair$pair
-
-    # > results
-    #           JSim      JDist
-    # 83_83 1.0000000 0.00000000
-    # 85_83 0.9230769 0.07692308
-    # 87_83 0.7857143 0.21428571
-    # 83_85 0.9230769 0.07692308
-    # 85_85 1.0000000 0.00000000
-    # 87_85 0.8461538 0.15384615
-    # 83_87 0.7857143 0.21428571
-    # 85_87 0.8461538 0.15384615
-    # 87_87 1.0000000 0.00000000
-
-    # results is a df of 2 columns, JSim and JDist.
-    # row names represents the similarity of all possible row combinations
-
-
-
-      # cleanResults.df is a simplified similarity table
-      #
-      # > results.df
-      #   left right      JSim      JDist
-    # 1   83    85 0.9230769 0.07692308
-    # 2   83    87 0.7857143 0.21428571
-    # 3   85    87 0.8461538 0.15384615
-
-  results <- results %>% 
-        dplyr::select(-left, -right, -JDist) %>%
-        dplyr::summarise_all(funs(mean, sd))
-
-    # > cleanResults.df
-  #        mean         sd
-  # 1 0.8516484 0.06884596
     
     return(results)
 
@@ -672,44 +647,44 @@ compareJaccardMultiWeekV3 <- function(data, transect, transectText) {
 
   }
 
-  measuresOfSimilarity <- function(inbound.df) {
+  ade4SimilarityTest <- function() {
+
+    # create a 9 observation sequence of 3 variables to test ade4Similarity() 
+
+    #test.df <- dplyr::tribble(~obs, ~x, ~y, ~z, 
+    #                         "obs1", 1, 0, 1,
+    #                          "obs2", 0, 0, 0,
+    #                          "obs3", 0, 0, 1,
+    #                          "obs4", 1, 0, 1,
+    #                          "obs5", 1, 1, 0,
+    #                          "obs6", 1, 1, 1,
+    #                          "obs7", 1, 0, 0,
+    #                          "obs8", 1, 0, 0,
+    #                          "obs0", 1, 0, 1 ) 
+
+    test.df <- as.data.frame(do.call(rbind, list(
+                list(1,0,1),
+                list(0,0,0),
+                list(0,0,1),
+                list(1,0,1),
+                list(1,1,0),
+                list(1,1,1),
+                list(1,0,0),
+                list(1,0,0),
+                list(1,0,1)
+                 ), quote=FALSE) )
+
+#> class(test.df)
+#[1] "data.frame"
+#> test.df
+#    V1 V2 V3 V4
+#1 obs1  1  0  1
+#2 obs2  0  0  0
+#3 obs3  0  0  1
 
 
-    # note regarding class(dist) : https://stackoverflow.com/questions/9879608/how-do-i-manipulate-access-elements-of-an-instance-of-dist-class-using-core-r
-    #temp1.df <- as.data.frame ( as.matrix ( dist.binary(inbound.df, method=1, diag=F, upper=F) ) ) # Jaccard
+#> data.saved <- data
 
-    print(inbound.df %>% row_number() )
-
-    #print(dplyr::row_number(inbound.df[1,]))
-    #print(dplyr::row_number(inbound.df[2,]))
-
-  
-
-    rowPair <- which(inbound.df[,1]>=0)
-
-    #print(paste("row pair: ", rowPair, "\n",  sep=""))
-
-    #return ( dist())
-
-    #dist.binary(inbound.df, method=2, diag=F, upper=F) 
-
-    #print(temp2.df)
-
-    # return( dplyr::bind_cols(temp1.df, temp2.df) )
-
-  }
-
-  distXY <- function(X,Y,n){ # @NandaDorea 
-  # https://stackoverflow.com/questions/9879608/how-do-i-manipulate-access-elements-of-an-instance-of-dist-class-using-core-r
-  # provide X and Y, the original rows of the elements in the matrix from which you calculated dist, 
-  # and n is the total number of elements in that matrix. The result is the position in the dist vector 
-  # where the distance will be.
-  A=min(X,Y)
-  B=max(X,Y)
-
-  d=eval(parse(text=
-               paste0("(A-1)*n  -",paste0((1:(A-1)),collapse="-"),"+ B-A")))
-
-  return(d)
+    ade4Similarity(test.df)
 
 }
