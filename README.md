@@ -49,11 +49,11 @@ TO-DO: refine normalization method
 ----------------------------------
 
 ``` r
-positionText <- paste("\ntransect positions ", "1-3", sep="")
+positionText <- paste("\ntransect positions ", "1-4", sep="")
 g3 <- compareTransectUsingQuosure(data=bugs.df, 
                                  species=quo(Thomisidae..crab.spider.), 
                                  operator="LT",
-                                 initialPosition=quo(4), 
+                                 initialPosition=quo(5), 
                                  secondaryPosition=quo(0),
                                  positionText)
 ```
@@ -61,11 +61,11 @@ g3 <- compareTransectUsingQuosure(data=bugs.df,
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 ``` r
-positionText <- paste("\ntransect positions ", "4-6", sep="")
+positionText <- paste("\ntransect positions ", "5-6", sep="")
 g46 <- compareTransectUsingQuosure(data=bugs.df, 
                                  species=quo(Thomisidae..crab.spider.), 
                                  operator="BETWEEN",
-                                 initialPosition=quo(3), 
+                                 initialPosition=quo(4), 
                                  secondaryPosition=quo(7),
                                  positionText)
 ```
