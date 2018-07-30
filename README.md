@@ -103,22 +103,26 @@ each of the two transects consists of 3 rows of 10 traps in each row. Is the tot
 ### TO-DO: compare Jaccard to the Simple Matching Coefficient (which also counts mutual absence): <https://en.wikipedia.org/wiki/Simple_matching_coefficient>
 
 ``` r
-gOak <- compareJaccardMultiWeekV3(data=bugs.df, 
-                                  transect=quo("oakMargin"),
+library(dplyr)
+
+gOak <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
+                                  t="oakMargin",
                                   transectText="oakMargin")
 ```
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 ``` r
-gControl <- compareJaccardMultiWeekV3(data=bugs.df, 
-                                      transect=quo("control"),
-                                      transectText="control")
+gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
+                                  t="control",
+                                  transectText="control")
 ```
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-4-2.png)
 
 ``` r
+#gControl <- compareJaccardMultiWeekV3(data=bugs.df, transect=quo("control"), transectText="control")
+
 g <- arrangeGrob(gOak, gControl, nrow=2)
 ```
 

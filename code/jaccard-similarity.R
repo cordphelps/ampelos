@@ -3,6 +3,7 @@
 
 
 library(dplyr)
+library(ade4)
 
 # https://stat.ethz.ch/R-manual/R-devel/library/base/html/apply.html
 # MARGIN : a vector giving the subscripts which the function will be applied over. E.g., for a matrix 1 indicates rows, 
@@ -449,7 +450,7 @@ bugRowsJaccardSimilarityV2 <- function(df, t, w) {
 
 }
 
-compareJaccardMultiWeekV4 <- function(data, ignoreBees, transect, transectText) {
+compareJaccardMultiWeekV4 <- function(data, ignoreBees, t, transectText) {
 
   # develop the data for similarity graphs that compare the populations of adjacent rows
   #
@@ -459,9 +460,11 @@ compareJaccardMultiWeekV4 <- function(data, ignoreBees, transect, transectText) 
   # this function is intended to be called from ampelos.Rmd
   #
 
-  data <- bugs.df
-  ignoreBees <- TRUE
-  t <- "control"
+  #data <- bugs.df
+  #ignoreBees <- TRUE
+  #t <- "control"
+
+  captionComment <- paste("(no caption comment)\n", sep="")
 
   weeks.vector <- getWeeks(data)                    # determine weeks in the dataset
   weeks.df <- dplyr::bind_cols(week = weeks.vector) # place weeks in a column
@@ -472,6 +475,8 @@ compareJaccardMultiWeekV4 <- function(data, ignoreBees, transect, transectText) 
 
   if (ignoreBees == TRUE) { 
 
+    captionComment <- paste("(bees ignored)\n", sep="")
+
     data <- data %>% dplyr::select( 
       -Agapostemon.sp....green..native.bee.,
       -Bombus.californicus..bumble.,
@@ -480,6 +485,7 @@ compareJaccardMultiWeekV4 <- function(data, ignoreBees, transect, transectText) 
       -Halictus.sp....3.part..native.bee.,
       -Honey.Bee,
       -Osmia.sp...native.bee.)
+
   }
 
   data <- data %>% 
@@ -533,25 +539,26 @@ compareJaccardMultiWeekV4 <- function(data, ignoreBees, transect, transectText) 
   # make one df for plotting
   plot.df <- dplyr::bind_rows(obs)
 
-  plotSimilarity(plot.df, transectText)
+  plotSimilarity(plot.df, transectText, captionComment)
 
 }
 
-plotSimilarity <- function(df, transectText) {
+plotSimilarity <- function(df, transectText, captionComment) {
 
 
-  gg <- ggplot(plot.df) + 
-      geom_point(aes(x=week, y=SME), shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
-      geom_point(aes(x=week, y=jaccard), shape = 21, size=5, colour = "mediumvioletred", fill = "purple1") + 
+  gg <- ggplot(df) + 
+      geom_point(aes(x=week, y=1-SME), show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
+      geom_point(aes(x=week, y=1-jaccard), show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "purple1") + 
 
       ylim(c(0, 1)) + 
       # scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +
       expand_limits(y=c(0,1)) + 
-      labs(title=paste(transectText, " transect: row triad population similarity", sep=""),
-        subtitle=paste("(none)", sep=""), 
+      labs(title=paste(transectText, " transect: row triad population similarity,\nJaccard and SMC", sep=""),
+        subtitle=paste("weekly mean of row-to-row indicies ", sep=""), 
           y="index", 
           x="week", 
-          caption = "https://en.wikipedia.org/wiki/Jaccard_index") +
+          caption = paste(captionComment, "https://en.wikipedia.org/wiki/Jaccard_index",
+            "\nhttps://en.wikipedia.org/wiki/Simple_matching_coefficient", sep="") ) +
       #theme(legend.position="none") +
       theme(legend.position = "bottom", legend.direction = "horizontal") +
       coord_fixed(ratio=5) # control the aspect ratio of the output
@@ -653,7 +660,7 @@ plotSimilarity <- function(df, transectText) {
     # values > 1 re-written as 1
     data[data > 0] <- 1
 
-    row.names(data) <- name.list$data.row   # NOTE: apparently deprecated
+    #row.names(data) <- name.list$data.row   # NOTE: apparently deprecated
 
     key_pairs <- expand.grid(name.list$data.row, name.list$data.row)  # column names are Var1 and Var2
 
@@ -753,9 +760,9 @@ plotSimilarity <- function(df, transectText) {
 
           # Jaccard distance
           # object dist is coerced to a matrix with as.matrix()
-          row1.row2.m1.matrix <- as.matrix(dist.binary(temp.df, method=1, diag=F, upper=F))  
+          row1.row2.m1.matrix <- as.matrix(ade4::dist.binary(temp.df, method=1, diag=F, upper=F))  
           # Simple Matching Coefficient distance
-          row1.row2.m2.matrix <- as.matrix(dist.binary(temp.df, method=2, diag=F, upper=F)) 
+          row1.row2.m2.matrix <- as.matrix(ade4::dist.binary(temp.df, method=2, diag=F, upper=F)) 
 
 #> row1.row2.m1.matrix
 #          1         2

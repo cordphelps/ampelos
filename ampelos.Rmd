@@ -88,12 +88,17 @@ ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #save
 
 ```{r, echo=TRUE, include=TRUE, message=F, warning=F }
 
-gOak <- compareJaccardMultiWeekV3(data=bugs.df, 
-                                  transect=quo("oakMargin"),
+library(dplyr)
+
+gOak <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
+                                  t="oakMargin",
                                   transectText="oakMargin")
-gControl <- compareJaccardMultiWeekV3(data=bugs.df, 
-                                      transect=quo("control"),
-                                      transectText="control")
+
+gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
+                                  t="control",
+                                  transectText="control")
+
+#gControl <- compareJaccardMultiWeekV3(data=bugs.df, transect=quo("control"), transectText="control")
 
 g <- arrangeGrob(gOak, gControl, nrow=2)
 
