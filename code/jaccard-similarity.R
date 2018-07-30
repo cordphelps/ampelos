@@ -421,12 +421,149 @@ compareJaccardMultiWeekV3 <- function(data, transect, transectText) {
 
 	}
 
+bugRowsJaccardSimilarityV2 <- function(df, t, w) {
 
+  # input is bugs.df 
+
+  #t <- quo("oakMargin")
+  #w <- quo(26)
+  #df <- data
+
+  test.df <- df %>% 
+        dplyr::select(-positionX, -position, -date, -time) %>%
+        dplyr::rename(Lygus.hesperus = Lygus.hesperus..western.tarnished.plant.bug.) %>%
+        dplyr::filter(transect == UQ(t), week == UQ(w)) # last comment
+        # https://www.reddit.com/r/rstats/comments/6zu5od/when_writing_functions_involving_dplyr_how_do_you/
+
+    test.df <- test.df %>%
+      dplyr::group_by(row) %>%
+      dplyr::select(-transect, -julian) %>%
+      dplyr::summarise_all(funs(sum)) 
+      # dplyr::mutate(uniqueRow = paste(row, "_", sep="")) %>%
+
+    name.list <- data.frame(test.df$row)
+
+    test.df[test.df > 0] <- 1
+
+    return(test.df)
+
+}
+
+compareJaccardMultiWeekV4 <- function(data, ignoreBees, transect, transectText) {
+
+  # develop the data for similarity graphs that compare the populations of adjacent rows
+  #
+  # the resulting dataframe has similarity variables (jaccard and SME) for each
+  # week by transect 
+  #
+  # this function is intended to be called from ampelos.Rmd
+  #
+
+  data <- bugs.df
+  ignoreBees <- TRUE
+  t <- "control"
+
+  weeks.vector <- getWeeks(data)                    # determine weeks in the dataset
+  weeks.df <- dplyr::bind_cols(week = weeks.vector) # place weeks in a column
+
+  data <- data %>%  dplyr::rename(
+                        Lygus.hesperus = Lygus.hesperus..western.tarnished.plant.bug., 
+                        cucumber.beetle = Diabrotica.undecimpunctata..Cucumber.Beetle.) 
+
+  if (ignoreBees == TRUE) { 
+
+    data <- data %>% dplyr::select( 
+      -Agapostemon.sp....green..native.bee.,
+      -Bombus.californicus..bumble.,
+      -checkerspot.butterfly,
+      -cucumber.beetle,
+      -Halictus.sp....3.part..native.bee.,
+      -Honey.Bee,
+      -Osmia.sp...native.bee.)
+  }
+
+  data <- data %>% 
+    dplyr::filter(transect == t) %>% 
+    dplyr::select(-position, -positionX, -transect, -julian, -time, -date) 
+
+
+  
+  ## testing : > bugRowsJaccardSimilarityV2(df=bugs.df, t="control", w=getWeeks(data)[1])
+
+## A tibble: 3 x 20
+#    row Diptera..Agromyzid… Braconid.wasp Halictus.sp....3.p… pencilBug Agapostemon.sp...…
+#  <dbl>               <dbl>         <int>               <dbl>     <dbl>              <dbl>
+#1     1                   1             0                   1         1                  0
+#2     1                   1             0                   1         0                  1
+#3     1                   1             0                   1         0                  0
+# ... with 14 more variables: Osmia.sp...native.bee. <dbl>, Honey.Bee <dbl>,
+#   Bombus.californicus..bumble. <dbl>, Thomisidae..crab.spider. <dbl>,
+#   spider.other <dbl>, ladyBug <dbl>, Lygus.hesperus <dbl>,
+#   pentamonidae...stinkBug. <int>, other <dbl>, checkerspot.butterfly <dbl>,
+#   Pyralidae..Snout.Moth. <dbl>, cucumber.beetle <dbl>, Orius..pirate.bug. <int>,
+#   week <dbl>
+
+
+  obs <- list()
+  j <- 0
+  temp.df <- data %>% dplyr::group_by(row) 
+
+  for(i in weeks.vector) {
+
+    j <- j + 1
+
+    temp2.df <- temp.df %>%
+      dplyr::filter(week == i) %>%
+      dplyr::summarise_all(funs(sum)) 
+
+    temp3.df <- ade4Similarity(temp2.df) # 
+
+#> ade4Similarity(data)
+#  Var1 Var2 left right   jaccard       SME
+#1    1    2    1     2 0.5477226 0.4803845
+#2    1    3    1     3 0.4472136 0.3922323
+#3    2    3    2     3 0.6741999 0.6201737
+
+#> mean(data$jaccard)   [1] 0.5563787 > mean(data$SME)  [1] 0.4975968
+
+    obs[[j]] <- data.frame(transect=t, week=i, jaccard=mean(temp3.df$jaccard), SME=mean(temp3.df$SME))
+
+  }
+
+  # make one df for plotting
+  plot.df <- dplyr::bind_rows(obs)
+
+  plotSimilarity(plot.df, transectText)
+
+}
+
+plotSimilarity <- function(df, transectText) {
+
+
+  gg <- ggplot(plot.df) + 
+      geom_point(aes(x=week, y=SME), shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
+      geom_point(aes(x=week, y=jaccard), shape = 21, size=5, colour = "mediumvioletred", fill = "purple1") + 
+
+      ylim(c(0, 1)) + 
+      # scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +
+      expand_limits(y=c(0,1)) + 
+      labs(title=paste(transectText, " transect: row triad population similarity", sep=""),
+        subtitle=paste("(none)", sep=""), 
+          y="index", 
+          x="week", 
+          caption = "https://en.wikipedia.org/wiki/Jaccard_index") +
+      #theme(legend.position="none") +
+      theme(legend.position = "bottom", legend.direction = "horizontal") +
+      coord_fixed(ratio=5) # control the aspect ratio of the output
+      # https://stackoverflow.com/questions/7056836/how-to-fix-the-aspect-ratio-in-ggplot
+
+  return(grid.arrange(gg, ncol=1, nrow=1))
+
+  }
 
   ade4Similarity <- function(data) {
 
     # checking the logic by hand
-    # for a matrix
     #
     #      1 obs1   1   0   1
     #      2 obs2   0   0   0
@@ -583,21 +720,22 @@ compareJaccardMultiWeekV3 <- function(data, transect, transectText) {
 
     
     new_column_val1.vector <- vector()   # init an empty vector to contain a distance measurement (from dist.ade4() )
+    new_column_val2.vector <- vector()
 
     for (i in 1:nrow(results4)) {   # 9 rows of 2 variables expands to 81 pairs; reduces to 36 unique pairs
 
           #print(paste(  " sliceA ", data.matrix[ as.integer(results4$left[i]), ]  , 
           #              " sliceB ", data.matrix[ as.integer(results4$right[i]), ] , sep="") )
 
-          leftData.matrix <- data.matrix[ as.integer(results4$left[i]), ]   # get data by a row number
-          rightData.matrix <- data.matrix[ as.integer(results4$right[i]), ]  # get data by a row number
+          leftData.matrix <- as.matrix(data.matrix[ as.integer(results4$left[i]), ], nrow=1)   # get data by a row number
+          rightData.matrix <- as.matrix(data.matrix[ as.integer(results4$right[i]), ], nrow=1)  # get data by a row number
 
           # ! matrix filled column by column, not row by row !
           # join.matrix <- matrix(c(leftData.matrix, rightData.matrix), 2, 3)
 
           # (so work with data frames....)
 
-          temp.df <- bind_rows(data.frame(leftData.matrix, row.names=NULL), data.frame(rightData.matrix, row.names=NULL))
+          temp.df <- t(bind_cols(data.frame(leftData.matrix, row.names=NULL), data.frame(rightData.matrix, row.names=NULL)))
 
 #>temp.df
 #   V1 V2 V3
@@ -613,22 +751,29 @@ compareJaccardMultiWeekV3 <- function(data, transect, transectText) {
           #dist.binary(temp.df, method=1, diag=F, upper=F)  # output: 0.7071068   class='dist'
           #dist.binary(temp.df, method=2, diag=F, upper=F)  # output: 0.5773503
 
+          # Jaccard distance
           # object dist is coerced to a matrix with as.matrix()
-          row1.row2.matrix <- as.matrix(dist.binary(temp.df, method=1, diag=F, upper=F))
+          row1.row2.m1.matrix <- as.matrix(dist.binary(temp.df, method=1, diag=F, upper=F))  
+          # Simple Matching Coefficient distance
+          row1.row2.m2.matrix <- as.matrix(dist.binary(temp.df, method=2, diag=F, upper=F)) 
 
-#> row1.row2.matrix
+#> row1.row2.m1.matrix
 #          1         2
 #1 0.0000000 0.7071068
 #2 0.7071068 0.0000000
 
           # get the distance values
-          val1 <- row1.row2.matrix[1,2]
+          jaccard.Distance <- row1.row2.m1.matrix[1,2]
+          SME.Distance <- row1.row2.m2.matrix[1,2]
+
 
           # add them to the vector
           if (length(new_column_val1.vector)>0) {
-            new_column_val1.vector <- c(new_column_val1.vector, val1)
+            new_column_val1.vector <- c(new_column_val1.vector, jaccard.Distance)
+            new_column_val2.vector <- c(new_column_val2.vector, SME.Distance)
           } else {
-            new_column_val1.vector <- val1 
+            new_column_val1.vector <- jaccard.Distance
+            new_column_val2.vector <- SME.Distance
           }
 
     }
@@ -637,11 +782,11 @@ compareJaccardMultiWeekV3 <- function(data, transect, transectText) {
     # a new column (for each distance value) that can be bound to result4 with dplyr::bind_cols()
 
     # add the vector(s) to the result4.df as a new column(s)
-    results5 <- dplyr::bind_cols(results4, data.frame(new_column_val1.vector))
-
+    results5 <- dplyr::bind_cols(results4, data.frame(jaccard=new_column_val1.vector))
+    results5 <- dplyr::bind_cols(results5, data.frame(SME=new_column_val2.vector))
 
     
-    return(results)
+    return(results5)
 
 
 
