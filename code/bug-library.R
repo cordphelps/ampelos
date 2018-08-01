@@ -684,6 +684,7 @@ compareTransectUsingQuosure <- function (data, species, operator, initialPositio
   combo.df <- combo.df %>% 
   dplyr::mutate(deltaMean=(oakEdgeMean-controlEdgeMean)/controlEdgeMean)
 
+
   assign("combo.df", combo.df, envir=.GlobalEnv)
 
 
@@ -714,6 +715,127 @@ compareTransectUsingQuosure <- function (data, species, operator, initialPositio
 
 }
 
+
+
+compareTransectUsingQuosureV2 <- function (data, species, operator, initialPosition, secondaryPosition, positionText) {
+
+  # Programming with dplyr, Different input variable (how and when to quote/unquote)
+  # https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
+
+  # This function provides the flexibility to configure the dplyr::filter() position argument on-the-fly,
+  # we need to support the following cases
+  #
+  # filter(position < initialPosition)
+  # filter(position > initialPosition)
+  # filter(between(position, initialPosition, secondaryPosition))
+
+  #####################################################
+  # https://stackoverflow.com/questions/29554796/meaning-of-band-width-in-ggplot-geom-smooth-lm
+
+  #species <- enquo(species)
+  #initialPosition <- enquo(initialPosition)
+  #secondaryPosition <- enquo(secondaryPosition)
+
+  if (FALSE) {   # available for debug
+    # https://stackoverflow.com/questions/9726705/assign-multiple-objects-to-globalenv-from-within-a-function
+    assign("data", data, envir=.GlobalEnv)
+    assign("species", species, envir=.GlobalEnv)
+    assign("operator", operator, envir=.GlobalEnv)
+    assign("initialPosition", initialPosition, envir=.GlobalEnv)
+    assign("secondaryPosition", secondaryPosition, envir=.GlobalEnv)
+  }
+
+  if (operator == "BETWEEN") {
+
+      oak.df <- data %>% 
+      dplyr::filter(between(position, !!initialPosition , !!secondaryPosition), time=="pm", transect=="oakMargin") %>% 
+      dplyr::group_by(julian) %>% 
+      dplyr::summarise(oakEdgeMean=mean(!!species))
+
+      center.df <- data %>% 
+      dplyr::filter(between(position, !!initialPosition , !!secondaryPosition), time=="pm", transect=="control") %>% 
+      dplyr::group_by(julian) %>% 
+      dplyr::summarise(controlEdgeMean=mean(!!species))
+      
+
+  } else {
+
+    if (operator == "LT") {
+
+      oak.df <- data %>% 
+      # dplyr::filter(position < !! initialPosition, time=="pm", transect=="oakMargin") %>% 
+      dplyr::filter(position < !! initialPosition, transect=="oakMargin") %>% 
+      dplyr::group_by(julian) %>% 
+      dplyr::summarise(oakEdgeMean=mean(!!species))
+
+      center.df <- data %>% 
+      # dplyr::filter(position < !! initialPosition, time=="pm", transect=="control") %>% 
+      dplyr::filter(position < !! initialPosition, transect=="control") %>% 
+      dplyr::group_by(julian) %>% 
+      dplyr::summarise(controlEdgeMean=mean(!!species))
+
+      ip <- initialPosition 
+      positionString <- paste("\ntransect positions < ", ip , sep="")
+
+    } else if (operator == "GT") {
+
+      oak.df <- data %>% 
+      dplyr::filter(position > !! initialPosition, transect=="oakMargin") %>% 
+      dplyr::group_by(julian) %>% 
+      dplyr::summarise(oakEdgeMean=mean(!! species))
+
+      center.df <- data %>% 
+      dplyr::filter(position > !! initialPosition, transect=="control") %>% 
+      dplyr::group_by(julian) %>% 
+      dplyr::summarise(controlEdgeMean=mean(!! species))
+
+      ip <- initialPosition
+      positionString <- paste("\ntransect positions > ", ip , sep="")
+
+    } else {
+
+      message( paste("compareTransectUsingQuosure(): ", operator, " not supported", sep=""))
+      stop()
+
+    }
+
+  }
+
+  combo.df <- merge(oak.df, center.df)
+
+  combo.df <- combo.df %>% 
+  dplyr::mutate(deltaMean=(oakEdgeMean-controlEdgeMean)/controlEdgeMean)
+  
+
+  assign("combo.df", combo.df, envir=.GlobalEnv)
+
+
+  ggCompare1 <- ggplot(combo.df, aes(x=julian, y=deltaMean)) +
+      geom_point(shape=21) + 
+      geom_smooth(method="lm", level=0.95) +  
+      geom_hline(yintercept=0) +
+      ylim(-1.1,1.1) +
+      labs(title= paste("average spiders per trap ",
+                        positionText,
+                        "\n(oak average - control average) / control average", sep=""), 
+           subtitle = paste("(95% confidence interval)", sep=""),
+         x="julian day",
+         y= "oakMargin fraction of control",
+         caption=paste("120 observations per day", "\npositions 1 - 10 inclusive", sep="")) +
+    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
+    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
+    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
+    theme(legend.title=element_blank(), 
+          legend.box.background = element_rect(colour = "black"),
+          panel.border = element_rect(colour = "black", fill=NA)) + 
+    # Put bottom-right corner of legend box in bottom-right corner of graph
+    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
+    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
+    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+    
+  return(grid.arrange(ggCompare1, ncol=1, nrow=1))
+
+}
 
 
 selectDataAcrossTransects <- function(data, week, species) {
