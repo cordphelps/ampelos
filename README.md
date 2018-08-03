@@ -171,7 +171,7 @@ plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", specie
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 28
+    ## Picking joint bandwidth of 27.9
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
@@ -183,7 +183,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 17.5
+    ## Picking joint bandwidth of 17.3
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-7-2.png)
 
@@ -194,7 +194,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 17.2
+    ## Picking joint bandwidth of 17.1
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-7-3.png)
 
@@ -220,10 +220,10 @@ percentage
 Diptera..Agromyzidae..leafminer..
 </td>
 <td style="text-align:right;">
-806
+832
 </td>
 <td style="text-align:right;">
-19.91
+20.03
 </td>
 </tr>
 <tr>
@@ -231,10 +231,10 @@ Diptera..Agromyzidae..leafminer..
 Braconid.wasp
 </td>
 <td style="text-align:right;">
-65
+69
 </td>
 <td style="text-align:right;">
-1.61
+1.66
 </td>
 </tr>
 <tr>
@@ -242,10 +242,10 @@ Braconid.wasp
 Halictus.sp....3.part..native.bee.
 </td>
 <td style="text-align:right;">
-335
+353
 </td>
 <td style="text-align:right;">
-8.28
+8.50
 </td>
 </tr>
 <tr>
@@ -253,10 +253,10 @@ Halictus.sp....3.part..native.bee.
 pencilBug
 </td>
 <td style="text-align:right;">
-57
+59
 </td>
 <td style="text-align:right;">
-1.41
+1.42
 </td>
 </tr>
 <tr>
@@ -264,10 +264,10 @@ pencilBug
 Agapostemon.sp....green..native.bee.
 </td>
 <td style="text-align:right;">
-54
+56
 </td>
 <td style="text-align:right;">
-1.33
+1.35
 </td>
 </tr>
 <tr>
@@ -278,7 +278,7 @@ Osmia.sp...native.bee.
 59
 </td>
 <td style="text-align:right;">
-1.46
+1.42
 </td>
 </tr>
 <tr>
@@ -286,10 +286,10 @@ Osmia.sp...native.bee.
 Honey.Bee
 </td>
 <td style="text-align:right;">
-427
+439
 </td>
 <td style="text-align:right;">
-10.55
+10.57
 </td>
 </tr>
 <tr>
@@ -297,10 +297,10 @@ Honey.Bee
 Bombus.californicus..bumble.
 </td>
 <td style="text-align:right;">
-248
+258
 </td>
 <td style="text-align:right;">
-6.13
+6.21
 </td>
 </tr>
 <tr>
@@ -308,10 +308,10 @@ Bombus.californicus..bumble.
 Thomisidae..crab.spider.
 </td>
 <td style="text-align:right;">
-646
+654
 </td>
 <td style="text-align:right;">
-15.96
+15.74
 </td>
 </tr>
 <tr>
@@ -319,10 +319,10 @@ Thomisidae..crab.spider.
 spider.other
 </td>
 <td style="text-align:right;">
-131
+140
 </td>
 <td style="text-align:right;">
-3.24
+3.37
 </td>
 </tr>
 <tr>
@@ -333,7 +333,7 @@ ladyBug
 36
 </td>
 <td style="text-align:right;">
-0.89
+0.87
 </td>
 </tr>
 <tr>
@@ -341,10 +341,10 @@ ladyBug
 Lygus.hesperus..western.tarnished.plant.bug.
 </td>
 <td style="text-align:right;">
-34
+36
 </td>
 <td style="text-align:right;">
-0.84
+0.87
 </td>
 </tr>
 <tr>
@@ -355,7 +355,7 @@ pentamonidae...stinkBug.
 15
 </td>
 <td style="text-align:right;">
-0.37
+0.36
 </td>
 </tr>
 <tr>
@@ -363,10 +363,10 @@ pentamonidae...stinkBug.
 other
 </td>
 <td style="text-align:right;">
-1071
+1082
 </td>
 <td style="text-align:right;">
-26.46
+26.05
 </td>
 </tr>
 <tr>
@@ -374,10 +374,10 @@ other
 checkerspot.butterfly
 </td>
 <td style="text-align:right;">
-25
+27
 </td>
 <td style="text-align:right;">
-0.62
+0.65
 </td>
 </tr>
 <tr>
@@ -388,7 +388,7 @@ Pyralidae..Snout.Moth.
 15
 </td>
 <td style="text-align:right;">
-0.37
+0.36
 </td>
 </tr>
 <tr>
@@ -399,7 +399,7 @@ Diabrotica.undecimpunctata..Cucumber.Beetle.
 15
 </td>
 <td style="text-align:right;">
-0.37
+0.36
 </td>
 </tr>
 <tr>
