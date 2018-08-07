@@ -5,6 +5,7 @@
 
 ##################### QA #############################
 
+test.df <- read.csv("./data/bugs.csv", header=TRUE, sep=",")
 
 # get all julian
 bugs.df %>% select(julian) %>%
