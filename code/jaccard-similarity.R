@@ -549,12 +549,13 @@ plotSimilarity <- function(df, transectText, captionComment) {
 
 
   gg <- ggplot(df) + 
-      geom_jitter(aes(x=week, y=1-SME), show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
-      geom_jitter(aes(x=week, y=1-jaccard), show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "purple1") + 
+      geom_jitter(aes(x=week, y=1-SME), width = 0.1, height = 0.1, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
+      geom_jitter(aes(x=week, y=1-jaccard), width = 0.1, height = 0.1, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "purple1") + 
 
       ylim(c(0, 1)) + 
       # scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +
       expand_limits(y=c(0,1)) + 
+      scale_x_continuous(breaks=seq(22,40,2) +
       labs(title=paste(transectText, " transect: row triad population similarity,\nJaccard and SMC", sep=""),
         subtitle=paste("weekly mean of row-to-row indicies ", sep=""), 
           y="index", 
