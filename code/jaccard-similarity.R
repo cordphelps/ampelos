@@ -549,8 +549,8 @@ plotSimilarity <- function(df, transectText, captionComment) {
 
 
   gg <- ggplot(df) + 
-      geom_point(aes(x=week, y=1-SME), position = jitter, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
-      geom_point(aes(x=week, y=1-jaccard), position = jitter, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "purple1") + 
+      geom_jitter(aes(x=week, y=1-SME), show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
+      geom_jitter(aes(x=week, y=1-jaccard), show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "purple1") + 
 
       ylim(c(0, 1)) + 
       # scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +
