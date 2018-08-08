@@ -543,12 +543,14 @@ compareJaccardMultiWeekV4 <- function(data, ignoreBees, t, transectText) {
 
 }
 
+
+
 plotSimilarity <- function(df, transectText, captionComment) {
 
 
   gg <- ggplot(df) + 
-      geom_point(aes(x=week, y=1-SME), show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
-      geom_point(aes(x=week, y=1-jaccard), show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "purple1") + 
+      geom_point(aes(x=week, y=1-SME), position = jitter, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
+      geom_point(aes(x=week, y=1-jaccard), position = jitter, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "purple1") + 
 
       ylim(c(0, 1)) + 
       # scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +
@@ -838,5 +840,99 @@ plotSimilarity <- function(df, transectText, captionComment) {
 #> data.saved <- data
 
     ade4Similarity(test.df)
+
+}
+
+
+
+compareDiversity <- function(data, ignoreBees, t, transectText) {
+
+  
+  #
+  # this function is intended to be called from ampelos.Rmd
+  #
+
+  #data <- bugs.df
+  #ignoreBees <- TRUE
+  #t <- "control"
+
+  captionComment <- paste("(no caption comment)\n", sep="")
+
+  weeks.vector <- getWeeks(data)                    # determine weeks in the dataset
+  weeks.df <- dplyr::bind_cols(week = weeks.vector) # place weeks in a column
+
+  data <- data %>%  dplyr::rename(
+                        Lygus.hesperus = Lygus.hesperus..western.tarnished.plant.bug., 
+                        cucumber.beetle = Diabrotica.undecimpunctata..Cucumber.Beetle.) 
+
+  if (ignoreBees == TRUE) { 
+
+    captionComment <- paste("(bees ignored)\n", sep="")
+
+    data <- data %>% dplyr::select( 
+      -Agapostemon.sp....green..native.bee.,
+      -Bombus.californicus..bumble.,
+      -checkerspot.butterfly,
+      -cucumber.beetle,
+      -Halictus.sp....3.part..native.bee.,
+      -Honey.Bee,
+      -Osmia.sp...native.bee.)
+
+  }
+
+  data <- data %>% 
+    dplyr::filter(transect == t) %>% 
+    dplyr::select(-position, -positionX, -transect, -julian, -time, -date) 
+
+
+  
+  ## testing : > bugRowsJaccardSimilarityV2(df=bugs.df, t="control", w=getWeeks(data)[1])
+
+## A tibble: 3 x 20
+#    row Diptera..Agromyzid… Braconid.wasp Halictus.sp....3.p… pencilBug Agapostemon.sp...…
+#  <dbl>               <dbl>         <int>               <dbl>     <dbl>              <dbl>
+#1     1                   1             0                   1         1                  0
+#2     1                   1             0                   1         0                  1
+#3     1                   1             0                   1         0                  0
+# ... with 14 more variables: Osmia.sp...native.bee. <dbl>, Honey.Bee <dbl>,
+#   Bombus.californicus..bumble. <dbl>, Thomisidae..crab.spider. <dbl>,
+#   spider.other <dbl>, ladyBug <dbl>, Lygus.hesperus <dbl>,
+#   pentamonidae...stinkBug. <int>, other <dbl>, checkerspot.butterfly <dbl>,
+#   Pyralidae..Snout.Moth. <dbl>, cucumber.beetle <dbl>, Orius..pirate.bug. <int>,
+#   week <dbl>
+
+
+  obs <- list()
+  j <- 0
+  temp.df <- data %>% dplyr::group_by(week) 
+
+  for(i in weeks.vector) {
+
+    j <- j + 1
+
+    temp2.df <- temp.df %>%
+      dplyr::filter(week == i) %>%
+      purrr::transpose() %>%
+
+      dplyr::summarise_all(funs(sum)) 
+
+    temp3.df <- ade4Similarity(temp2.df) # 
+
+#> ade4Similarity(data)
+#  Var1 Var2 left right   jaccard       SME
+#1    1    2    1     2 0.5477226 0.4803845
+#2    1    3    1     3 0.4472136 0.3922323
+#3    2    3    2     3 0.6741999 0.6201737
+
+#> mean(data$jaccard)   [1] 0.5563787 > mean(data$SME)  [1] 0.4975968
+
+    obs[[j]] <- data.frame(transect=t, week=i, jaccard=mean(temp3.df$jaccard), SME=mean(temp3.df$SME))
+
+  }
+
+  # make one df for plotting
+  plot.df <- dplyr::bind_rows(obs)
+
+  # plotSimilarity(plot.df, transectText, captionComment)
 
 }
