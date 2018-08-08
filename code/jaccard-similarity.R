@@ -555,7 +555,7 @@ plotSimilarity <- function(df, transectText, captionComment) {
       ylim(c(0, 1)) + 
       # scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +
       expand_limits(y=c(0,1)) + 
-      scale_x_continuous(breaks=seq(22,40,2) +
+      scale_x_continuous(breaks=seq(22,40,2)) +
       labs(title=paste(transectText, " transect: row triad population similarity,\nJaccard and SMC", sep=""),
         subtitle=paste("weekly mean of row-to-row indicies ", sep=""), 
           y="index", 
