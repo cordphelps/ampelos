@@ -10,10 +10,16 @@ how does a 'natural' field margin influence the population of beneficial insects
 source("./code/bug-library.R")
 source("./code/similarity.R")
 source("./code/jaccard-similarity.R")
+source("./code/diversity.R")
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 ```
+
+transect design
+---------------
+
+![transect layout](./images/transectLayout.jpg)
 
 is there a difference in the spider populations for the two transects?
 ----------------------------------------------------------------------
@@ -90,11 +96,6 @@ newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = 
 ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
 ```
 
-transect design
----------------
-
-![transect layout](./images/transectLayout.jpg)
-
 each of the two transects consists of 3 rows of 10 traps in each row. Is the total insect population relatively uniform among the 3 rows of a transect? Does this uniformity change over time? Compute the Jaccard Index for each week: the index *'is a statistic used for comparing the similarity and diversity of sample sets.'*
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -119,8 +120,6 @@ gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-4-2.png)
 
 ``` r
-#gControl <- compareJaccardMultiWeekV3(data=bugs.df, transect=quo("control"), transectText="control")
-
 g <- arrangeGrob(gOak, gControl, nrow=2)
 ```
 
@@ -158,6 +157,33 @@ plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="
 
     ## NULL
 
+species and individuals per sample?
+-----------------------------------
+
+``` r
+div(bugs.df, species=FALSE, ignoreBees=FALSE, t="control")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png)
+
+``` r
+div(bugs.df, species=FALSE, ignoreBees=FALSE, t="oakMargin")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-7-2.png)
+
+``` r
+div(bugs.df, species=TRUE, ignoreBees=FALSE, t="control")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-7-3.png)
+
+``` r
+div(bugs.df, species=TRUE, ignoreBees=FALSE, t="oakMargin")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-7-4.png)
+
 the crab spider is a dominant species in the vineyard. How are they distributed along the length of the row?
 ------------------------------------------------------------------------------------------------------------
 
@@ -173,7 +199,7 @@ plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", specie
 
     ## Picking joint bandwidth of 27.8
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 ``` r
 new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
@@ -185,7 +211,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 
     ## Picking joint bandwidth of 17.1
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-7-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
 
 ``` r
 plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="oakMargin", when="pm", wk=1, caption=Sys.Date())
@@ -196,7 +222,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 
     ## Picking joint bandwidth of 16.7
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-7-3.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-3.png)
 
 and the species counts?
 -----------------------
