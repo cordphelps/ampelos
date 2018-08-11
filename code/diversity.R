@@ -115,7 +115,7 @@ plotDivSpecies <- function(df, titleText, subText, captionText) {
       expand_limits(x=c(22,40)) +
       scale_x_continuous(breaks = seq(min(22), max(40), by = 5)) +
     
-      coord_fixed(ratio=.5) +  # control the aspect ratio of the output 
+      coord_fixed(ratio=.8) +  # control the aspect ratio of the output 
     
     #geom_smooth(aes(x=rowCounts, y=rowSum), method = "loess", size = 1.5) +
     #geom_smooth(aes(x=rowCounts, y=rowSum), method="lm", level=0.95) +
@@ -133,7 +133,8 @@ plotDivSpecies <- function(df, titleText, subText, captionText) {
       
       # https://stackoverflow.com/questions/7056836/how-to-fix-the-aspect-ratio-in-ggplot
 
-  return(grid.arrange(gg, ncol=1, nrow=1))
+  #return(grid.arrange(gg, ncol=1, nrow=1))
+      return(gg)
 
   }
 
@@ -164,17 +165,19 @@ div <- function(data, species, ignoreBees, t) {
   
   if (species == FALSE) {
 
-    plotDivIndividuals(input.df, 
-                paste("weekly individual count diversity: ", "\ntransect ", t, sep=""), 
+    gg <- plotDivIndividuals(input.df, 
+                paste("weekly individual count diversity: \n", t, " transect ", sep=""), 
                 paste("ignoreBees : ", ignoreBees, sep=""),
                 "caption")
   } else {
 
-    plotDivSpecies(input.df, 
-                paste("weekly species diversity ", "\ntransect ", t, sep=""), 
+    gg <- plotDivSpecies(input.df, 
+                paste("weekly species diversity \n", t, " transect ", sep=""), 
                 paste("ignoreBees : ", ignoreBees, sep=""),
                 "caption")
 
   }
+
+  return(gg)
 
 }

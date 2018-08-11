@@ -16,85 +16,32 @@ source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/dat
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 ```
 
-transect design
----------------
-
-![transect layout](./images/transectLayout.jpg)
-
-is there a difference in the spider populations for the two transects?
-----------------------------------------------------------------------
+weekly composition of species and individuals?
+----------------------------------------------
 
 ``` r
-reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(26), species=quo(Thomisidae..crab.spider.))
+# (fig.keep='none' suppresses the plots temporarily)
 
-g1 <- plotBugDistribution(data=reducedData.df, 
-                          title=paste("crab spider occurrences", "\nweek 26", sep=""), 
-                          caption="stuff")
+ggC <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="control")
+ggO <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="oakMargin")
+
+ggC2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="control")
+ggO2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="oakMargin")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-2-1.png)
-
 ``` r
-reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(30), species=quo(Thomisidae..crab.spider.))
-
-g2 <- plotBugDistribution(data=reducedData.df, 
-                          title=paste("crab spider occurrences", "\nweek 30", sep=""), 
-                          caption="stuff")
-```
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-2-2.png)
-
-``` r
-g <- arrangeGrob(g1, g2, nrow=1)
-```
-
-using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (segments are traps 1-4, 5-6, and 7-10)
-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-TO-DO: refine normalization method
-----------------------------------
-
-``` r
-positionText <- paste("\ntransect positions ", "1-4", sep="")
-g3 <- compareTransectUsingQuosure(data=bugs.df, 
-                                 species=quo(Thomisidae..crab.spider.), 
-                                 operator="LT",
-                                 initialPosition=quo(5), 
-                                 secondaryPosition=quo(0),
-                                 positionText)
+grid.arrange(ggO2, ggC2, ncol=2, nrow=1)
 ```
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 ``` r
-positionText <- paste("\ntransect positions ", "5-6", sep="")
-g46 <- compareTransectUsingQuosure(data=bugs.df, 
-                                 species=quo(Thomisidae..crab.spider.), 
-                                 operator="BETWEEN",
-                                 initialPosition=quo(4), 
-                                 secondaryPosition=quo(7),
-                                 positionText)
+grid.arrange(ggO, ggC, ncol=2, nrow=1)
 ```
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-3-2.png)
 
-``` r
-positionText <- paste("\ntransect positions ", "7-10", sep="")
-g7 <- compareTransectUsingQuosure(data=bugs.df, 
-                                 species=quo(Thomisidae..crab.spider.), 
-                                 operator="GT",
-                                 initialPosition=quo(6), 
-                                 secondaryPosition=quo(0),
-                                 positionText)
-```
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-3-3.png)
-
-``` r
-g <- arrangeGrob(g3, g46, g7, nrow=3)
-newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = "")
-ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
-```
+![transect layout](./images/transectLayout.jpg)
 
 each of the two transects consists of 3 rows of 10 traps in each row. Is the total insect population relatively uniform among the 3 rows of a transect? Does this uniformity change over time? Compute the Jaccard Index for each week: the index *'is a statistic used for comparing the similarity and diversity of sample sets.'*
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -123,6 +70,100 @@ gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
 g <- arrangeGrob(gOak, gControl, nrow=2)
 ```
 
+is there a difference in the spider populations for the two transects?
+----------------------------------------------------------------------
+
+``` r
+reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(24), species=quo(Thomisidae..crab.spider.))
+
+g24 <- plotBugDistribution(data=reducedData.df, 
+                          title=paste("crab spider occurrences", "\nweek 24", sep=""), 
+                          caption="stuff")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-5-1.png)
+
+``` r
+reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(26), species=quo(Thomisidae..crab.spider.))
+
+g26 <- plotBugDistribution(data=reducedData.df, 
+                          title=paste("crab spider occurrences", "\nweek 26", sep=""), 
+                          caption="stuff")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-5-2.png)
+
+``` r
+reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(28), species=quo(Thomisidae..crab.spider.))
+
+g28 <- plotBugDistribution(data=reducedData.df, 
+                          title=paste("crab spider occurrences", "\nweek 28", sep=""), 
+                          caption="stuff")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-5-3.png)
+
+``` r
+reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(30), species=quo(Thomisidae..crab.spider.))
+
+g30 <- plotBugDistribution(data=reducedData.df, 
+                          title=paste("crab spider occurrences", "\nweek 30", sep=""), 
+                          caption="stuff")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-5-4.png)
+
+``` r
+# g <- arrangeGrob(g1, g2, nrow=1)
+```
+
+using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (segments are traps 1-4, 5-6, and 7-10)
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#### TO-DO: refine normalization method
+
+``` r
+positionText <- paste("\ntransect positions ", "1-4", sep="")
+g3 <- compareTransectUsingQuosure(data=bugs.df, 
+                                 species=quo(Thomisidae..crab.spider.), 
+                                 operator="LT",
+                                 initialPosition=quo(5), 
+                                 secondaryPosition=quo(0),
+                                 positionText)
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-6-1.png)
+
+``` r
+positionText <- paste("\ntransect positions ", "5-6", sep="")
+g46 <- compareTransectUsingQuosure(data=bugs.df, 
+                                 species=quo(Thomisidae..crab.spider.), 
+                                 operator="BETWEEN",
+                                 initialPosition=quo(4), 
+                                 secondaryPosition=quo(7),
+                                 positionText)
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-6-2.png)
+
+``` r
+positionText <- paste("\ntransect positions ", "7-10", sep="")
+g7 <- compareTransectUsingQuosure(data=bugs.df, 
+                                 species=quo(Thomisidae..crab.spider.), 
+                                 operator="GT",
+                                 initialPosition=quo(6), 
+                                 secondaryPosition=quo(0),
+                                 positionText)
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-6-3.png)
+
+``` r
+g <- arrangeGrob(g3, g46, g7, nrow=3)
+newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = "")
+ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
+```
+
 how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
 -------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -131,14 +172,14 @@ m1 <- simMatrixV2(data=bugs.df, transect=quo("oakMargin"),
                                 transectText="oakMargin")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 ``` r
 m2 <- simMatrixV2(data=bugs.df, transect=quo("control"),
                                 transectText="control")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-5-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-7-2.png)
 
 ``` r
 g <- arrangeGrob(m1, m2, nrow=2)
@@ -153,36 +194,9 @@ does the crab spider population appear to change over time? Is there a differenc
 plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-6-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-6-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
 
     ## NULL
-
-species and individuals per sample?
------------------------------------
-
-``` r
-div(bugs.df, species=FALSE, ignoreBees=FALSE, t="control")
-```
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png)
-
-``` r
-div(bugs.df, species=FALSE, ignoreBees=FALSE, t="oakMargin")
-```
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-7-2.png)
-
-``` r
-div(bugs.df, species=TRUE, ignoreBees=FALSE, t="control")
-```
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-7-3.png)
-
-``` r
-div(bugs.df, species=TRUE, ignoreBees=FALSE, t="oakMargin")
-```
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-7-4.png)
 
 the crab spider is a dominant species in the vineyard. How are they distributed along the length of the row?
 ------------------------------------------------------------------------------------------------------------
@@ -199,7 +213,7 @@ plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", specie
 
     ## Picking joint bandwidth of 27.8
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 ``` r
 new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
@@ -211,7 +225,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 
     ## Picking joint bandwidth of 17.1
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-9-2.png)
 
 ``` r
 plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="oakMargin", when="pm", wk=1, caption=Sys.Date())
@@ -222,7 +236,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 
     ## Picking joint bandwidth of 16.7
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-3.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-9-3.png)
 
 and the species counts?
 -----------------------
