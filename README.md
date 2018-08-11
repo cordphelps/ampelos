@@ -114,6 +114,16 @@ g30 <- plotBugDistribution(data=reducedData.df,
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-5-4.png)
 
 ``` r
+reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(32), species=quo(Thomisidae..crab.spider.))
+
+g32 <- plotBugDistribution(data=reducedData.df, 
+                          title=paste("crab spider occurrences", "\nweek 32", sep=""), 
+                          caption="stuff")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-5-5.png)
+
+``` r
 # g <- arrangeGrob(g1, g2, nrow=1)
 ```
 
@@ -168,18 +178,18 @@ how about the insect populations themselves? Is the presence of any particular s
 -------------------------------------------------------------------------------------------------------------------------------------------
 
 ``` r
-m1 <- simMatrixV2(data=bugs.df, transect=quo("oakMargin"),
+m1 <- simMatrixV3(data=bugs.df, transect=quo("oakMargin"),
                                 transectText="oakMargin")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png)
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png" width="100%" />
 
 ``` r
-m2 <- simMatrixV2(data=bugs.df, transect=quo("control"),
+m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
                                 transectText="control")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-7-2.png)
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-7-2.png" width="100%" />
 
 ``` r
 g <- arrangeGrob(m1, m2, nrow=2)

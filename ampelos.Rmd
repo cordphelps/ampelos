@@ -100,6 +100,12 @@ g30 <- plotBugDistribution(data=reducedData.df,
                           title=paste("crab spider occurrences", "\nweek 30", sep=""), 
                           caption="stuff")
 
+reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(32), species=quo(Thomisidae..crab.spider.))
+
+g32 <- plotBugDistribution(data=reducedData.df, 
+                          title=paste("crab spider occurrences", "\nweek 32", sep=""), 
+                          caption="stuff")
+
 # g <- arrangeGrob(g1, g2, nrow=1)
 
 ```
@@ -142,11 +148,11 @@ ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #save
 
 ## how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
 
-```{r, echo=TRUE, include=TRUE, message=F, warning=F }
+```{r, out.width = "100%", echo=TRUE, include=TRUE, message=F, warning=F }
 
-m1 <- simMatrixV2(data=bugs.df, transect=quo("oakMargin"),
+m1 <- simMatrixV3(data=bugs.df, transect=quo("oakMargin"),
                                 transectText="oakMargin")
-m2 <- simMatrixV2(data=bugs.df, transect=quo("control"),
+m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
                                 transectText="control")
 
 g <- arrangeGrob(m1, m2, nrow=2)

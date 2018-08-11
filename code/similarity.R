@@ -282,3 +282,66 @@ simMatrixV2 <- function(data, transect, transectText) {
   return(grid.arrange(sim, ncol=1, nrow=1))
 
 }
+
+
+simMatrixV3 <- function(data, transect, transectText) {
+
+    # http://www.sthda.com/english/wiki/ggplot2-quick-correlation-matrix-heatmap-r-software-and-data-visualization
+
+    # return grob : side-by-side similarity matricies for the two transects
+
+# produce correlation coefficients between the possible pairs of variables 
+# cor(matrix, method = c("pearson", "kendall", "spearman"))
+# ?cor
+# ... For cor(), if method is "kendall" or "spearman", Kendall's tau or Spearman's rho 
+# statistic is used to estimate a rank-based measure of association. These are 
+# more robust and have been recommended if the data do not necessarily come from 
+# a bivariate normal distribution.
+
+# Correlation matrix list with significance levels (coefficients matrix plus p-value matrix)
+# > ?rcorr
+# .... Spearman correlations are the Pearson linear correlations computed on the ranks of 
+# non-missing elements, using midranks for ties.
+  
+    library("dplyr")
+    library("reshape2")
+    library("ggplot2")
+    library("gridExtra")
+    library("grid")
+    library("ggcorrplot")
+  
+    ## get the insect data by transect and by week
+  
+    # https://stackoverflow.com/questions/21644848/summarizing-multiple-columns-with-dplyr
+    oak.df <- data %>% 
+        dplyr::select(-row, -positionX, -position, -date, -time, -julian) %>%
+        dplyr::rename(cucumber.beetle = Diabrotica.undecimpunctata..Cucumber.Beetle.) %>%
+        dplyr::rename(Lygus.hesperus = Lygus.hesperus..western.tarnished.plant.bug.) %>%
+        dplyr::filter(transect==UQ(transect)) %>%
+        dplyr::group_by(week) %>%
+        dplyr::select(-transect) %>%
+        dplyr::summarise_all(funs(mean)) %>%
+        dplyr::select(-week) 
+    # now all columns are species, rows are 'week averages'
+
+     ## Compute the correlation matrix
+    sim.matrix <- as.matrix(oak.df)
+    cormat <- round(cor(sim.matrix, method="spearman"),2)
+
+  # Heatmap
+  sim <- ggcorrplot(cormat, hc.order = TRUE, 
+           type = "lower", 
+           lab = TRUE,           # values inside circles
+           lab_size = 2,         # text size in circles 
+           show.legend = FALSE,
+           tl.cex = 6,           # variable label size 
+           method="circle", 
+           colors = c("tomato2", "white", "springgreen3"), 
+           title="insect presence correlogram", 
+           ggtheme=theme_bw)
+
+
+  return(grid.arrange(sim, ncol=1, nrow=1))
+
+}
+
