@@ -185,14 +185,18 @@ m1 <- simMatrixV3(data=bugs.df, transect=quo("oakMargin"),
 <img src="ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png" width="100%" />
 
 ``` r
+#g <- arrangeGrob(m1, m2, nrow=2)
+```
+
+``` r
 m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
                                 transectText="control")
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-7-2.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png" width="100%" />
 
 ``` r
-g <- arrangeGrob(m1, m2, nrow=2)
+#g <- arrangeGrob(m1, m2, nrow=2)
 ```
 
 does the crab spider population appear to change over time? Is there a difference between the two transects?
@@ -204,7 +208,7 @@ does the crab spider population appear to change over time? Is there a differenc
 plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-9-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-9-2.png)
 
     ## NULL
 
@@ -223,7 +227,7 @@ plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", specie
 
     ## Picking joint bandwidth of 27.8
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 ``` r
 new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
@@ -235,7 +239,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 
     ## Picking joint bandwidth of 17.1
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-9-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-10-2.png)
 
 ``` r
 plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="oakMargin", when="pm", wk=1, caption=Sys.Date())
@@ -246,7 +250,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 
     ## Picking joint bandwidth of 16.7
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-9-3.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-10-3.png)
 
 and the species counts?
 -----------------------

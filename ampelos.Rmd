@@ -152,10 +152,20 @@ ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #save
 
 m1 <- simMatrixV3(data=bugs.df, transect=quo("oakMargin"),
                                 transectText="oakMargin")
+
+#g <- arrangeGrob(m1, m2, nrow=2)
+
+```
+
+
+```{r, out.width = "100%", echo=TRUE, include=TRUE, message=F, warning=F }
+
+
 m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
                                 transectText="control")
 
-g <- arrangeGrob(m1, m2, nrow=2)
+#g <- arrangeGrob(m1, m2, nrow=2)
+
 ```
 
 ## does the crab spider population appear to change over time? Is there a difference between the two transects?
