@@ -161,6 +161,9 @@ kmPlot <- function(list, transectText) {
 
       	#scale_y_continuous(breaks=seq(22,40,2)) +
 
+      	geom_vline(xintercept=4.5) +
+      	geom_vline(xintercept=7.5) +
+
       	scale_y_discrete() +
 
       	coord_fixed(ratio=3) + # control the aspect ratio
