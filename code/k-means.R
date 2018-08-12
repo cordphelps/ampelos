@@ -163,6 +163,8 @@ kmPlot <- function(list, transectText) {
 
       	scale_y_discrete() +
 
+      	coord_fixed(ratio=3) + # control the aspect ratio
+
       	labs(title=paste("crab spider clusters using KMean\n", sep=""),
         subtitle=paste(transectText, " transect", sep=""), 
           y="week number", 

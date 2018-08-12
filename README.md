@@ -11,6 +11,7 @@ source("./code/bug-library.R")
 source("./code/similarity.R")
 source("./code/jaccard-similarity.R")
 source("./code/diversity.R")
+source("./code/k-means.R")
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
@@ -127,6 +128,30 @@ g32 <- plotBugDistribution(data=reducedData.df,
 # g <- arrangeGrob(g1, g2, nrow=1)
 ```
 
+are clusters appearing and do they persist across multiple weeks?
+-----------------------------------------------------------------
+
+``` r
+clusterNumber <- 4
+df <- bugs.df
+species <- "Thomisidae..crab.spider."
+
+dataList <- buildClustersByWeek(df, t="control", species="Thomisidae..crab.spider.", cn=clusterNumber)
+
+cl1.gg <- kmPlot(list=dataList, transectText="control")
+
+df <- bugs.df
+dataList <- buildClustersByWeek(df, t="oakMargin", species="Thomisidae..crab.spider.", cn=clusterNumber)
+
+cl2.gg <- kmPlot(list=dataList, transectText="oakMargin")
+```
+
+``` r
+grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png)
+
 using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (segments are traps 1-4, 5-6, and 7-10)
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -142,7 +167,7 @@ g3 <- compareTransectUsingQuosure(data=bugs.df,
                                  positionText)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 ``` r
 positionText <- paste("\ntransect positions ", "5-6", sep="")
@@ -154,7 +179,7 @@ g46 <- compareTransectUsingQuosure(data=bugs.df,
                                  positionText)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-6-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
 
 ``` r
 positionText <- paste("\ntransect positions ", "7-10", sep="")
@@ -166,7 +191,7 @@ g7 <- compareTransectUsingQuosure(data=bugs.df,
                                  positionText)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-6-3.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-3.png)
 
 ``` r
 g <- arrangeGrob(g3, g46, g7, nrow=3)
@@ -182,7 +207,7 @@ m1 <- simMatrixV3(data=bugs.df, transect=quo("oakMargin"),
                                 transectText="oakMargin")
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-9-1.png" width="100%" />
 
 ``` r
 #g <- arrangeGrob(m1, m2, nrow=2)
@@ -193,7 +218,7 @@ m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
                                 transectText="control")
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-10-1.png" width="100%" />
 
 ``` r
 #g <- arrangeGrob(m1, m2, nrow=2)
@@ -208,7 +233,7 @@ does the crab spider population appear to change over time? Is there a differenc
 plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-9-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-9-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-11-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-11-2.png)
 
     ## NULL
 
@@ -227,7 +252,7 @@ plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", specie
 
     ## Picking joint bandwidth of 27.8
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
 ``` r
 new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
@@ -239,7 +264,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 
     ## Picking joint bandwidth of 17.1
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-10-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-12-2.png)
 
 ``` r
 plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="oakMargin", when="pm", wk=1, caption=Sys.Date())
@@ -250,7 +275,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 
     ## Picking joint bandwidth of 16.7
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-10-3.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-12-3.png)
 
 and the species counts?
 -----------------------
