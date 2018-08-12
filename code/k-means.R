@@ -4,19 +4,37 @@
 # objective: classify (determine clusters of) the trap locations containing crab spiders 
 # for a week/transect
 
-kmReduce <- function(df, t, w, s, intWeek) {
+kmReduce <- function(df, ft, fw, fs, intWeek) {
 
 # filter data based on transect, week, and species presence
 
-#t <- quo("oakMargin")
-#w <- quo(26)
+#t <- "oakMargin"
+#w <- 26
+#formula.t <- (~ transect == "oakMargin" )
+#formula.w <- (~ week == 24 )
+#formula.s <- (~ Thomisidae..crab.spider. > 0 )
+#s<- "Thomisidae..crab.spider."
 #df <- bugs.df
-#s<- quo(Thomisidae..crab.spider.)
 #intWeek <- 26
 
+
+#t <- enquo(t)
+#w <- enquo(w)
+#s<- enquo(s)
+
+
+
 	data <- df %>%
-      dplyr::filter(transect == UQ(t), week == UQ(w), UQ(s) > 0) %>%    # get all traps with spiders for transect/week
+      #dplyr::filter(transect == !! t, week == !! w) %>%    # get all traps with spiders for transect/week
+	  dplyr::filter_(ft) %>%
+	  dplyr::filter_(fw) %>%
+      dplyr::filter_(fs) %>%  # https://stackoverflow.com/questions/36647468/creating-a-function-with-an-argument-passed-to-dplyrfilter-what-is-the-best-wa
       dplyr::select(row, position, week, transect) 
+
+      		#  !! transect
+			# The bang bang says we want the expression that item is referring to, not item itself.
+			# http://r.danal.com/tutorials/quosures_inside_out.html
+      		# 
 
     
     data$row <- as.character(data$row)  			# replace the row number with a week number  **** CHECK LOGIC ****
@@ -32,10 +50,9 @@ kmReduce <- function(df, t, w, s, intWeek) {
 
 }
 
-kmAssignClusters <- function(kdata, cn) {
+kmAssignClusters <- function(list, cn) {
 
-	#kdata <- dataList[[1]]
-	#cn <- 3
+	kdata <- list
 
 	set.seed(20)
 	clusters <- kmeans(kdata[,1:2], cn, iter.max=100)
@@ -80,7 +97,7 @@ kmAssignClusters <- function(kdata, cn) {
 	v.cluster.df <- v.cluster.df %>% dplyr::mutate(newCluster = as.list(v.rowVector))
 
 	# add an empty column to the target data
-	kdata$newCluster <- "NA"
+	kdata$newCluster <- NULL
 	#
 	# walk through data; compare data$cluster to v.cluster.df$cluster
 	# 
@@ -88,11 +105,12 @@ kmAssignClusters <- function(kdata, cn) {
 
 		for (j in 1:nrow(v.cluster.df)) {
 			if ( kdata$cluster[[i]] == v.cluster.df$cluster[[j]] ) {
-				kdata$newCluster[[i]] <- as.factor(v.cluster.df$newCluster[[j]])
+				kdata$newCluster[[i]] <- v.cluster.df$newCluster[[j]]
 			}
 		}
-
 	}
+
+	kdata$newCluster <- as.factor(kdata$newCluster)
 
 
 	return(kdata)
@@ -117,6 +135,8 @@ getClusters <- function(data) {
 }
 
 kmPlot <- function(list, transectText) {
+
+	#list <- datalist
 
 	ggplot() + 
 
@@ -154,23 +174,44 @@ kmPlot <- function(list, transectText) {
 
 }
 
-buildClustersByWeek <- function(df, transect, cn) {
+buildClustersByWeek <- function(df, t, species, cn) {
 
 	#df <- bugs.df
-	#transect <- "control"
+	#i <- 1
+	#species <- "Thomisidae..crab.spider."
 	#cn <- 3
+	#formula.t <- (~ transect == "oakMargin" )
+	#formula.w <- (~ week == 25 )
+	#formula.s <- (~ Thomisidae..crab.spider. > 0 )
+	#t <- "control"
+
+	transectString <- paste("~transect=='", t, "'", sep="")
+	formula.t <- as.formula(transectString)
+	#transectExp <- parse(text = transectString)
+
+	speciesString <- paste("~", species, ">0", sep="")
+	formula.s <- as.formula(speciesString)
+	#speciesExp <- parse(text = speciesString)
 
 	weeks.vector <- getWeeks(df)
 
+	dataList <- NULL
 	dataList <- list()
 
 	for (i in 1:length(weeks.vector)) {
 
-			dataList[[i]] <- kmReduce(df, 
-                 quo(transect), quo(weeks.vector[[i]]), quo(Thomisidae..crab.spider.),
-                 weeks.vector[[i]])
+			w <- weeks.vector[[i]]
 
-			dataList[[i]] <- kmAssignClusters(dataList[[i]], cn)
+			weekString <- paste("~week==", weeks.vector[[i]], sep="") # dynamically create an expression to
+			formula.w <- as.formula(weekString)
+			#weekExp <- parse(text = weekString)                    # filter by week
+																	 # http://adv-r.had.co.nz/Expressions.html#parsing-and-deparsing
+
+			dataList[[i]] <- kmReduce(df, ft=formula.t, fw=formula.w, fs=formula.s, intWeek=w)
+
+			clusterList <- dataList[[i]]
+
+			dataList[[i]] <- kmAssignClusters(list=clusterList, cn=cn)
 
 	}
 

@@ -1,14 +1,7 @@
----
-title: "ampelos"
-output: github_document
----
+ampelos
+================
 
-
-
-
-
-```{r, echo=T, message=F, warning=F}
-
+``` r
 library(ggplot2)
 library(gridExtra)
 
@@ -34,13 +27,9 @@ test.df <- as.data.frame(do.call(rbind, list(
                 list(1,0,0),
                 list(1,0,3)
                  ), quote=FALSE) )
-
-
 ```
 
-
-```{r}
-
+``` r
 clusterNumber <- 3
 df <- bugs.df
 species <- "Thomisidae..crab.spider."
@@ -48,20 +37,26 @@ species <- "Thomisidae..crab.spider."
 dataList <- buildClustersByWeek(df, t="control", species="Thomisidae..crab.spider.", cn=clusterNumber)
 
 kmPlot(list=dataList, transectText="control")
+```
 
+    ## Scale for 'x' is already present. Adding another scale for 'x', which
+    ## will replace the existing scale.
+
+![](k-means_files/figure-markdown_github/unnamed-chunk-2-1.png)
+
+``` r
 df <- bugs.df
 dataList <- buildClustersByWeek(df, t="oakMargin", species="Thomisidae..crab.spider.", cn=clusterNumber)
 
 kmPlot(list=dataList, transectText="oakMargin")
-
 ```
 
+    ## Scale for 'x' is already present. Adding another scale for 'x', which
+    ## will replace the existing scale.
 
+![](k-means_files/figure-markdown_github/unnamed-chunk-2-2.png)
 
-
-```{r}
-
-
+``` r
 dataList <- list()
 
 if (FALSE) {
@@ -87,12 +82,4 @@ dataList[[3]] <- kmBuildClusters(dataList[[3]], clusterNumber)
 kmPlot(dataList, "control")
 
 }
-
-
-
-
 ```
-
-
-
-
