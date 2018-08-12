@@ -116,7 +116,7 @@ g32 <- plotBugDistribution(data=reducedData.df,
 ```{r, echo=TRUE, include=TRUE, message=F, warning=F, fig.keep='none'}
 
 
-clusterNumber <- 4
+clusterNumber <- 3
 df <- bugs.df
 species <- "Thomisidae..crab.spider."
 

@@ -132,7 +132,7 @@ are clusters appearing and do they persist across multiple weeks?
 -----------------------------------------------------------------
 
 ``` r
-clusterNumber <- 4
+clusterNumber <- 3
 df <- bugs.df
 species <- "Thomisidae..crab.spider."
 
