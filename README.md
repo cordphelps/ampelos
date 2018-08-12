@@ -152,8 +152,8 @@ grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
-using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (segments are traps 1-4, 5-6, and 7-10)
-------------------------------------------------------------------------------------------------------------------------------------------------------------
+using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (cluster analysis suggests trap segments 1-4, 5-7, and 8-10)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #### TO-DO: refine normalization method
 
@@ -170,23 +170,23 @@ g3 <- compareTransectUsingQuosure(data=bugs.df,
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 ``` r
-positionText <- paste("\ntransect positions ", "5-6", sep="")
+positionText <- paste("\ntransect positions ", "5-7", sep="")
 g46 <- compareTransectUsingQuosure(data=bugs.df, 
                                  species=quo(Thomisidae..crab.spider.), 
                                  operator="BETWEEN",
                                  initialPosition=quo(4), 
-                                 secondaryPosition=quo(7),
+                                 secondaryPosition=quo(8),
                                  positionText)
 ```
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
 
 ``` r
-positionText <- paste("\ntransect positions ", "7-10", sep="")
+positionText <- paste("\ntransect positions ", "8-10", sep="")
 g7 <- compareTransectUsingQuosure(data=bugs.df, 
                                  species=quo(Thomisidae..crab.spider.), 
                                  operator="GT",
-                                 initialPosition=quo(6), 
+                                 initialPosition=quo(7), 
                                  secondaryPosition=quo(0),
                                  positionText)
 ```
