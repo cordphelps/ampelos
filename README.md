@@ -85,26 +85,6 @@ g24 <- plotBugDistribution(data=reducedData.df,
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 ``` r
-reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(26), species=quo(Thomisidae..crab.spider.))
-
-g26 <- plotBugDistribution(data=reducedData.df, 
-                          title=paste("crab spider occurrences", "\nweek 26", sep=""), 
-                          caption="stuff")
-```
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-5-2.png)
-
-``` r
-reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(28), species=quo(Thomisidae..crab.spider.))
-
-g28 <- plotBugDistribution(data=reducedData.df, 
-                          title=paste("crab spider occurrences", "\nweek 28", sep=""), 
-                          caption="stuff")
-```
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-5-3.png)
-
-``` r
 reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(30), species=quo(Thomisidae..crab.spider.))
 
 g30 <- plotBugDistribution(data=reducedData.df, 
@@ -112,17 +92,7 @@ g30 <- plotBugDistribution(data=reducedData.df,
                           caption="stuff")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-5-4.png)
-
-``` r
-reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(32), species=quo(Thomisidae..crab.spider.))
-
-g32 <- plotBugDistribution(data=reducedData.df, 
-                          title=paste("crab spider occurrences", "\nweek 32", sep=""), 
-                          caption="stuff")
-```
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-5-5.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-5-2.png)
 
 ``` r
 # g <- arrangeGrob(g1, g2, nrow=1)
@@ -140,7 +110,6 @@ dataList <- buildClustersByWeek(df, t="control", species="Thomisidae..crab.spide
 
 cl1.gg <- kmPlot(list=dataList, transectText="control")
 
-df <- bugs.df
 dataList <- buildClustersByWeek(df, t="oakMargin", species="Thomisidae..crab.spider.", cn=clusterNumber)
 
 cl2.gg <- kmPlot(list=dataList, transectText="oakMargin")
@@ -150,7 +119,7 @@ cl2.gg <- kmPlot(list=dataList, transectText="oakMargin")
 grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png)
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png" width="100%" />
 
 using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (cluster analysis suggests trap segments 1-4, 5-7, and 8-10)
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -233,7 +202,7 @@ does the crab spider population appear to change over time? Is there a differenc
 plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-11-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-11-2.png)
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-11-1.png" width="100%" /><img src="ampelos_files/figure-markdown_github/unnamed-chunk-11-2.png" width="100%" />
 
     ## NULL
 

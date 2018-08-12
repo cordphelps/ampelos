@@ -55,7 +55,7 @@ kmAssignClusters <- function(list, cn) {
 	kdata <- list
 
 	set.seed(20)
-	clusters <- kmeans(kdata[,1:2], cn, iter.max=100)
+	clusters <- kmeans(kdata[,1:2], cn, iter.max=100)    # 'replace' is handed to base::sample()
 	kdata$cluster <- as.factor(clusters$cluster)
 
 	# problem: the cluster numbers are not necessary in order of the trap positions
@@ -140,38 +140,56 @@ kmPlot <- function(list, transectText) {
 
 	ggplot() + 
 
-  		geom_point(aes(x = position[], y = row[], fill = newCluster),
+  		geom_point(aes(y = position[], x = row[], fill = newCluster),
   			data = list[[1]], shape = 21, size=5) +
 
-  		geom_point(aes(x = position[], y = row[], fill = newCluster),
+  		geom_point(aes(y = position[], x = row[], fill = newCluster),
+  			data = list[[2]], shape = 21, size=5) +
+
+  		geom_point(aes(y = position[], x = row[], fill = newCluster),
   			data = list[[3]], shape = 21, size=5) +
 
-  		geom_point(aes(x = position[], y = row[], fill = newCluster),
+  		geom_point(aes(y = position[], x = row[], fill = newCluster),
+  			data = list[[4]], shape = 21, size=5) +
+
+  		geom_point(aes(y = position[], x = row[], fill = newCluster),
   			data = list[[5]], shape = 21, size=5) +
 
-  		geom_point(aes(x = position[], y = row[], fill = newCluster),
+  		geom_point(aes(y = position[], x = row[], fill = newCluster),
+  			data = list[[6]], shape = 21, size=5) +
+
+  		geom_point(aes(y = position[], x = row[], fill = newCluster),
   			data = list[[7]], shape = 21, size=5) +
 
-  		geom_point(aes(x = position[], y = row[], fill = newCluster),
+  		geom_point(aes(y = position[], x = row[], fill = newCluster),
+  			data = list[[8]], shape = 21, size=5) +
+
+  		geom_point(aes(y = position[], x = row[], fill = newCluster),
+  			data = list[[9]], shape = 21, size=5) +
+
+  		geom_point(aes(y = position[], x = row[], fill = newCluster),
   			data = list[[10]], shape = 21, size=5) +
 
-  		xlim(c(1, 10)) + 
-      	expand_limits(x=c(1,10)) +
-      	scale_x_continuous(breaks = seq(min(1), max(10), by = 1)) +
+  		ylim(c(1, 10)) + 
+      	expand_limits(y=c(1,10)) +
+      	scale_y_continuous(breaks = seq(min(1), max(10), by = 1)) +
 
       	#scale_y_continuous(breaks=seq(22,40,2)) +
 
-      	geom_vline(xintercept=4.5) +
-      	geom_vline(xintercept=7.5) +
+      	geom_hline(yintercept=4.5) +
+      	geom_hline(yintercept=7.5) +
 
-      	scale_y_discrete() +
+      	scale_x_discrete() +
 
-      	coord_fixed(ratio=3) + # control the aspect ratio
+      	coord_fixed(ratio=1) + # control the aspect ratio
 
-      	labs(title=paste("crab spider clusters using KMean\n", sep=""),
-        subtitle=paste(transectText, " transect", sep=""), 
-          y="week number", 
-          x="trap position", 
+      	# guide_legend(title="clusters") +
+      	guides(fill=guide_legend(title="clusters")) +
+
+      	labs(title=paste("crab spider clusters\n", transectText, " transect", sep=""),
+        subtitle=paste("stats::kmeans()", sep=""),   
+          x="week number", 
+          y="trap position", 
           caption = paste("https://en.wikipedia.org/wiki/K-means_clustering", sep="") ) +
 
   		theme_bw()

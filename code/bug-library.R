@@ -280,7 +280,8 @@ plotSpeciesTrend <- function(data, bugs, speciesText, where, when, caption) {
     # Put bottom-right corner of legend box in bottom-right corner of graph
     theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
     theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
+    theme_bw() 
 
     ggCONTROL <- ggplot(sliced.df, aes(x=week, y=controlPMtotal)) +
       geom_point(shape=21) +
@@ -304,7 +305,8 @@ plotSpeciesTrend <- function(data, bugs, speciesText, where, when, caption) {
     # Put bottom-right corner of legend box in bottom-right corner of graph
     theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
     theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
+    theme_bw() 
     
   grid.arrange(ggOAK, ggCONTROL, ncol=2, nrow=1)
 
@@ -368,7 +370,8 @@ plotSpeciesTrend <- function(data, bugs, speciesText, where, when, caption) {
     # Put bottom-right corner of legend box in bottom-right corner of graph
     theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
     theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
+    theme_bw() 
 
     ggCONTROL <- ggplot(sliced.df, aes(x=julian, y=controlPMtotal)) +
       geom_point(shape=21) +
@@ -392,7 +395,8 @@ plotSpeciesTrend <- function(data, bugs, speciesText, where, when, caption) {
     # Put bottom-right corner of legend box in bottom-right corner of graph
     theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
     theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
+    theme_bw() 
     
   grid.arrange(ggOAK, ggCONTROL, ncol=2, nrow=1)
 
@@ -709,7 +713,8 @@ compareTransectUsingQuosure <- function (data, species, operator, initialPositio
     # Put bottom-right corner of legend box in bottom-right corner of graph
     theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
     theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
+    theme_bw() 
     
   return(grid.arrange(ggCompare1, ncol=1, nrow=1))
 
@@ -831,7 +836,8 @@ compareTransectUsingQuosureV2 <- function (data, species, operator, initialPosit
     # Put bottom-right corner of legend box in bottom-right corner of graph
     theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
     theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
+    theme_bw() 
     
   return(grid.arrange(ggCompare1, ncol=1, nrow=1))
 
@@ -859,7 +865,7 @@ plotBugDistribution <- function (data, title, caption) {
 
   # http://t-redactyl.io/blog/2016/02/creating-plots-in-r-using-ggplot2-part-6-weighted-scatterplots.html
   gg <- ggplot(data, aes(positionX, row, size=totalSpiders)) +
-    geom_point(shape=21, colour = "purple", fill = "plum", alpha=0.6) +
+    geom_point(shape=21, colour = "purple", fill = "plum", alpha=0.6) +           # 
     #scale_size_area(max_size = 20) +
     # geom_count() probably more appropriate http://ggplot2.tidyverse.org/reference/scale_size.html
     scale_size(range = c(1, 10)) +
@@ -890,7 +896,7 @@ plotBugDistribution <- function (data, title, caption) {
     #annotate("segment", x = 12, xend = 36, y = 98, yend = 100, colour = "black") +    
     #annotate("text", x = 47, y = 100, label = "oak tree", colour="black") +
     annotate("text", x = 95, y = 76, label = "oak transect", colour="black") +
-    annotate("text", x = 95, y = 40, label = "control transect", fill="white", colour="black") +
+    annotate("text", x = 95, y = 40, label = "control transect", colour="black") + # fill="white", 
     theme_bw() +
     theme() + 
     # theme(legend.position = "bottom", legend.direction = "horizontal") +

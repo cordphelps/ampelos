@@ -564,6 +564,7 @@ plotSimilarity <- function(df, transectText, captionComment) {
             "\nhttps://en.wikipedia.org/wiki/Simple_matching_coefficient", sep="") ) +
       #theme(legend.position="none") +
       theme(legend.position = "bottom", legend.direction = "horizontal") +
+      theme_bw() +
       coord_fixed(ratio=5) # control the aspect ratio of the output
       # https://stackoverflow.com/questions/7056836/how-to-fix-the-aspect-ratio-in-ggplot
 
