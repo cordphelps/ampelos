@@ -8,6 +8,8 @@ kmReduce <- function(df, ft, fw, fs, intWeek) {
 
 # filter data based on transect, week, and species presence
 
+# agruments ft, fw, and fw are pre-built "formulae" that dplyr::filter_() can tolerate
+
 #t <- "oakMargin"
 #w <- 26
 #formula.t <- (~ transect == "oakMargin" )
@@ -52,13 +54,21 @@ kmReduce <- function(df, ft, fw, fs, intWeek) {
 
 kmAssignClusters <- function(list, cn) {
 
-	kdata <- list
+	# find clusters in weekly data and then standardize the cluster numbers
+	# so multiple weeks can be compare visually
 
-	set.seed(20)
-	clusters <- kmeans(kdata[,1:2], cn, iter.max=100)    # 'replace' is handed to base::sample()
-	kdata$cluster <- as.factor(clusters$cluster)
+	kdata <- list  # kdata is a df that is an element of a large list
 
-	# problem: the cluster numbers are not necessary in order of the trap positions
+	# find clusters
+	set.seed(20)	 									# cn is the pre-defined number of clusters
+	clusters <- kmeans(kdata[,1:2], cn, iter.max=100)   # row and position are columns 1 and 2 (see kmReduce() )
+	kdata$cluster <- as.factor(clusters$cluster)		# prob with 'spider.other' : 'replace' is handed to base::sample()
+
+	# now every row / position pair with species occurrances is assigned a cluster number
+
+	# problem: the cluster numbers assigned by kdata() are not necessarily in order of ascending trap position
+	# (so, to make the cluster fill colors match in the graphics, the cluster numbers need to be synchronized
+	#  across weeks)
 
 	# for each cluster, create a list of the positions 
 	v.clusterVector <- getClusters(kdata)
@@ -85,7 +95,7 @@ kmAssignClusters <- function(list, cn) {
 	for (i in 1:length(v.clusterVector)) {
 		v.cluster.df <- v.cluster.df %>% tibble::add_row(cluster = i, mean = v.mean.list[[i]])
 	}
-	# now use the mean sort the rows  
+	# now use the mean to sort the rows  
 	v.cluster.df <- dplyr::arrange(v.cluster.df, mean)
 	# build a vector of row numbers
 	# this is the new order for the cluster assignments
