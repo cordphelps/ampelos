@@ -24,6 +24,8 @@ bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 
 ## weekly composition of species and individuals?
 
+#### TO-DO: annotate charts with key dates ( spray events, cover crop collapse, veraision, )
+
 ```{r, echo=TRUE, include=TRUE, message=F, warning=F, fig.keep='none'}
 
 # (fig.keep='none' suppresses the plots temporarily)
