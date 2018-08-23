@@ -194,7 +194,9 @@ m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
 
 # pass variables to dyplr pipes
 # https://stackoverflow.com/questions/27975124/pass-arguments-to-dplyr-functions
-plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
+#plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), #speciesText="Crab Spider", where="control", when="pm", #caption=Sys.Date())
+
+plotSpeciesTrendV2(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
 
 ```
 

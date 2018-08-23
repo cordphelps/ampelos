@@ -20,6 +20,7 @@ library(tidyverse)
 library(knitr)
 library(kableExtra)
 
+
 plotRidges <- function(data, combined, bugs, speciesText, where, when, wk, caption) {
 
 
@@ -407,6 +408,240 @@ plotSpeciesTrend <- function(data, bugs, speciesText, where, when, caption) {
   
   return()
 }
+
+
+
+plotSpeciesTrendV2 <- function(data, bugs, speciesText, where, when, caption) {
+  # bugs has to come in as a pointer
+  # speciesText is presentable text for the plot labels, 'quo_name(bugs)' gets the mashed df column label
+  
+  # https://stackoverflow.com/questions/9726705/assign-multiple-objects-to-globalenv-from-within-a-function
+  # assign("data", data, envir=.GlobalEnv)
+  # assign("bugs", bugs, envir=.GlobalEnv)
+  # assign("where", where, envir=.GlobalEnv)
+  # assign("when", when, envir=.GlobalEnv)
+  # assign("wk", wk, envir=.GlobalEnv)
+  # assign("caption", caption, envir=.GlobalEnv)
+  
+
+  
+  # https://stackoverflow.com/questions/1660124/how-to-sum-a-variable-by-group
+  # dyplr group: https://stackoverflow.com/questions/48714625/error-in-data-frame-unused-argument
+  # dyplr multiple groups: https://stackoverflow.com/questions/21653295/dplyr-issues-when-using-group-bymultiple-variables
+  
+
+  ########### stand-alone dplyr test code ##########
+  if (FALSE) {   # this is essentially a multi-line comment
+    temp.df <- bugs.df %>%
+      filter( time == "pm",  transect == "oakMargin") %>%
+      group_by( week ) %>%
+      summarise( sp_by_week = sum( Thomisidae..crab.spider. , na.rm = TRUE ) , n=n()) %>%
+      mutate(ave_per_week = sp_by_week / (n / 30))
+
+      sp_percent <- sum(temp.df$sp_by_week) / sum(temp.df$n)
+
+      new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
+
+  }
+  ########### end stand-alone dplyr test code ##########
+
+
+  temp.df <- bugs.df %>%
+    #filter( time == "pm",  transect == "oakMargin") %>%
+    filter(transect == "oakMargin") %>%
+    group_by( week ) %>%
+    summarise( sp_by_week = sum( !!bugs , na.rm = TRUE ) , n=n()) %>%
+    mutate(ave_per_week = sp_by_week / (n / 30))
+  
+  # get statistics
+  sp_percentOak <- sum(temp.df$sp_by_week) / sum(temp.df$n) * 100
+  sp_percentOak <- format(round(sp_percentOak, 2), nsmall = 2)
+
+  temp.df <- bugs.df %>%
+    filter( time == "pm",  transect == "control") %>%
+    group_by( week ) %>%
+    summarise( sp_by_week = sum( !!bugs , na.rm = TRUE ) , n=n()) %>%
+    mutate(ave_per_week = sp_by_week / (n / 30))
+  
+  # get statistics
+  sp_percentControl <- sum(temp.df$sp_by_week) / sum(temp.df$n) * 100
+  sp_percentControl <- format(round(sp_percentControl, 2), nsmall = 2)
+  
+  
+  oakPM.df <- data %>%
+    filter( time == "pm",  transect == "oakMargin") %>%
+    group_by( week ) %>%
+    summarise( oakPMtotal = sum( !!bugs , na.rm = TRUE ) ) 
+  
+  controlPM.df <- data %>%
+    filter( time == "pm",  transect == "control") %>%
+    group_by( week ) %>%
+    summarise( controlPMtotal = sum( !!bugs , na.rm = TRUE ) ) 
+  
+  # join the data frames
+  pm.df <- merge(oakPM.df, controlPM.df)
+  
+  oakAM.df <- data %>%
+    filter( time == "am",  transect == "oakMargin") %>%
+    group_by( week ) %>%
+    summarise( oakAMtotal = sum( !!bugs , na.rm = TRUE ) ) 
+  
+  controlAM.df <- data %>%
+    filter( time == "am",  transect == "control") %>%
+    group_by( week ) %>%
+    summarise( controlAMtotal = sum( !!bugs , na.rm = TRUE ) )  
+  
+  # join the data frames
+  am.df <- merge(oakAM.df, controlAM.df)
+  
+  sliced.df <- merge(am.df, pm.df)
+    
+
+  
+  ggOAK <- ggSpeciesWeekTrend(sliced.df, j="week", PM="oakPMtotal", AM="oakAMtotal", st="Crab Spider", t="oakMargin", spct=sp_percentOak, caption="oCaption")
+
+  ggCONTROL <- ggSpeciesWeekTrend(sliced.df, j="week", PM="controlPMtotal", AM="controlAMtotal", st="Crab Spider", t="control", spct=sp_percentControl, caption="cCaption")
+  
+    
+  grid.arrange(ggOAK, ggCONTROL, ncol=2, nrow=1)
+
+
+
+  ######################################################################################
+  ######################################################################################
+  ######################################################################################
+
+  ######## develop the same graphs, but by day (not week)
+
+  oakPM.df <- data %>%
+    filter( time == "pm",  transect == "oakMargin") %>%
+    group_by( julian ) %>%
+    summarise( oakPMtotal = sum( !!bugs , na.rm = TRUE ) ) 
+  
+  controlPM.df <- data %>%
+    filter( time == "pm",  transect == "control") %>%
+    group_by( julian ) %>%
+    summarise( controlPMtotal = sum( !!bugs , na.rm = TRUE ) ) 
+  
+  # join the data frames
+  pm.df <- merge(oakPM.df, controlPM.df)
+  
+  oakAM.df <- data %>%
+    filter( time == "am",  transect == "oakMargin") %>%
+    group_by( julian ) %>%
+    summarise( oakAMtotal = sum( !!bugs , na.rm = TRUE ) ) 
+  
+  controlAM.df <- data %>%
+    filter( time == "am",  transect == "control") %>%
+    group_by( julian ) %>%
+    summarise( controlAMtotal = sum( !!bugs , na.rm = TRUE ) )  
+  
+  # join the data frames
+  am.df <- merge(oakAM.df, controlAM.df)
+  
+  sliced.df <- merge(am.df, pm.df)
+
+
+  
+  ggOAK <- ggSpeciesJulianTrend(sliced.df, j="julian", PM="oakPMtotal", AM="oakAMtotal", st="Crab Spider", t="oakMargin", spct=sp_percentOak, caption="oCaption")
+
+  ggCONTROL <- ggSpeciesJulianTrend(sliced.df, j="julian", PM="controlPMtotal", AM="controlAMtotal", st="Crab Spider", t="control", spct=sp_percentControl, caption="cCaption")
+
+    
+  grid.arrange(ggOAK, ggCONTROL, ncol=2, nrow=1)
+
+
+
+
+  # ggsave("joy1.png", height=8, width=8, dpi=120, type="cairo-png")
+  
+  return()
+}
+
+ggSpeciesJulianTrend <- function(df, j, PM, AM, st, t, spct, caption) {
+
+  # https://stackoverflow.com/questions/19826352/pass-character-strings-to-ggplot2-within-a-function
+
+  # note: these two functions can't be combined with logic to manipluate the labels
+  # because labels can't be changed  ... https://ggplot2.tidyverse.org/reference/gg-add.html
+
+  gg <- ggplot(df, aes_string(x=j, y=PM)) +
+      geom_point(shape=21) +
+      geom_line(aes_string(x=j, y=PM), colour="red") +
+      geom_point(aes_string(x=j, y=AM), shape=22) +
+      geom_line(aes_string(x=j, y=AM), colour="blue") +   
+      ylim(0,100) +
+      labs(title= paste(st, " Population Counts",
+                        "\ntransect: ", t, sep=""), 
+           subtitle = paste("\ntraps with ", st, "s: ", spct, " %", 
+                           sep=""),
+         x="julian day",
+         y= "daily total",
+         caption=paste(caption, "\n(NO CAPTION)", sep="")) +
+    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
+    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
+    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
+    theme(legend.title=element_blank(), 
+          legend.box.background = element_rect(colour = "black"),
+          panel.border = element_rect(colour = "black", fill=NA)) + 
+    # Put bottom-right corner of legend box in bottom-right corner of graph
+    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
+    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
+    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
+    theme_bw() 
+
+    return(gg)
+
+}
+
+ggSpeciesWeekTrend <- function(df, j, PM, AM, st, t, spct, caption) {
+
+  # https://stackoverflow.com/questions/19826352/pass-character-strings-to-ggplot2-within-a-function
+
+  # note: these two functions can't be combined with logic to manipluate the labels
+  # because labels can't be changed  ... https://ggplot2.tidyverse.org/reference/gg-add.html
+  gg <- ggplot(df, aes_string(x=j, y=PM)) +
+      geom_point(shape=21) +
+      geom_line(aes_string(x=j, y=PM), colour="red") +
+      geom_point(aes_string(x=j, y=AM), shape=22) +
+      geom_line(aes_string(x=j, y=AM), colour="blue") + 
+
+      ylim(0,100) +
+
+      #xlim(c(22, 40)) + 
+      #expand_limits(x=c(22,40)) +
+      #scale_x_continuous(breaks = seq(min(22), max(40), by = 5)) +
+      scale_x_continuous(breaks = seq(min(20), max(40), by = 2), labels = fmt_dcimals(0)) +
+
+      labs(title= paste(st, " Population Counts",
+                        "\ntransect: ", t, sep=""), 
+           subtitle = paste("\ntraps with ", st, "s: ", spct, " %", 
+                           sep=""),
+         x="week",
+         y= "daily total",
+         caption=paste(caption, "\n(NO CAPTION)", sep="")) +
+    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
+    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
+    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
+    theme(legend.title=element_blank(), 
+          legend.box.background = element_rect(colour = "black"),
+          panel.border = element_rect(colour = "black", fill=NA)) + 
+    # Put bottom-right corner of legend box in bottom-right corner of graph
+    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
+    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
+    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
+    theme_bw() 
+
+    return(gg)
+
+}
+
+fmt_dcimals <- function(decimals=0){
+  # https://stackoverflow.com/questions/10035786/ggplot2-y-axis-label-decimal-precision
+    function(x) format(x,nsmall = decimals,scientific = FALSE)
+}
+
+
 
 compareTransect <- function () {
 

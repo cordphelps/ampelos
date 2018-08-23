@@ -235,7 +235,7 @@ buildClustersByWeek <- function(df, t, species, cn) {
 
 	for (i in 1:length(weeks.vector)) {
 
-		if (weeks.vector[[i]] < 33) {
+		if (weeks.vector[[i]] < 33) {    # data becomes too sparse to cluster
 
 			w <- weeks.vector[[i]]
 

@@ -202,7 +202,9 @@ does the crab spider population appear to change over time? Is there a differenc
 ``` r
 # pass variables to dyplr pipes
 # https://stackoverflow.com/questions/27975124/pass-arguments-to-dplyr-functions
-plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
+#plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), #speciesText="Crab Spider", where="control", when="pm", #caption=Sys.Date())
+
+plotSpeciesTrendV2(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
 ```
 
 <img src="ampelos_files/figure-markdown_github/unnamed-chunk-11-1.png" width="100%" /><img src="ampelos_files/figure-markdown_github/unnamed-chunk-11-2.png" width="100%" />
