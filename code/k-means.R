@@ -60,10 +60,11 @@ kmAssignClusters <- function(list, cn) {
 	kdata <- list  # kdata is a df that is an element of a large list
 
 	# find clusters
-	set.seed(20)	 									              # cn is the pre-defined number of clusters
-	clusters <- kmeans(kdata[,1:2], cn, iter.max=100, replace=TRUE)   # row and position are columns 1 and 2 (see kmReduce() )
-	kdata$cluster <- as.factor(clusters$cluster)		              # 'replace' is handed to base::sample(), TRUE allows 
-																	  # sample smaller than 'cn'
+	set.seed(20)	 									            # cn is the pre-defined number of clusters
+	clusters <- kmeans(kdata[,1:2], cn, iter.max=100)    			# row and position are columns 1 and 2 (see kmReduce() )
+	kdata$cluster <- as.factor(clusters$cluster)		            # 'replace' is handed to base::sample(), TRUE allows 
+																	# sample smaller than 'cn' (but kmeans() does not pass it)
+								# https://www.r-bloggers.com/finding-optimal-number-of-clusters/
 
 	# now every row / position pair with species occurrances is assigned a cluster number
 
@@ -234,6 +235,8 @@ buildClustersByWeek <- function(df, t, species, cn) {
 
 	for (i in 1:length(weeks.vector)) {
 
+		if (weeks.vector[[i]] < 33) {
+
 			w <- weeks.vector[[i]]
 
 			weekString <- paste("~week==", weeks.vector[[i]], sep="") # dynamically create an expression to
@@ -246,6 +249,8 @@ buildClustersByWeek <- function(df, t, species, cn) {
 			clusterList <- dataList[[i]]
 
 			dataList[[i]] <- kmAssignClusters(list=clusterList, cn=cn)
+
+		}
 
 	}
 

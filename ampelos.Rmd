@@ -15,6 +15,7 @@ source("./code/similarity.R")
 source("./code/jaccard-similarity.R")
 source("./code/diversity.R")
 source("./code/k-means.R")
+source("./code/kmeansReplaceTRUE.R")
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
