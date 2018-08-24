@@ -2,10 +2,10 @@
 title: "CIMIS"
 output: github_document
 ---
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
 
 ```{r}
 # read CIMIS data via the public API and plot results
@@ -32,7 +32,7 @@ end <- paste("&endDate=", Sys.Date(), sep="")
 units <- "&unitOfMeasure=M"
 # units <- "&unitOfMeasure=E"   # default = english units
 apiString <- paste(baseURL, key, station, start, end, units, sep="")
-data <- fromJSON(apiString)
+data <- fromJSON(apiString)   # CIMIS appears to be throttling requests.....
 data.df <- as.data.frame(data)
 df2.df <- as.data.frame(data.df$Data.Providers.Records)
   
