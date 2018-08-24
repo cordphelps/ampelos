@@ -273,10 +273,10 @@ percentage
 Diptera..Agromyzidae..leafminer..
 </td>
 <td style="text-align:right;">
-868
+880
 </td>
 <td style="text-align:right;">
-19.36
+19.20
 </td>
 </tr>
 <tr>
@@ -287,7 +287,7 @@ Braconid.wasp
 73
 </td>
 <td style="text-align:right;">
-1.63
+1.59
 </td>
 </tr>
 <tr>
@@ -295,10 +295,10 @@ Braconid.wasp
 Halictus.sp....3.part..native.bee.
 </td>
 <td style="text-align:right;">
-437
+476
 </td>
 <td style="text-align:right;">
-9.75
+10.39
 </td>
 </tr>
 <tr>
@@ -309,7 +309,7 @@ pencilBug
 60
 </td>
 <td style="text-align:right;">
-1.34
+1.31
 </td>
 </tr>
 <tr>
@@ -317,10 +317,10 @@ pencilBug
 Agapostemon.sp....green..native.bee.
 </td>
 <td style="text-align:right;">
-69
+77
 </td>
 <td style="text-align:right;">
-1.54
+1.68
 </td>
 </tr>
 <tr>
@@ -328,10 +328,10 @@ Agapostemon.sp....green..native.bee.
 Osmia.sp...native.bee.
 </td>
 <td style="text-align:right;">
-61
+62
 </td>
 <td style="text-align:right;">
-1.36
+1.35
 </td>
 </tr>
 <tr>
@@ -339,10 +339,10 @@ Osmia.sp...native.bee.
 Honey.Bee
 </td>
 <td style="text-align:right;">
-467
+471
 </td>
 <td style="text-align:right;">
-10.41
+10.28
 </td>
 </tr>
 <tr>
@@ -350,7 +350,7 @@ Honey.Bee
 Bombus.californicus..bumble.
 </td>
 <td style="text-align:right;">
-271
+277
 </td>
 <td style="text-align:right;">
 6.04
@@ -361,10 +361,10 @@ Bombus.californicus..bumble.
 Thomisidae..crab.spider.
 </td>
 <td style="text-align:right;">
-677
+678
 </td>
 <td style="text-align:right;">
-15.10
+14.79
 </td>
 </tr>
 <tr>
@@ -372,10 +372,10 @@ Thomisidae..crab.spider.
 spider.other
 </td>
 <td style="text-align:right;">
-165
+168
 </td>
 <td style="text-align:right;">
-3.68
+3.67
 </td>
 </tr>
 <tr>
@@ -383,10 +383,10 @@ spider.other
 ladyBug
 </td>
 <td style="text-align:right;">
-40
+42
 </td>
 <td style="text-align:right;">
-0.89
+0.92
 </td>
 </tr>
 <tr>
@@ -394,10 +394,10 @@ ladyBug
 Lygus.hesperus..western.tarnished.plant.bug.
 </td>
 <td style="text-align:right;">
-36
+37
 </td>
 <td style="text-align:right;">
-0.80
+0.81
 </td>
 </tr>
 <tr>
@@ -416,10 +416,10 @@ pentamonidae...stinkBug.
 other
 </td>
 <td style="text-align:right;">
-1175
+1197
 </td>
 <td style="text-align:right;">
-26.20
+26.12
 </td>
 </tr>
 <tr>
@@ -430,7 +430,7 @@ checkerspot.butterfly
 27
 </td>
 <td style="text-align:right;">
-0.60
+0.59
 </td>
 </tr>
 <tr>
@@ -441,7 +441,7 @@ Pyralidae..Snout.Moth.
 16
 </td>
 <td style="text-align:right;">
-0.36
+0.35
 </td>
 </tr>
 <tr>
@@ -452,7 +452,7 @@ Diabrotica.undecimpunctata..Cucumber.Beetle.
 18
 </td>
 <td style="text-align:right;">
-0.40
+0.39
 </td>
 </tr>
 <tr>
