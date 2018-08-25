@@ -201,7 +201,9 @@ does the crab spider population appear to change over time? Is there a differenc
 ``` r
 # pass variables to dyplr pipes
 # https://stackoverflow.com/questions/27975124/pass-arguments-to-dplyr-functions
-plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
+#plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), #speciesText="Crab Spider", where="control", when="pm", #caption=Sys.Date())
+
+plotSpeciesTrendV2(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
 ```
 
 <img src="ampelos_files/figure-markdown_github/unnamed-chunk-11-1.png" width="100%" /><img src="ampelos_files/figure-markdown_github/unnamed-chunk-11-2.png" width="100%" />
@@ -233,7 +235,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 17.1
+    ## Picking joint bandwidth of 17
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-12-2.png)
 
@@ -244,7 +246,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 16.7
+    ## Picking joint bandwidth of 16.6
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-12-3.png)
 
@@ -270,10 +272,10 @@ percentage
 Diptera..Agromyzidae..leafminer..
 </td>
 <td style="text-align:right;">
-862
+880
 </td>
 <td style="text-align:right;">
-19.60
+19.20
 </td>
 </tr>
 <tr>
@@ -284,7 +286,7 @@ Braconid.wasp
 73
 </td>
 <td style="text-align:right;">
-1.66
+1.59
 </td>
 </tr>
 <tr>
@@ -292,10 +294,10 @@ Braconid.wasp
 Halictus.sp....3.part..native.bee.
 </td>
 <td style="text-align:right;">
-399
+476
 </td>
 <td style="text-align:right;">
-9.07
+10.39
 </td>
 </tr>
 <tr>
@@ -306,7 +308,7 @@ pencilBug
 60
 </td>
 <td style="text-align:right;">
-1.36
+1.31
 </td>
 </tr>
 <tr>
@@ -314,10 +316,10 @@ pencilBug
 Agapostemon.sp....green..native.bee.
 </td>
 <td style="text-align:right;">
-65
+77
 </td>
 <td style="text-align:right;">
-1.48
+1.68
 </td>
 </tr>
 <tr>
@@ -325,10 +327,10 @@ Agapostemon.sp....green..native.bee.
 Osmia.sp...native.bee.
 </td>
 <td style="text-align:right;">
-59
+62
 </td>
 <td style="text-align:right;">
-1.34
+1.35
 </td>
 </tr>
 <tr>
@@ -336,10 +338,10 @@ Osmia.sp...native.bee.
 Honey.Bee
 </td>
 <td style="text-align:right;">
-458
+471
 </td>
 <td style="text-align:right;">
-10.41
+10.28
 </td>
 </tr>
 <tr>
@@ -347,10 +349,10 @@ Honey.Bee
 Bombus.californicus..bumble.
 </td>
 <td style="text-align:right;">
-270
+277
 </td>
 <td style="text-align:right;">
-6.14
+6.04
 </td>
 </tr>
 <tr>
@@ -358,10 +360,10 @@ Bombus.californicus..bumble.
 Thomisidae..crab.spider.
 </td>
 <td style="text-align:right;">
-675
+678
 </td>
 <td style="text-align:right;">
-15.35
+14.79
 </td>
 </tr>
 <tr>
@@ -369,10 +371,10 @@ Thomisidae..crab.spider.
 spider.other
 </td>
 <td style="text-align:right;">
-160
+168
 </td>
 <td style="text-align:right;">
-3.64
+3.67
 </td>
 </tr>
 <tr>
@@ -380,10 +382,10 @@ spider.other
 ladyBug
 </td>
 <td style="text-align:right;">
-40
+42
 </td>
 <td style="text-align:right;">
-0.91
+0.92
 </td>
 </tr>
 <tr>
@@ -391,10 +393,10 @@ ladyBug
 Lygus.hesperus..western.tarnished.plant.bug.
 </td>
 <td style="text-align:right;">
-36
+37
 </td>
 <td style="text-align:right;">
-0.82
+0.81
 </td>
 </tr>
 <tr>
@@ -405,7 +407,7 @@ pentamonidae...stinkBug.
 15
 </td>
 <td style="text-align:right;">
-0.34
+0.33
 </td>
 </tr>
 <tr>
@@ -413,10 +415,10 @@ pentamonidae...stinkBug.
 other
 </td>
 <td style="text-align:right;">
-1156
+1197
 </td>
 <td style="text-align:right;">
-26.28
+26.12
 </td>
 </tr>
 <tr>
@@ -427,7 +429,7 @@ checkerspot.butterfly
 27
 </td>
 <td style="text-align:right;">
-0.61
+0.59
 </td>
 </tr>
 <tr>
@@ -438,7 +440,7 @@ Pyralidae..Snout.Moth.
 16
 </td>
 <td style="text-align:right;">
-0.36
+0.35
 </td>
 </tr>
 <tr>
@@ -449,7 +451,7 @@ Diabrotica.undecimpunctata..Cucumber.Beetle.
 18
 </td>
 <td style="text-align:right;">
-0.41
+0.39
 </td>
 </tr>
 <tr>
