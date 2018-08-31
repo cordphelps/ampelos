@@ -3,6 +3,10 @@ title: "ampelos"
 output: github_document
 ---
 
+```{r, echo=F, message=F, warning=F}
+setwd("/Users/rcphelps/code/thesis/ampelos")
+```
+
 
 ```{r, echo=F, message=F, warning=F}
                                     # , out.height = '100%'}
@@ -22,6 +26,8 @@ library(ggmap)
 library(maps)
 library(mapdata)
 library(gridExtra)
+library(png)
+
 library(cowplot)    # height adjustment in tables with plot_grid()
 library(patchwork)  # alternative to cowplot
 library(egg)        # alternative to cowplot
@@ -128,7 +134,7 @@ sq_map <- get_map(location = center, maptype = "satellite", source = "google", z
 
 ampelosOnly <- ggmap(sq_map) + 
   geom_point(data = ampelosPoint.df, mapping = aes(x = lon, y = lat), 
-             color = "green", shape=13, size = 8, stroke=2) +
+             color = "green", shape=13, size = 6, stroke=1) +
   geom_label(data = ampelosPoint.df, aes(label = paste(as.character(name), sep="")), 
             angle = 0, hjust = 0, nudge_x = 0.06, nudge_y = 0.08) +
   
@@ -153,7 +159,7 @@ ampelosOnly <- ggmap(sq_map) +
 
 CIMISampelos <- ggmap(sq_map) + 
   geom_point(data = placePoints.df, mapping = aes(x = lon, y = lat), 
-             color = "green", shape=13, size = 8, stroke=2) +
+             color = "green", shape=13, size = 6, stroke=1) +
   geom_label(data = placePoints.df, aes(label = paste(as.character(name), sep="")), 
             angle = 0, hjust = 0, nudge_x = 0.06, nudge_y = 0.08) +
   
@@ -197,7 +203,7 @@ sq_map <- get_map(location = ampelos,
 
 ampelosZoom <- ggmap(sq_map) + 
   geom_point(data = ampelosPoint.df, mapping = aes(x = lon, y = lat), 
-             color = "green", shape=13, size = 8, stroke=2) +
+             color = "green", shape=13, size = 6, stroke=1) +
   geom_label(data = ampelosPoint.df, aes(label = paste(as.character(name), sep="")), 
             angle = 0, hjust = 0, nudge_x = 0.06, nudge_y = 0.08) +
   
@@ -233,7 +239,7 @@ sq_map <- get_map(location = ampelos,
 
 ampelos17 <- ggmap(sq_map) + 
   geom_point(data = ampelosPoint.df, mapping = aes(x = lon, y = lat), 
-             color = "green", shape=13, size = 8, stroke=2) +
+             color = "green", shape=13, size = 6, stroke=1) +
   geom_label(data = ampelosPoint.df, aes(label = paste(as.character(name), sep="")), 
             angle = 0, hjust = 0, nudge_x = 0.06, nudge_y = 0.08) +
   
@@ -361,5 +367,53 @@ grid.arrange(
 ```
 
 
-![landscape](./images/transect-aerial.png)
+
+![landscape](../images/transectAerial.png)
+
+
+```{r, echo=F, message=F, warning=F}
+
+# https://stackoverflow.com/questions/22107126/reading-in-multiple-png-files-in-order-to-create-a-new-plot-with-grid-arrange
+
+if (TRUE) {
+  
+  # Hide tick marks and labels to match .png size
+  ampelos17 <- ampelos17 + theme(
+      axis.title.x=element_blank(),
+      axis.text.x=element_blank(),
+      axis.ticks.x=element_blank(),
+      axis.title.y=element_blank(),
+      axis.text.y=element_blank(),
+      axis.ticks.y=element_blank()  ) +
+    
+      labs(title="")   # remove the title
+  
+  t.png.raster = lapply(sprintf("../images/transectAerial.png", 1:4), png::readPNG)
+  t.grobList = lapply(t.png.raster, grid::rasterGrob)
+
+  #gridExtra::grid.arrange(grobs=gl)
+  
+
+  plot_grid(ampelos17, t.grobList[[1]],
+            labels = c("figure A\nAmpelos North Block", 
+                       "figure B\ntransect orientation"), # ascii backspace / <CR> does not work
+            label_size=12, 
+            label_fontface = "plain",
+            axis="t",
+            align = "v",
+            ncol = 2,
+            #rel_heights = c(1,1),      # applies to rows
+            rel_widths = c(1,1.175),    # applies to columns
+            scale = c(1, 1)
+          )
+
+  # it is difficult to adjust the space between plots with plot_grid()
+  # https://github.com/wilkelab/cowplot/issues/31
+  # 
+  
+    
+}
+
+
+```
 
