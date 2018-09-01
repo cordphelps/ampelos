@@ -7,7 +7,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-```{r}
+```{r, echo=F, message=F, warning=F}
 # read CIMIS data via the public API and plot results
 ## 
 ## http://et.water.ca.gov/Rest/Index
@@ -22,60 +22,58 @@ knitr::opts_chunk$set(echo = TRUE)
 #   3) adjust the startDate, endDate, and station per your requirements
   
 library(jsonlite)
+library(gridExtra)
+library(cowplot)
 
-cimisKey <- fromJSON("./PRIVATE-CIMIS-API-KEY.json")
-baseURL <- "http://et.water.ca.gov/api/data?appKey="
-key <- cimisKey[["CIMIS-API-KEY"]]
-station <- "&targets=231"
-start <- "&startDate=2018-01-01"
-end <- paste("&endDate=", Sys.Date(), sep="")
-units <- "&unitOfMeasure=M"
-# units <- "&unitOfMeasure=E"   # default = english units
-apiString <- paste(baseURL, key, station, start, end, units, sep="")
-data <- fromJSON(apiString)   # CIMIS appears to be throttling requests.....
-data.df <- as.data.frame(data)
-df2.df <- as.data.frame(data.df$Data.Providers.Records)
+if (FALSE) {
+  cimisKey <- fromJSON("./PRIVATE-CIMIS-API-KEY.json")
+  baseURL <- "http://et.water.ca.gov/api/data?appKey="
+  key <- cimisKey[["CIMIS-API-KEY"]] 
+  station <- "&targets=231"
+  start <- "&startDate=2018-01-01"
+  end <- "&endDate=2018-08-30"
+  #end <- paste("&endDate=", Sys.Date(), sep="")
+  units <- "&unitOfMeasure=M"
+  # units <- "&unitOfMeasure=E"   # default = english units
+  
+  apiString <- paste(baseURL, key, station, start, end, units, sep="")
+  print(apiString)
+  
+  data <- fromJSON(apiString)   # CIMIS appears to be throttling requests.....
+  data.df <- as.data.frame(data)
+  df2.df <- as.data.frame(data.df$Data.Providers.Records)
+  
+  
+  write.csv(jsonlite::flatten(df2.df), './weather/CIMIS231.csv')
+  
+} else {    # read data saved to disc to avoid
+            # multiple hits to the CIMIS db
+  
+  df2.df <- read.csv("./weather/CIMIS231.csv")
+  
+}
   
 
 #
 # CIMIS data items : http://et.water.ca.gov/Rest/Index
 # 
 
-# convert df values to numeric
-# 
+df2.df$DayAirTmpAvg <- as.numeric(df2.df$DayAirTmpAvg.Value)
+df2.df$DayAirTmpMin <- as.numeric(df2.df$DayAirTmpMin.Value)
+df2.df$DayAirTmpMax <- as.numeric(df2.df$DayAirTmpMax.Value)
+df2.df$DaySoilTmpAvg <- as.numeric(df2.df$DaySoilTmpAvg.Value)
+df2.df$DayRelHumAvg <- as.numeric(df2.df$DayRelHumAvg.Value)
+df2.df$DayWindSpdAvg <- as.numeric(df2.df$DayWindSpdAvg.Value)
+df2.df$Julian <- as.numeric(df2.df$Julian)
 
-DayAirTmpAvg.list <- df2.df$DayAirTmpAvg$Value       # save the values
-df2.df$DayAirTmpAvg <- NULL                          # delete the column (currently a df)
-df2.df$DayAirTmpAvg <- as.numeric(DayAirTmpAvg.list) # re-create the column as numeric
-
-DayAirTmpMin.list <- df2.df$DayAirTmpMin$Value       
-df2.df$DayAirTmpMin <- NULL                        
-df2.df$DayAirTmpMin <- as.numeric(DayAirTmpMin.list)
-  
-DayAirTmpMax.list <- df2.df$DayAirTmpMax$Value       
-df2.df$DayAirTmpMax <- NULL                        
-df2.df$DayAirTmpMax <- as.numeric(DayAirTmpMax.list)
-
-DaySoilTmpAvg.list <- df2.df$DaySoilTmpAvg$Value       
-df2.df$DaySoilTmpAvg <- NULL                        
-df2.df$DaySoilTmpAvg <- as.numeric(DaySoilTmpAvg.list)
-
-DayRelHumAvg.list <- df2.df$DayRelHumAvg$Value       
-df2.df$DayRelHumAvg <- NULL                        
-df2.df$DayRelHumAvg <- as.numeric(DayRelHumAvg.list)
-  
-Julian.list <- df2.df$Julian       
-df2.df$Julian <- NULL                        
-df2.df$Julian <- as.numeric(Julian.list)
-  
 # convert more vars as necessary
   
 ```
 
-```{r}
+```{r, echo=F, message=F, warning=F}
 library(ggplot2)
 
-ggplot(data = df2.df, aes(x=Julian)) + 
+ambient231 <- ggplot(data = df2.df, aes(x=Julian)) + 
   geom_line(aes(y = DayAirTmpMax), colour = "red") +
   geom_line(aes(y = DayAirTmpAvg), colour = "green") +
   geom_line(aes(y = DayAirTmpMin), colour = "blue") +
@@ -84,10 +82,13 @@ ggplot(data = df2.df, aes(x=Julian)) +
                        sec.axis = sec_axis(~.*(9/5) + 32,
                                            breaks= seq(0, 110, 10),
                                            name= "air temp (F)"))  +
-  labs(y = "air temp (C)") +
+  labs(title = paste("Ambient Temperatures", sep=""), 
+      subtitle = paste("CIMIS station #231", sep=""),
+      y = "air temp (C)") +
+  theme_bw() +
   theme(axis.title.y.right = element_text(angle = 90))
   
-ggplot(data = df2.df, aes(x=Julian, y=DayRelHumAvg)) + 
+humidity231 <- ggplot(data = df2.df, aes(x=Julian, y=DayRelHumAvg)) + 
   # geom_line(aes(y = DayRelHumAvg), colour = "blue") +
   geom_point(shape=21) + 
   geom_smooth(method="lm", level=0.95) +  
@@ -99,9 +100,10 @@ ggplot(data = df2.df, aes(x=Julian, y=DayRelHumAvg)) +
          subtitle = paste("CIMIS station #231", sep="")) +
   annotate("segment", x = 120, xend = 175, y = 60, yend = 70,
   colour = "blue") +
+  theme_bw() +
   annotate("text", x = 100, y = 60, label = "spray stylet oil")
 
-ggplot(data = df2.df, aes(x=Julian, y=DaySoilTmpAvg)) + 
+ground231 <- ggplot(data = df2.df, aes(x=Julian, y=DaySoilTmpAvg)) + 
   geom_point(shape=21) + 
   geom_smooth(method="lm", level=0.95) +  
   geom_vline(xintercept=175) +
@@ -117,6 +119,95 @@ ggplot(data = df2.df, aes(x=Julian, y=DaySoilTmpAvg)) +
         subtitle = paste("CIMIS station #231", sep=""),
         caption=paste("sensor located 15 cm (6 in) below soil surface", 
                      "\n under irrigated grass", sep="") )  +
+  theme_bw() +
+  theme(axis.title.y.right = element_text(angle = 90)) 
+
+wind231 <- ggplot(data = df2.df, aes(x=Julian, y=DayWindSpdAvg)) + 
+  geom_point(shape=21) + 
+  geom_smooth(method="lm", level=0.95) +  
+
+  ylim(0,10) +
+  expand_limits(y = 10) +
+  # scale_y_continuous(breaks=seq(0,40,10),
+  scale_y_continuous(
+    sec.axis = sec_axis(~.*(9/5) + 32,
+                        breaks= seq(0, 10, 1),
+                        name= "meters/second")) +
+  labs(x = "julian", y = "meters/second") +
+  labs(title = paste("Average Wind Speed", sep=""), 
+        subtitle = paste("CIMIS station #231", sep=""),
+        caption=paste("", sep="") )  +
+  theme_bw() +
   theme(axis.title.y.right = element_text(angle = 90)) 
 
 ```
+
+
+```{r, echo=T, message=F, warning=F}
+
+
+ampelos.ambient <- plot_grid(ambient231,
+                             
+            label_size=12, 
+            label_fontface = "plain",
+            axis="t",
+            align = "v",
+            ncol = 1,
+            #rel_heights = c(1),      # applies to rows
+            rel_widths = c(1),    # applies to columns
+            scale = c(1)
+          )
+
+  # it is difficult to adjust the space between plots with plot_grid()
+  # https://github.com/wilkelab/cowplot/issues/31
+  # 
+  
+  print(ampelos.ambient)
+  
+  ampelos.ground <- plot_grid(ground231,
+                             
+            label_size=12, 
+            label_fontface = "plain",
+            axis="t",
+            align = "v",
+            ncol = 1,
+            #rel_heights = c(1),      # applies to rows
+            rel_widths = c(1),    # applies to columns
+            scale = c(1)
+          )
+
+  # it is difficult to adjust the space between plots with plot_grid()
+  # https://github.com/wilkelab/cowplot/issues/31
+  # 
+  
+  print(ampelos.ground)
+  
+  
+  
+  
+  ampelos.humidity <- plot_grid(humidity231,
+
+            axis="t",
+            align = "v",
+            ncol = 1,
+            #rel_heights = c(1),      # applies to rows
+            rel_widths = c(1),    # applies to columns
+            scale = c(1)
+          )
+  
+  print(ampelos.humidity)
+  
+  ampelos.wind <- plot_grid(wind231,
+          
+            axis="t",
+            align = "v",
+            ncol = 1,
+            #rel_heights = c(1),      # applies to rows
+            rel_widths = c(1),    # applies to columns
+            scale = c(1)
+          )
+  
+  print(ampelos.wind)
+
+```
+

@@ -394,7 +394,7 @@ if (TRUE) {
   #gridExtra::grid.arrange(grobs=gl)
   
 
-  plot_grid(ampelos17, t.grobList[[1]],
+  ampelos.panel <- plot_grid(ampelos17, t.grobList[[1]],
             labels = c("figure A\nAmpelos North Block", 
                        "figure B\ntransect orientation"), # ascii backspace / <CR> does not work
             label_size=12, 
@@ -411,6 +411,9 @@ if (TRUE) {
   # https://github.com/wilkelab/cowplot/issues/31
   # 
   
+  print(ampelos.panel)
+  
+  cowplot::save_plot("./output/ampelos.panel.jpg", ampelos.panel)
     
 }
 
