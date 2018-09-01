@@ -129,7 +129,8 @@ plotRidges <- function(data, combined, bugs, speciesText, where, when, wk, capti
                        "\nhttps://en.wikipedia.org/wiki/Kernel_density_estimation", 
                        sep="")) +
     theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
+    theme_bw()
 
   } else {   # the x axis data combined for values > 0 ; adjust labels with scale_y_discrete()
 
@@ -159,7 +160,8 @@ plotRidges <- function(data, combined, bugs, speciesText, where, when, wk, capti
                        "\nhttps://en.wikipedia.org/wiki/Kernel_density_estimation", 
                        sep="")) +
     theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5))
+    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
+    theme_bw()
 
   }
   

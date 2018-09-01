@@ -152,46 +152,48 @@ kmPlot <- function(list, transectText) {
 
 	ggplot() + 
 
-  		geom_point(aes(y = position[], x = row[], fill = newCluster),
+  		geom_point(aes(y = position[], x = week[], fill = newCluster),    # x = row[]
   			data = list[[1]], shape = 21, size=5) +
 
-  		geom_point(aes(y = position[], x = row[], fill = newCluster),
+  		geom_point(aes(y = position[], x = week[], fill = newCluster),
   			data = list[[2]], shape = 21, size=5) +
 
-  		geom_point(aes(y = position[], x = row[], fill = newCluster),
+  		geom_point(aes(y = position[], x = week[], fill = newCluster),
   			data = list[[3]], shape = 21, size=5) +
 
-  		geom_point(aes(y = position[], x = row[], fill = newCluster),
+  		geom_point(aes(y = position[], x = week[], fill = newCluster),
   			data = list[[4]], shape = 21, size=5) +
 
-  		geom_point(aes(y = position[], x = row[], fill = newCluster),
+  		geom_point(aes(y = position[], x = week[], fill = newCluster),
   			data = list[[5]], shape = 21, size=5) +
 
-  		geom_point(aes(y = position[], x = row[], fill = newCluster),
+  		geom_point(aes(y = position[], x = week[], fill = newCluster),
   			data = list[[6]], shape = 21, size=5) +
 
-  		geom_point(aes(y = position[], x = row[], fill = newCluster),
+  		geom_point(aes(y = position[], x = week[], fill = newCluster),
   			data = list[[7]], shape = 21, size=5) +
 
-  		geom_point(aes(y = position[], x = row[], fill = newCluster),
+  		geom_point(aes(y = position[], x = week[], fill = newCluster),
   			data = list[[8]], shape = 21, size=5) +
 
-  		geom_point(aes(y = position[], x = row[], fill = newCluster),
+  		geom_point(aes(y = position[], x = week[], fill = newCluster),
   			data = list[[9]], shape = 21, size=5) +
 
-  		geom_point(aes(y = position[], x = row[], fill = newCluster),
+  		geom_point(aes(y = position[], x = week[], fill = newCluster),
   			data = list[[10]], shape = 21, size=5) +
 
-  		ylim(c(1, 10)) + 
+  		#ylim(c(1, 10)) + 
       	expand_limits(y=c(1,10)) +
       	scale_y_continuous(breaks = seq(min(1), max(10), by = 1)) +
 
-      	#scale_y_continuous(breaks=seq(22,40,2)) +
+      	#xlim(c(22, 34)) +              # Set scale limits ('zoom' function; designed to exclude existing data)
+      	expand_limits(x=c(22,34)) +    # enlarge the range of the axis
+      	scale_x_continuous(breaks=seq(22,34,2)) +         # log, squart-root, reverse....
+
+      	#expand_limits(x=c(22,34), y=c(1,10)) +
 
       	geom_hline(yintercept=4.5) +
       	geom_hline(yintercept=7.5) +
-
-      	scale_x_discrete() +
 
       	coord_fixed(ratio=1) + # control the aspect ratio
 
@@ -199,10 +201,10 @@ kmPlot <- function(list, transectText) {
       	guides(fill=guide_legend(title="clusters")) +
 
       	labs(title=paste("crab spider clusters\n", transectText, " transect", sep=""),
-        subtitle=paste("stats::kmeans()", sep=""),   
+        subtitle=paste("(data for weeks 33-34\nis too sparse)", sep=""),   
           x="week number", 
           y="trap position", 
-          caption = paste("https://en.wikipedia.org/wiki/K-means_clustering", sep="") ) +
+          caption = paste("stats::kmeans()\nhttps://en.wikipedia.org/wiki/K-means_clustering", sep="") ) +
 
   		theme_bw()
 

@@ -67,13 +67,13 @@ plotDivIndividuals <- function(df, titleText, subText, captionText) {
       geom_jitter(aes(x=week, y=rowSum), width = 0.1, height = 0.1, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
       
 
-      ylim(c(0, 500)) +
+      #ylim(c(0, 500)) +              # data zoom feature
       expand_limits(y=c(0,500)) +
       scale_y_continuous(breaks = seq(min(0), max(500), by = 50)) +
     
-      xlim(c(22, 40)) + 
-      expand_limits(x=c(22,40)) +
-      scale_x_continuous(breaks = seq(min(22), max(40), by = 5)) +
+      #xlim(c(22, 40)) +              # data zoom feature
+      expand_limits(x=c(22,34)) +
+      scale_x_continuous(breaks = seq(min(22), max(34), by = 2)) +
     
       coord_fixed(ratio=.05) +  # control the aspect ratio of the output 
     
@@ -107,13 +107,13 @@ plotDivSpecies <- function(df, titleText, subText, captionText) {
       geom_jitter(aes(x=week, y=rowCounts), width = 0.1, height = 0.1, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
       
 
-      ylim(c(0, 30)) +
+      #ylim(c(0, 30)) +          # data zoom feature
       expand_limits(y=c(0,30)) +
       scale_y_continuous(breaks = seq(min(0), max(30), by = 5)) +
     
-      xlim(c(22, 40)) + 
-      expand_limits(x=c(22,40)) +
-      scale_x_continuous(breaks = seq(min(22), max(40), by = 5)) +
+      #xlim(c(22, 40)) +          # data zoom feature
+      expand_limits(x=c(22,34)) +
+      scale_x_continuous(breaks = seq(min(22), max(34), by = 2)) +
     
       coord_fixed(ratio=.8) +  # control the aspect ratio of the output 
     
@@ -166,13 +166,13 @@ div <- function(data, species, ignoreBees, t) {
   if (species == FALSE) {
 
     gg <- plotDivIndividuals(input.df, 
-                paste("weekly individual count diversity: \n", t, " transect ", sep=""), 
+                paste(t, " transect insect count diversity",  sep=""), 
                 paste("ignoreBees : ", ignoreBees, sep=""),
                 "caption")
   } else {
 
     gg <- plotDivSpecies(input.df, 
-                paste("weekly species diversity \n", t, " transect ", sep=""), 
+                paste(t, " transect species diversity",  sep=""), 
                 paste("ignoreBees : ", ignoreBees, sep=""),
                 "caption")
 
