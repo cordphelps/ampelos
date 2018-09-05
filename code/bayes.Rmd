@@ -3,420 +3,294 @@ title: "ampelos"
 output: github_document
 ---
 
-```{r, echo=F, message=F, warning=F}
-setwd("/Users/rcphelps/code/thesis/ampelos")
-```
-
-
-```{r, echo=F, message=F, warning=F}
-                                    # , out.height = '100%'}
-# county map
-
-# get the coordinates of a place
-# https://support.google.com/maps/answer/18539?co=GENIE.Platform%3DDesktop&hl=en
-
-
-# http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html
-# install.packages(c("ggplot2", "devtools", "dplyr", "stringr"))
-# install.packages(c("maps", "mapdata"))
-# devtools::install_github("dkahle/ggmap")
-
-library(ggplot2)
-library(ggmap)
-library(maps)
-library(mapdata)
-library(gridExtra)
-library(png)
-
-library(cowplot)    # height adjustment in tables with plot_grid()
-library(patchwork)  # alternative to cowplot
-library(egg)        # alternative to cowplot
-
-
-states <- map_data("state")
-west_coast <- subset(states, region %in% c("california", "oregon", "washington"))
-
-#> west_coast
-#long      lat group order     region
-#667   -120.0060 42.00927     4   667 california
-#668   -120.0060 41.20139     4   668 california
-#669   -120.0060 39.70024     4   669 california
-
-westCoast <- ggplot(data = west_coast) + 
-  geom_polygon(aes(x = long, y = lat, group = group), fill = "palegreen", color = "black") +
-  coord_fixed(1.3) +
-  theme_bw()
-
-ca_df <- subset(states, region == "california")
-counties <- map_data("county")
-ca_county <- subset(counties, region == "california")
-sbCounty <- subset(counties, subregion == "santa barbara")
-
-vC <- subset(counties, subregion == "ventura")
-sloC <- subset(counties, subregion == "san luis obispo")
-bC <- subset(counties, subregion == "san benito")
-# cC <- subset(counties, subregion == "santa cruz")  # data looks wrong
-mC <- subset(counties, subregion == "monterey")
-centralCoast <- dplyr::bind_rows(vC, sloC, bC, mC)
-
-
-
-california <- ggplot(data = ca_df, mapping = aes(x = long, y = lat, group = group)) + 
-  
-  geom_polygon(color = "black", fill = "#F4D292") + 
-  #geom_polygon(data = ca_county, fill = "paleblue", color = "black") +
-  geom_polygon(data = centralCoast, fill = "#E79798", color = "black") +
-  geom_polygon(color = "black", fill = NA) +  # get the state border back on top
-  geom_polygon(data = sbCounty, 
-               aes(x = long, y = lat, group = group), 
-               fill = 'palegreen', color = "black") +   # "palegreen"
-
-  coord_fixed(1.3) +  # aspect ratio for lon/lat
-  expand_limits(y = c(33, 42), x = c(-125,-114)) +
-  
-  labs(title="California 'Central Coast'\nCounties",
-       subtitle=paste("Santa Barbara County in green\n", " \n", " ", sep=""),  # match plot sub-title space
-          x="longitude", 
-          y="latitude", 
-          caption = paste(" ", sep="") )  +
-  
-  #theme_nothing() +
-  theme_bw()  + # default font size = 12pt
-                # https://stackoverflow.com/questions/24874594/font-size-confusion-in-ggplot2
-
-  theme(plot.subtitle=element_text(size=9))  # must follow theme_bw() to override default
-
-  #theme(plot.background = element_rect(fill = "green")) # works with plot_grid(), not patchwork
-  #theme(panel.background = element_rect(fill = "red"))
-
-
-
-```
-
-
 
 
 ```{r, echo=F, message=F, warning=F}
 
-
-sbbox <- make_bbox(lon = sbCounty$long, lat = sbCounty$lat, f = .3)
-sq_map <- get_map(location = sbbox, maptype = "satellite", source = "google")
-
-# CIMIS #231 google map-able coordinates : 34.672222, -120.51306
-# Ampelos 34.625133, -120.280478
-bbPoints.df <-dplyr::tribble(~name, ~lon, ~lat, 
-                           "corner1", -121, 34.3,
-                           "corner2", -119, 35.3)
-
-placePoints.df <-dplyr::tribble(~name, ~lon, ~lat, 
-                           "CIMIS-231", -120.51306, 34.672222, 
-                           "Ampelos", -120.280478, 34.625133)
-
-ampelos <- c(-120.280478, 34.625133)
-
-ampelosPoint.df <-dplyr::tribble(~name, ~lon, ~lat, 
-                           "Ampelos", -120.280478, 34.625133)
-
-center <- sapply(bbPoints.df[2:3], mean)
-
-sbbox <- make_bbox(lon = bbPoints.df$lon, lat = bbPoints.df$lat, f = 1)
-    # f = number specifying the fraction by which the range should be extended
-# maptype =  "terrain"
-  
-sq_map <- get_map(location = center, maptype = "satellite", source = "google", zoom=9)
-
-
-```
-
-
-```{r, echo=F, message=F, warning=F}
-
-
-ampelosOnly <- ggmap(sq_map) + 
-  geom_point(data = ampelosPoint.df, mapping = aes(x = lon, y = lat), 
-             color = "green", shape=13, size = 6, stroke=1) +
-  geom_label(data = ampelosPoint.df, aes(label = paste(as.character(name), sep="")), 
-            angle = 0, hjust = 0, nudge_x = 0.06, nudge_y = 0.08) +
-  
-  coord_fixed(1.3) +  # aspect ratio for lon/lat
-  expand_limits(y=c(34.3,35.3)) +
-  scale_y_continuous(breaks=seq(34.3,35.3,.5)) +
-  expand_limits(x=c(-121, -119)) +
-  scale_x_continuous(breaks=seq(-121, -119, 1)) +
-  
-  labs(title="Ampelos Vineyards\nin the Sta. Rita Hills AVA",
-          x="longitude", 
-          y="latitude", 
-          caption = paste(" ", sep="") ) +
-  
-  theme_bw() +  # default font size = 12pt
-                # https://stackoverflow.com/questions/24874594/font-size-confusion-in-ggplot2
-  #theme(axis.text=element_text(size=10),axis.title=element_text(size=10))
-  
-  theme(plot.subtitle=element_text(size=9))  # must follow theme_bw() to override default
-
-
-
-CIMISampelos <- ggmap(sq_map) + 
-  geom_point(data = placePoints.df, mapping = aes(x = lon, y = lat), 
-             color = "green", shape=13, size = 6, stroke=1) +
-  geom_label(data = placePoints.df, aes(label = paste(as.character(name), sep="")), 
-            angle = 0, hjust = 0, nudge_x = 0.06, nudge_y = 0.08) +
-  
-  coord_fixed(1.3) +  # aspect ratio for lon/lat
-  expand_limits(y=c(34.3,35.3)) +
-  scale_y_continuous(breaks=seq(34.3,35.3,.5)) +
-  expand_limits(x=c(-121, -119)) +
-  scale_x_continuous(breaks=seq(-121, -119, 1)) +
-  
-  labs(title="relative locations: Ampelos Vineyards\nand CIMIS weather station #231",
-        subtitle=paste("14 miles (22 Km) between",
-                          "\nCIMIS #231 at 34:40:19.9986 N, 120:30:47.0154 W",
-                          "\nand Ampelos at 34:37:30.4782 N, 120:16:49.7208 W", sep=""),   
-          x="longitude", 
-          y="latitude", 
-          caption = paste("https://www.nhc.noaa.gov/gccalc.shtml",
-                          sep="") ) +
-  
-  # "\nhttps://www.fcc.gov/media/radio/dms-decimal",
-  
-  theme_bw() +  # default font size = 12pt
-                # https://stackoverflow.com/questions/24874594/font-size-confusion-in-ggplot2
-  #theme(axis.text=element_text(size=10),axis.title=element_text(size=10))
-  
-  theme(plot.subtitle=element_text(size=9))  # must follow theme_bw() to override default
-
-
-
-
-```
-
-
-```{r, echo=F, message=F, warning=F}
-
-sbbox <- make_bbox(lon = bbPoints.df$lon, lat = bbPoints.df$lat, f = 1)
-    # f = number specifying the fraction by which the range should be extended
-# maptype =  "terrain"
-
-sq_map <- get_map(location = ampelos, 
-                  maptype = "satellite", source = "google", zoom=15)
-
-ampelosZoom <- ggmap(sq_map) + 
-  geom_point(data = ampelosPoint.df, mapping = aes(x = lon, y = lat), 
-             color = "green", shape=13, size = 6, stroke=1) +
-  geom_label(data = ampelosPoint.df, aes(label = paste(as.character(name), sep="")), 
-            angle = 0, hjust = 0, nudge_x = 0.06, nudge_y = 0.08) +
-  
-  coord_fixed(1.3) +  # aspect ratio for lon/lat
-  # more detail: https://stackoverflow.com/questions/27915118/ggmap-changing-size-of-map
-  
-  #expand_limits(y=c(34.3,35.3)) +
-  #scale_y_continuous(breaks=seq(34.3,35.3,.5)) +
-  #expand_limits(x=c(-121, -119)) +
-  #scale_x_continuous(breaks=seq(-121, -119, 1)) +
-  
-  labs(title="Ampelos Vineyards\n(Sta. Rita Hills AVA)",
-          x="longitude", 
-          y="latitude", 
-          caption = paste("https://en.wikipedia.org/wiki/Sta._Rita_Hills_AVA", sep="") ) +
-  
-  theme_bw() +  # default font size = 12pt
-                # https://stackoverflow.com/questions/24874594/font-size-confusion-in-ggplot2
-  #theme(axis.text=element_text(size=10),axis.title=element_text(size=10))
-  
-  theme(plot.subtitle=element_text(size=9))  # must follow theme_bw() to override default
-
-
-
-
-```
-
-
-```{r, echo=F, message=F, warning=F}
-
-sq_map <- get_map(location = ampelos, 
-                  maptype = "satellite", source = "google", zoom=17)
-
-ampelos17 <- ggmap(sq_map) + 
-  geom_point(data = ampelosPoint.df, mapping = aes(x = lon, y = lat), 
-             color = "green", shape=13, size = 6, stroke=1) +
-  geom_label(data = ampelosPoint.df, aes(label = paste(as.character(name), sep="")), 
-            angle = 0, hjust = 0, nudge_x = 0.06, nudge_y = 0.08) +
-  
-  coord_fixed(1.3) +  # aspect ratio for lon/lat
-  #expand_limits(y=c(34.3,35.3)) +
-  #scale_y_continuous(breaks=seq(34.3,35.3,.5)) +
-  #expand_limits(x=c(-121, -119)) +
-  #scale_x_continuous(breaks=seq(-121, -119, 1)) +
-  
-  labs(title="Ampelos North Block",
-          x="longitude", 
-          y="latitude", 
-          caption = paste(" ", sep="") ) +
-  
-  theme_bw() +  # default font size = 12pt
-                # https://stackoverflow.com/questions/24874594/font-size-confusion-in-ggplot2
-  #theme(axis.text=element_text(size=10),axis.title=element_text(size=10))
-  
-  theme(plot.subtitle=element_text(size=9))  # must follow theme_bw() to override default
-
-
-```
-
-
-
-```{r, echo=F, message=F, warning=F}
-
-if (TRUE) {
-  
-  #grid.arrange(westCoast, california, ncol=2, nrow=1)
-  plot_grid(california, ampelosOnly,
-          align = "h",
-          ncol = 2,
-          rel_heights = c(1,1),
-          rel_widths = c(1,1)
-          )
-
-  # it is difficult to adjust the space between plots with plot_grid()
-  # https://github.com/wilkelab/cowplot/issues/31
-  # 
-  
-  
-}
-
-```
-
-
-
-```{r, echo=F, message=F, warning=F}
-
-if (TRUE) {
-  
-  #grid.arrange(westCoast, california, ncol=2, nrow=1)
-  plot_grid(CIMISampelos, ampelosZoom,
-          align = "h",
-          ncol = 2,
-          rel_heights = c(1,1),
-          rel_widths = c(1,1)
-          )
-
-  # it is difficult to adjust the space between plots with plot_grid()
-  # https://github.com/wilkelab/cowplot/issues/31
-  # 
-  
-    
-}
-
-
-```
-
-```{r, echo=F, message=F, warning=F}
-
-  plot_grid(ampelos17,
-          align = "h",
-          ncol = 1
-          )
-
-```
-
-
-
-
-```{r, echo=F, message=F, warning=F}
+library(combinat)
+library(compare)
+library(dplyr)
 
 if (FALSE) {
-california + 
-  patchwork::plot_spacer() + 
-  patchwork::plot_layout(ncol=3, 
-                         heights = c(1,1,1), 
-                         widths = c(1, 0.5, 2)) +
-  CIMISampelos
+  # generate all possible combinations of 3 counts of 0 to 5 spiders
+  combo.df <- as.data.frame( combn(c(0,0,0,1,1,1,2,2,2,3,3,3,4,4,4,5,5,5), 3) )
+  #shortCombo <- as.data.frame( combn(c(0,1,2,3,4,5),3) )  # does not generate "0,0,0"
+  combo816.df <- combo.df 
+  # result is 3 rows with 816 columns representing the combinations
+  
+  # remove duplicate triplets
+  columns <- ncol(combo.df)
+  for (i in 1:columns) {
+    k <- i+1
+    if (k > columns) {
+      break
+    } else {
+      for (j in columns:k) {         # walk backwards along the columns
+        c.list <- compare(as.list(combo.df[,i]), as.list(combo.df[,j]), ignoreOrder=TRUE)
+        if ( c.list[[1]] == TRUE) {
+          combo.df[,j] <- NULL                 # delete the duplicate column
+        }
+      }
+    }
+    columns <- ncol(combo.df)
+    #column.list[[i]] <- combo.df[,i]
+  }
+  
+  # write the unique species count combinations to disc
+  write.table(combo.df, './output/speciesCombinations.csv', 
+              append = FALSE, sep = ",", col.names = TRUE)
+  
+} else {  
+  # read the unique species count combinations from disc
+  uniqueCombo56.df <- read.table('./output/speciesCombinations.csv', sep = ",")
+}
+
+############################################################################
+
+#list1 <- list(c(1,1,0))
+#list2 <- list(c(0,1,1))
+#compare(list1, list2, ignoreOrder=TRUE)
+
+```
+
+
+```{r kable, results='asis', echo=FALSE, message=F, warning=F}
+
+# compute the mean of the 3 counts and add a column (56 combinations)
+uC.df <- as.data.frame(t(uniqueCombo56.df)) %>% 
+  dplyr::rename(obsOne = `1`) %>%
+  dplyr::rename(obsTwo = `2`) %>%
+  dplyr::rename(obsThree = `3`) %>% 
+  dplyr::rowwise() %>% 
+  dplyr::mutate(conjecture= (paste(obsOne, obsTwo, obsThree, sep='-'))) %>% 
+  dplyr::mutate(conjectureMean = as.numeric( mean(c(obsOne, obsTwo, obsThree))) ) 
+  
+# 'I' means 'inhibit' : https://stackoverflow.com/questions/9547518/create-a-data-frame-where-a-column-is-a-list
+
+# uC.df['p'] <- NA
+# uC.df['ways'] <- NA
+# uC.df['plausibility'] <- NA
+
+
+knitr::kable(uC.df)
+
+```
+
+```{r}
+
+# compute the frequency of each mean and add columns for count and frequency
+# https://stackoverflow.com/questions/24576515/relative-frequencies-proportions-with-dplyr
+meanFreq16.df <- uC.df %>%
+  dplyr::group_by(conjectureMean) %>%
+  dplyr::summarise (countWays = n()) %>%
+  dplyr::mutate(freq = countWays / sum(countWays)) 
+
+#meanFreq16.df <- meanFreq.df %>%
+  #dplyr::rowwise() %>%
+  #dplyr::mutate(conjectureMeanC = paste(as.character(conjectureMean), "C", sep=""))
+  #dplyr::mutate(conjectureMeanC = formatC(conjectureMean, digits=7, format = "f"))
+
+# to go the the next level with 16x16 conjectures implies 1.84x10^19 observations... (don't do that)
+
+# instead, reduce to means in 6 domains
+
+group1.df <- meanFreq16.df %>%
+  dplyr::filter(conjectureMean >= 0 & conjectureMean <= .5)
+group2.df <- meanFreq16.df %>%
+  dplyr::filter(conjectureMean > .5 & conjectureMean <= 1.5)
+group3.df <- meanFreq16.df %>%
+  dplyr::filter(conjectureMean > 1.5 & conjectureMean <= 2.5)
+group4.df <- meanFreq16.df %>%
+  dplyr::filter(conjectureMean > 2.5 & conjectureMean <= 3.5)
+group5.df <- meanFreq16.df %>%
+  dplyr::filter(conjectureMean > 3.5 & conjectureMean <= 4.5)
+group6.df <- meanFreq16.df %>%
+  dplyr::filter(conjectureMean > 4.5 & conjectureMean <= 5)
+
+# sum the ways and the frequency for each domain
+group1.df <- group1.df %>%
+  dplyr::summarise(countWays=sum(countWays), freq=sum(freq))
+group2.df <- group2.df %>%
+  dplyr::summarise(countWays=sum(countWays), freq=sum(freq))
+group3.df <- group3.df %>%
+  dplyr::summarise(countWays=sum(countWays), freq=sum(freq))
+group4.df <- group4.df %>%
+  dplyr::summarise(countWays=sum(countWays), freq=sum(freq))
+group5.df <- group5.df %>%
+  dplyr::summarise(countWays=sum(countWays), freq=sum(freq))
+group6.df <- group6.df %>%
+  dplyr::summarise(countWays=sum(countWays), freq=sum(freq))
+
+# assemble into one df
+conjecture.df <- dplyr::tribble(~conjecture, ~countWays, ~freq,  
+                      "group1", group1.df[[1,1]], group1.df[[1,2]],
+                      "group2", group2.df[[1,1]], group2.df[[1,2]],
+                      "group3", group3.df[[1,1]], group3.df[[1,2]],
+                      "group4", group4.df[[1,1]], group4.df[[1,2]],
+                      "group5", group5.df[[1,1]], group5.df[[1,2]],
+                      "group6", group6.df[[1,1]], group6.df[[1,2]])
+
+
+
+
+```
+
+
+```{r}
+
+nextObservation <- function(vector1, vector2) {
+  # compute the next generation
+  # https://stackoverflow.com/questions/11388359/unique-combination-of-all-elements-from-two-or-more-vectors
+  
+  # testing....
+  #vector1 <- c('a', 'b', 'c')
+  #vector2 <- c('x', 'y', 'z')
+  #
+  if (FALSE) {
+    test.df <- dplyr::tribble(~obs, ~x, ~y,  
+                             "obs1", 'a', 'a',
+                              "obs2", 'b', 'b',
+                              "obs3", 'c', 'c',
+                              "obs4", 'd', 'd',
+                              "obs5", 'e', 'e',
+                              "obs6", 'f', 'f')
+  }
+  
+  
+  
+  library(tidyr)
+  
+  # find all unique combinations
+  #next.df <- as.data.frame(tidyr::crossing(vector1, vector2))
+  # remove the mirror images (because the lists are exactly the same)
+  
+  withDuplicates.df <- as.data.frame(tidyr::crossing(test.df$x, test.df$y))
+  
+  noDuplicates.df <- removeDup(as.data.frame(t(withDuplicates.df)))
+  
+  noDuplicates.df <- as.data.frame(t(noDuplicates.df))
+
 }
 
 ```
 
 
-```{r, echo=F, message=F, warning=F}
+```{r}
+
+removeDup <- function(df) {
+  
+  # remove columns containing duplicate row data interpreted as a list
+  #       col1 col2 col3
+  # row1   1    0    1
+  # row2   0    0    0
+  # row3   1    1    1
+  #                  ^--- duplicate
+  
+  # testing.....
+  # t.df <- as.data.frame(t(withDuplicates.df))
+  #df <- t.df
+  
+  columns <- ncol(df)
+  for (i in 1:columns) {
+    k <- i+1
+    if (k > columns) {
+      break
+    } else {
+      for (j in columns:k) {         # walk backwards along the columns
+        c.list <- compare(df[,i], df[,j], ignoreOrder=TRUE)
+        if ( c.list[[1]] == TRUE) {
+          df[,j] <- NULL                 # delete the duplicate column
+        }
+      }
+    }
+    columns <- ncol(df)
+  }
+  
+  return(df)
+  
+}
+
+
+```
+
+
+```{r}
+
+library(dplyr)
+
+source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
+bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
+
+# interesting / obscure stuff about creating a dataframe column that
+# that contain lists
+# http://stat545.com/block023_dplyr-do.html
+# http://ijlyttle.github.io/isugg_purrr/presentation.html#(18)
+# https://stackoverflow.com/questions/42179298/double-nesting-with-tidyverse-and-purrr
+# (defer for now)
+
+# build a list of evidence by transect, by cluster, by week, by time-of-day (ref: buildClustersByWeek() )
 
 if (FALSE) {
-library(grid)
-pushViewport(viewport(layout=grid.layout(1,2)))
-print(california,vp=viewport(layout.pos.row=1,layout.pos.col=1))
-print(CIMISampelos,vp=viewport(layout.pos.row=1,layout.pos.col=2))
+df <- bugs.df
+	i <- 1
+	species <- "Thomisidae..crab.spider."
+	formula.t <- (~ transect == "oakMargin" )
+	formula.w <- (~ week == 25 )
+	formula.s <- (~ Thomisidae..crab.spider. > 0 )
 }
+
+	transectString <- paste("~transect=='", t, "'", sep="")
+	formula.t <- as.formula(transectString)
+	#transectExp <- parse(text = transectString)
+
+	speciesString <- paste("~", species, ">0", sep="")
+	formula.s <- as.formula(speciesString)
+	
+	formula.cluster1 <- paste("~ position==1 | position==2 | position==3 | position==4", sep="")
+	formula.cluster2 <- paste("~ position==5 | position==6 | position==7", sep="")
+	formula.cluster3 <- paste("~ position==8 | position==9 | position==10", sep="")
+
+  weeks.vector <- getWeeks(df)
+  timeList <- c('am', 'pm')
+  clusterFormulaList <- c(formula.cluster1, formula.cluster2, formula.cluster3)
+
+  for (i in 1:length(weeks.vector)) {
+			w <- weeks.vector[[i]]
+			for (j in timeList) {
+			  for (k in clusterFormulaList) {
+			    weekString <- paste("~week==", weeks.vector[[i]], sep="") # dynamically create an expression to filter by week
+			    formula.w <- as.formula(weekString)
+			    dataList[[i]] <- kmReduce(df, ft=formula.t, fw=formula.w, fs=formula.s, intWeek=w)
+
+			    clusterList <- dataList[[i]]
+			    dataList[[i]] <- kmAssignClusters(list=clusterList, cn=cn)
+			  }
+			}
+	  }
+                   
+
+  
+
 
 ```
 
 
+```{r}
 
-```{r, echo=F, message=F, warning=F}
-
-if (FALSE) {
-# https://cran.r-project.org/web/packages/egg/vignettes/Overview.html
-
-mapGrob <- lapply(list(california, CIMISampelos), expose_layout, FALSE, FALSE)
-grid.arrange(
-  grobs = mapGrob,
-  widths = c(1, 1),
-  heights = c(1,1),
-  layout_matrix = rbind( c(1, 2)),
-  set_panel_size(debug=TRUE)
-)
+evidence <- function() {
+  
+  
+  oakCL1w36pm.list <- bugs.df %>%
+    dplyr::filter(transect == "oakMargin" & week == 23 & time == 'pm') %>%
+    dplyr::filter(position==1 | position==2 | position==3 | position==4) %>%
+    dplyr::group_by(julian) %>%
+    dplyr::summarise(aveSpiders = mean(Thomisidae..crab.spider.) ) %>%
+    dplyr::select(-julian) %>%  # remove julian column
+    as.list()                   # list now contains the average for
+                                # each of the julian days in the week
+  
+  
 }
-
-```
-
-
-
-![landscape](../images/transectAerial.png)
-
-
-```{r, echo=F, message=F, warning=F}
-
-# https://stackoverflow.com/questions/22107126/reading-in-multiple-png-files-in-order-to-create-a-new-plot-with-grid-arrange
-
-if (TRUE) {
-  
-  # Hide tick marks and labels to match .png size
-  ampelos17 <- ampelos17 + theme(
-      axis.title.x=element_blank(),
-      axis.text.x=element_blank(),
-      axis.ticks.x=element_blank(),
-      axis.title.y=element_blank(),
-      axis.text.y=element_blank(),
-      axis.ticks.y=element_blank()  ) +
-    
-      labs(title="")   # remove the title
-  
-  t.png.raster = lapply(sprintf("../images/transectAerial.png", 1:4), png::readPNG)
-  t.grobList = lapply(t.png.raster, grid::rasterGrob)
-
-  #gridExtra::grid.arrange(grobs=gl)
-  
-
-  ampelos.panel <- plot_grid(ampelos17, t.grobList[[1]],
-            labels = c("figure A\nAmpelos North Block", 
-                       "figure B\ntransect orientation"), # ascii backspace / <CR> does not work
-            label_size=12, 
-            label_fontface = "plain",
-            axis="t",
-            align = "v",
-            ncol = 2,
-            #rel_heights = c(1,1),      # applies to rows
-            rel_widths = c(1,1.175),    # applies to columns
-            scale = c(1, 1)
-          )
-
-  # it is difficult to adjust the space between plots with plot_grid()
-  # https://github.com/wilkelab/cowplot/issues/31
-  # 
-  
-  print(ampelos.panel)
-  
-  cowplot::save_plot("./output/ampelos.panel.jpg", ampelos.panel)
-    
-}
-
 
 ```
 

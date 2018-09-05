@@ -190,8 +190,6 @@ kmPlot <- function(list, transectText) {
       	expand_limits(x=c(22,34)) +    # enlarge the range of the axis
       	scale_x_continuous(breaks=seq(22,34,2)) +         # log, squart-root, reverse....
 
-      	#expand_limits(x=c(22,34), y=c(1,10)) +
-
       	geom_hline(yintercept=4.5) +
       	geom_hline(yintercept=7.5) +
 

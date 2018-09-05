@@ -129,46 +129,60 @@ using the control transect as a baseline, how do the populations in the primary 
 #### TO-DO: refine normalization method
 
 ``` r
-positionText <- paste("\ntransect positions ", "1-4", sep="")
-g3 <- compareTransectUsingQuosure(data=bugs.df, 
+if (FALSE) {
+  positionText <- paste("\ntransect positions ", "1-4", sep="")
+  g3 <- compareTransectUsingQuosure(data=bugs.df, 
                                  species=quo(Thomisidae..crab.spider.), 
                                  operator="LT",
                                  initialPosition=quo(5), 
                                  secondaryPosition=quo(0),
                                  positionText)
-```
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)
-
-``` r
-positionText <- paste("\ntransect positions ", "5-7", sep="")
-g46 <- compareTransectUsingQuosure(data=bugs.df, 
+  positionText <- paste("\ntransect positions ", "5-7", sep="")
+  g46 <- compareTransectUsingQuosure(data=bugs.df, 
                                  species=quo(Thomisidae..crab.spider.), 
                                  operator="BETWEEN",
                                  initialPosition=quo(4), 
                                  secondaryPosition=quo(8),
                                  positionText)
-```
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
-
-``` r
-positionText <- paste("\ntransect positions ", "8-10", sep="")
-g7 <- compareTransectUsingQuosure(data=bugs.df, 
+  positionText <- paste("\ntransect positions ", "8-10", sep="")
+  g7 <- compareTransectUsingQuosure(data=bugs.df, 
                                  species=quo(Thomisidae..crab.spider.), 
                                  operator="GT",
                                  initialPosition=quo(7), 
                                  secondaryPosition=quo(0),
                                  positionText)
+  g <- arrangeGrob(g3, g46, g7, nrow=3)
+  newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = "")
+  ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
+  
+} else {
+  
+  positionText <- paste("\ntransect positions ", "1-4", sep="")
+  g3 <- compareTransectG2V1(data=bugs.df, 
+                                 species=quo(Thomisidae..crab.spider.), 
+                                 operator="LT",
+                                 initialPosition=quo(5), 
+                                 secondaryPosition=quo(0),
+                                 positionText)
+  positionText <- paste("\ntransect positions ", "5-7", sep="")
+  g46 <- compareTransectG2V1(data=bugs.df, 
+                                 species=quo(Thomisidae..crab.spider.), 
+                                 operator="BETWEEN",
+                                 initialPosition=quo(4), 
+                                 secondaryPosition=quo(8),
+                                 positionText)
+  positionText <- paste("\ntransect positions ", "8-10", sep="")
+  g7 <- compareTransectG2V1(data=bugs.df, 
+                                 species=quo(Thomisidae..crab.spider.), 
+                                 operator="GT",
+                                 initialPosition=quo(7), 
+                                 secondaryPosition=quo(0),
+                                 positionText)
+  
+}
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-3.png)
-
-``` r
-g <- arrangeGrob(g3, g46, g7, nrow=3)
-newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = "")
-ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
-```
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-8-3.png)
 
 how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
 -------------------------------------------------------------------------------------------------------------------------------------------
