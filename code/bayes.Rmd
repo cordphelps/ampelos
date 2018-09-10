@@ -216,13 +216,14 @@ removeDup <- function(df) {
 
 ```{r}
 
+source("./jaccard-similarity.R")  # (gets the function getWeeks() )
 library(dplyr)
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 
-# interesting / obscure stuff about creating a dataframe column that
-# that contain lists
+# interesting / obscure stuff about creating a dataframe column 
+# that contains lists
 # http://stat545.com/block023_dplyr-do.html
 # http://ijlyttle.github.io/isugg_purrr/presentation.html#(18)
 # https://stackoverflow.com/questions/42179298/double-nesting-with-tidyverse-and-purrr
@@ -230,19 +231,14 @@ bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 
 # build a list of evidence by transect, by cluster, by week, by time-of-day (ref: buildClustersByWeek() )
 
-if (FALSE) {
+if (TRUE) {
 df <- bugs.df
 	i <- 1
-	species <- "Thomisidae..crab.spider."
-	formula.t <- (~ transect == "oakMargin" )
 	formula.w <- (~ week == 25 )
 	formula.s <- (~ Thomisidae..crab.spider. > 0 )
 }
 
-	transectString <- paste("~transect=='", t, "'", sep="")
-	formula.t <- as.formula(transectString)
-	#transectExp <- parse(text = transectString)
-
+  species <- "Thomisidae..crab.spider."
 	speciesString <- paste("~", species, ">0", sep="")
 	formula.s <- as.formula(speciesString)
 	
@@ -250,45 +246,201 @@ df <- bugs.df
 	formula.cluster2 <- paste("~ position==5 | position==6 | position==7", sep="")
 	formula.cluster3 <- paste("~ position==8 | position==9 | position==10", sep="")
 
-  weeks.vector <- getWeeks(df)
+  weeks.vector <- getWeeks(bugs.df)
   timeList <- c('am', 'pm')
   clusterFormulaList <- c(formula.cluster1, formula.cluster2, formula.cluster3)
 
+  ave.df <- NULL
+    
   for (i in 1:length(weeks.vector)) {
-			w <- weeks.vector[[i]]
-			for (j in timeList) {
-			  for (k in clusterFormulaList) {
-			    weekString <- paste("~week==", weeks.vector[[i]], sep="") # dynamically create an expression to filter by week
-			    formula.w <- as.formula(weekString)
-			    dataList[[i]] <- kmReduce(df, ft=formula.t, fw=formula.w, fs=formula.s, intWeek=w)
-
-			    clusterList <- dataList[[i]]
-			    dataList[[i]] <- kmAssignClusters(list=clusterList, cn=cn)
-			  }
-			}
-	  }
-                   
-
+			
+			for (j in 1:length(timeList)) {
+			  
+			  for (k in 1:length(clusterFormulaList)) {
+			    if (k==1) {
+			      clusterListChars <- "one" 
+			      } else if (k==2) {
+			      clusterListChars <- "two"
+			      } else {
+			      clusterListChars <- "three"
+			      }
+			    
+			      twtString <- paste("~ week==", weeks.vector[[i]], 
+			                       " & time=='", timeList[[j]], "'", sep="")
+			    
+			      clusterString <- paste(clusterFormulaList[[k]], sep="")
+			      
+			      dailyAverage.list <- dailyAverageByClusterTimeWeek(bugs.df, 
+			                     ft=as.formula(twtString),
+			                     fc=as.formula(clusterString))
+			      
+			      # create a df record for each of the averages in the list
+			      for (m in 1:length(dailyAverage.list[[1]])) {
+			        temp.df <- data.frame(weeks.vector[[i]], 
+			                              timeList[[j]], 
+			                              clusterListChars,
+			                              dailyAverage.list[[1]][[m]]
+			                            )
+			        # column names need to match for rbind() to work
+			        names(temp.df) <- c("week","time", "cluster", "aveSpiders")
+			        
+			        # tack it on
+			        # https://stackoverflow.com/questions/35366187/how-to-write-if-else-statements-if-dataframe-is-empty
+			        if (!exists('ave.df')) {
+			          ave.df <- temp.df
+			          # (so, on the first pass the column names are cool)
+			        }
+			        ave.df <- rbind(ave.df, temp.df)
+			        
+			      } # end create a df record
+			  } # clusterFormulaList
+			} # timeList
+  } # weeks.vector
   
+  # remove the 'am' data points
+  ave.df <- ave.df %>%
+    dplyr::filter(time=='am')
+  
+  plotWeekly(ave.df, t)
+
+
+
+```
+
+```{r}
+ave.df <- ave.df %>%
+    dplyr::filter(time=='am')
+
+
+ave.df$contact <- t
+# generate nrow(ave.df) random population numbers with a normal distribution 
+ave.df$population <- rnorm(nrow(ave.df), mean=15, sd=5)
+
+plotWeekly(ave.df, t)
+
+```
+
+```{r}
+
+# the number of trapped spiders increases with log(population)
+
+# the number of trapped spiders increases with natural habital support
+
+# the impact of population on trapped spiders increases with natural habital support
+
+# the number of trapped spiders increases with daylight
+
+# R code 10.40
+ave.df$log_pop <- log(ave.df$population)
+ave.df$contact_high <- ifelse( ave.df$contact=="oakMargin" , 1 , 0 )
 
 
 ```
 
 
+
+
 ```{r}
 
-evidence <- function() {
+          
+
+plotWeekly <- function(df, t) {
+
+
+  ggplot(df, aes(x=week, y=aveSpiders, colour=cluster)) + 
+      #geom_jitter(aes(x=week, y=aveSpiders), width = 0.1, height = 0.1, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = cluster) + 
+    
+      geom_jitter(aes(colour=cluster, fill = cluster), shape=21, size=5, alpha=.5) +
+
+      ylim(c(0, 2)) + 
+      # scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +
+      expand_limits(y=c(0,2)) + 
+      scale_x_continuous(breaks=seq(22,40,2)) +
+      labs(title=paste(t, " transect: ave spiders\ntrapped per day", sep=""),
+        subtitle=paste("", sep=""), 
+          y="average spiders per observation", 
+          x="week", 
+          caption = paste("", sep="") ) +
+
+      theme(legend.position = "bottom", legend.direction = "horizontal") +
+      theme_bw() +
+      coord_fixed(ratio=5) # control the aspect ratio of the output
+
+
+
+}
+
+
+
+```
+
+
+
+
+```{r}
+
+dailyAverageByClusterTimeWeek <- function(df, ft, fc) {
   
+  # build and return a list of daily row average spiders for each week / cluster / time
   
-  oakCL1w36pm.list <- bugs.df %>%
-    dplyr::filter(transect == "oakMargin" & week == 23 & time == 'pm') %>%
-    dplyr::filter(position==1 | position==2 | position==3 | position==4) %>%
+  dailyAverage.list <- df %>%
+    #dplyr::filter(transect == "oakMargin" & week == 23 & time == 'pm') %>%
+    #dplyr::filter(position==1 | position==2 | position==3 | position==4) %>%
+    dplyr::filter_(ft)  %>%
+    dplyr::filter_(fc)  %>%
     dplyr::group_by(julian) %>%
     dplyr::summarise(aveSpiders = mean(Thomisidae..crab.spider.) ) %>%
     dplyr::select(-julian) %>%  # remove julian column
     as.list()                   # list now contains the average for
                                 # each of the julian days in the week
   
+  return(dailyAverage.list)
+}
+
+```
+
+```{r}
+
+if (FALSE) {
+  
+  sigma.list <- seq(from=4, to=9, length.out=200)
+  post <- expand.grid(mu=mu.list, sigma=sigma.list)
+  post$LL < -sapply(1:nrow(post), 
+                  function(i) sum(dnorm( d2$height, 
+                                         x = mean=post$mu[i], 
+                                         sd=post$sigma[i], log=TRUE)))
+  post$prod <- post$LL + dnorm(post$mu, 178,20,TRUE) + dunif(post$sigma, 0,50,TRUE)
+  post$prob <- exp(post$prod - max(post$prod))
+  
+  contour_xyz(post$mu, post$sigma, post$prob)
+  image_xyz(post$mu, post$sigma, post$prob)
+
+  # code 4.17
+  sample.rows <- sample(1:nrow(post), size=1e4, replace=TRUE, prob=post$prob)
+  sample.mu <- post$mu[sample.rows]
+  sample.sigma <- post$sigma[sample.rows]
+  
+  plot(sample.mu, sample.sigma, cex=0.5, pch=16, col=col.alpha(rangi2,0.1))
+  
+  ## R code 4.24
+  library(rethinking)
+  data(Howell1)
+  d <- Howell1
+  d2 <- d[ d$age >= 18 , ]
+
+  ## R code 4.25
+  flist <- alist(
+    height ~ dnorm( mu , sigma ) ,
+    mu ~ dnorm( 178 , 20 ) ,
+    sigma ~ dunif( 0 , 50 )
+    )
+
+  ## R code 4.26
+m4.1 <- map( flist , data=d2 )
+
+## R code 4.27
+precis( m4.1 )
+
   
 }
 
