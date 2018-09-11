@@ -56,14 +56,14 @@ if (FALSE) {
 
 ```{r kable, results='asis', echo=FALSE, message=F, warning=F}
 
-# compute the mean of the 3 counts and add a column (56 combinations)
+# compute the sum of the 3 counts and add a column (56 combinations)
 uC.df <- as.data.frame(t(uniqueCombo56.df)) %>% 
   dplyr::rename(obsOne = `1`) %>%
   dplyr::rename(obsTwo = `2`) %>%
   dplyr::rename(obsThree = `3`) %>% 
   dplyr::rowwise() %>% 
   dplyr::mutate(conjecture= (paste(obsOne, obsTwo, obsThree, sep='-'))) %>% 
-  dplyr::mutate(conjectureMean = as.numeric( mean(c(obsOne, obsTwo, obsThree))) ) 
+  dplyr::mutate(conjectureSum = as.numeric( sum(c(obsOne, obsTwo, obsThree))) ) 
   
 # 'I' means 'inhibit' : https://stackoverflow.com/questions/9547518/create-a-data-frame-where-a-column-is-a-list
 
@@ -78,10 +78,10 @@ knitr::kable(uC.df)
 
 ```{r}
 
-# compute the frequency of each mean and add columns for count and frequency
+# compute the frequency of each sum and add columns for count and frequency
 # https://stackoverflow.com/questions/24576515/relative-frequencies-proportions-with-dplyr
 meanFreq16.df <- uC.df %>%
-  dplyr::group_by(conjectureMean) %>%
+  dplyr::group_by(conjectureSum) %>%
   dplyr::summarise (countWays = n()) %>%
   dplyr::mutate(freq = countWays / sum(countWays)) 
 
@@ -219,6 +219,9 @@ removeDup <- function(df) {
 source("./jaccard-similarity.R")  # (gets the function getWeeks() )
 library(dplyr)
 
+library(ggplot2)
+
+
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 
@@ -234,7 +237,7 @@ bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 if (TRUE) {
 df <- bugs.df
 	i <- 1
-	formula.w <- (~ week == 25 )
+	# formula.w <- (~ week == 25 )
 	formula.s <- (~ Thomisidae..crab.spider. > 0 )
 }
 
@@ -247,12 +250,15 @@ df <- bugs.df
 	formula.cluster3 <- paste("~ position==8 | position==9 | position==10", sep="")
 
   weeks.vector <- getWeeks(bugs.df)
+  transectList <- c('oakMargin', 'control')
   timeList <- c('am', 'pm')
   clusterFormulaList <- c(formula.cluster1, formula.cluster2, formula.cluster3)
 
-  ave.df <- NULL
+  total.df <- NULL
     
   for (i in 1:length(weeks.vector)) {
+    
+    for (n in 1:length(transectList)) {
 			
 			for (j in 1:length(timeList)) {
 			  
@@ -270,57 +276,148 @@ df <- bugs.df
 			    
 			      clusterString <- paste(clusterFormulaList[[k]], sep="")
 			      
-			      dailyAverage.list <- dailyAverageByClusterTimeWeek(bugs.df, 
+			      dailySum.list <- dailySumByClusterTimeWeek(bugs.df, 
 			                     ft=as.formula(twtString),
 			                     fc=as.formula(clusterString))
 			      
 			      # create a df record for each of the averages in the list
-			      for (m in 1:length(dailyAverage.list[[1]])) {
-			        temp.df <- data.frame(weeks.vector[[i]], 
+			      for (m in 1:length(dailySum.list[[1]])) {
+			        temp.df <- data.frame(weeks.vector[[i]],
+			                              transectList[[n]],
 			                              timeList[[j]], 
 			                              clusterListChars,
-			                              dailyAverage.list[[1]][[m]]
+			                              dailySum.list[[1]][[m]]
 			                            )
 			        # column names need to match for rbind() to work
-			        names(temp.df) <- c("week","time", "cluster", "aveSpiders")
+			        names(temp.df) <- c("week", "transect", "time", "cluster", "totalSpiders")
 			        
 			        # tack it on
 			        # https://stackoverflow.com/questions/35366187/how-to-write-if-else-statements-if-dataframe-is-empty
-			        if (!exists('ave.df')) {
-			          ave.df <- temp.df
+			        if (!exists('total.df')) {
+			          total.df <- temp.df
 			          # (so, on the first pass the column names are cool)
+			        } else {
+			          total.df <- rbind(total.df, temp.df)
 			        }
-			        ave.df <- rbind(ave.df, temp.df)
 			        
 			      } # end create a df record
+			      
 			  } # clusterFormulaList
 			} # timeList
+    } # transectList
   } # weeks.vector
   
   # remove the 'am' data points
-  ave.df <- ave.df %>%
-    dplyr::filter(time=='am')
+  #ave.df <- ave.df %>%
+    #dplyr::filter(time=='am')
   
-  plotWeekly(ave.df, t)
-
+  plotWeekly(total.df)
+  
+  liklihood.df <- generateLiklihood(df=total.df)
+  
+  plotLiklihood(df=liklihood.df)
 
 
 ```
 
+
 ```{r}
-ave.df <- ave.df %>%
-    dplyr::filter(time=='am')
+
+plotLiklihood <- function(df) {
+  
+  library(gridExtra)
+  
+  gg <- ggplot(df, aes(x=seasonalTimeframe, y=liklihood)) +
+    
+    geom_jitter(aes(colour = factor(cluster),
+                    fill = factor(cluster), 
+                    alpha = .9 ), 
+                shape = 21, size=5) +
+
+      ylim(c(0, 1)) + 
+      expand_limits(y=c(0,1)) + 
+      #scale_x_continuous(breaks=seq(22,40,2)) +
+      labs(title=paste("liklihood of oakMargin effect on the\nspider population", sep=""),
+        subtitle=paste("subtitle ", sep=""), 
+          y="probability", 
+          x="seasonal timeframe", 
+          caption = paste("", sep="") ) +
+    
+      scale_color_manual(name="cluster postions", labels = c("1-4", "5-7", "8-10"), values = c("red", "green", "blue")) +
+    
+      scale_x_discrete(labels=c("one" = "weeks 23-25", "two" = "weeks 26-30",
+                              "three" = "weeks 31-34")) +
+    
+      guides(fill=FALSE) +
+      guides(alpha=FALSE) +
+      guides(factor=FALSE) +
+    
+      #theme(legend.position="none") +
+      theme(legend.position = "bottom", legend.direction = "horizontal") +
+      theme_bw() +
+      coord_fixed() # control the aspect ratio of the output
 
 
-ave.df$contact <- t
-# generate nrow(ave.df) random population numbers with a normal distribution 
-ave.df$population <- rnorm(nrow(ave.df), mean=15, sd=5)
+  return(grid.arrange(gg, ncol=1, nrow=1))
+  
+  
+}
 
-plotWeekly(ave.df, t)
 
 ```
 
+
+
 ```{r}
+
+generateLiklihood <- function(df) {
+
+library(rethinking)
+
+# build and return a df of liklihood (the probability that the
+# spider population is influenced by the oakMargin) by cluster by week
+
+
+# estimate different mean populations across 3 groups of weeks reflecting the 
+# seasonal population decline
+# 
+# week 23, 24, 25           : mean 75, sd 15
+# week 26, 27, 28, 29, 30   : mean 50, sd 8
+# week 31, 32, 33, 34       : mean 15, sd 2
+
+  # generate nrow(ave.df) random population numbers with a normal distribution
+    # t.df$population <- rnorm(nrow(t.df), mean=50, sd=5)
+
+
+  df$population <- ifelse( (df$week>22 & df$week<26), rnorm(nrow(df), mean=75, sd=15),
+                     ifelse( (df$week>25 & df$week<31), rnorm(nrow(df), mean=25, sd=8),
+                      rnorm(nrow(df), mean=15, sd=2)) )
+
+df$population <- as.integer(df$population)
+# R code 10.40
+df$log_pop <- log(df$population)
+df$contact_high <- ifelse( df$transect=="oakMargin" , 1 , 0 )
+
+cl.st.list <- list()  # for each cluster  
+                      # build list of dataframes represting the  
+                      # seasonal population 
+cl.st.list[[1]] <- df %>% dplyr::filter(week < 26 & cluster == 'one')
+cl.st.list[[2]] <- df %>% dplyr::filter(week > 25 & week < 31 & cluster == 'one')
+cl.st.list[[3]] <- df %>% dplyr::filter(week > 30 & cluster == 'one')
+
+cl.st.list[[4]] <- df %>% dplyr::filter(week < 26 & cluster == 'two')
+cl.st.list[[5]] <- df %>% dplyr::filter(week > 25 & week < 31 & cluster == 'two')
+cl.st.list[[6]] <- df %>% dplyr::filter(week > 30 & cluster == 'two')
+
+cl.st.list[[7]] <- df %>% dplyr::filter(week < 26 & cluster == 'three')
+cl.st.list[[8]] <- df %>% dplyr::filter(week > 25 & week < 31 & cluster == 'three')
+cl.st.list[[9]] <- df %>% dplyr::filter(week > 30 & cluster == 'three')
+
+# plotWeekly(total.df)
+
+#########
+## the model
+#########
 
 # the number of trapped spiders increases with log(population)
 
@@ -330,9 +427,74 @@ plotWeekly(ave.df, t)
 
 # the number of trapped spiders increases with daylight
 
-# R code 10.40
-ave.df$log_pop <- log(ave.df$population)
-ave.df$contact_high <- ifelse( ave.df$contact=="oakMargin" , 1 , 0 )
+liklihood.df <- NULL
+    
+  for (i in 1:length(cl.st.list)) {  # build model for each seasonal timeframe
+    
+      ## R code 10.41
+      m10.10 <- map(
+          alist(
+              totalSpiders ~ dpois( lambda ),
+              #totalSpiders ~ dgamma( lambda ),
+              log(lambda) <- a + bp*log_pop +
+                  bc*contact_high + bpc*contact_high*log_pop,
+              a ~ dnorm(0,100),
+              c(bp,bc,bpc) ~ dnorm(0,1)
+          ),
+          data=cl.st.list[[i]] )
+
+      ## R code 10.42
+      precis(m10.10,corr=TRUE)
+      plot(precis(m10.10))  # line graph
+
+      ## R code 10.43
+      post <- extract.samples(m10.10)
+      lambda_high <- exp( post$a + post$bc + (post$bp + post$bpc)*2)
+      lambda_low <- exp( post$a + post$bp*2 )
+
+      plot(post)  # (faceted plot)
+
+      fig10.8 <- data.frame(lh=lambda_high, ll=lambda_low, delta=lambda_high-lambda_low)
+
+      ## R code 10.44
+      diff <- lambda_high - lambda_low
+      # sum(diff > 0)/length(diff)
+      
+      # figure out which cluster we are referring to
+      if (i < 4) {
+        cluster <- "one" 
+      } else if (i > 6) {
+        cluster <- "three"
+      } else {
+        cluster <- "two"
+      }
+      
+      # figure out which seasonal timeframe we are referring to
+      if (i == 1 | i == 4 | i == 7) {
+        seasonalTimeframe <- "one" 
+      } else if (i == 2 | i == 5 | i == 8) {
+        seasonalTimeframe <- "two"
+      } else {
+        seasonalTimeframe <- "three"
+      }      
+      
+      temp2.df <- data.frame(cluster, seasonalTimeframe, sum(diff > 0)/length(diff) )
+      # column names need to match for rbind() to work
+			names(temp2.df) <- c("cluster", "seasonalTimeframe", "liklihood")
+			        
+			 # tack it on
+			 if (!exists('liklihood.df')) {
+			     liklihood.df <- temp2.df
+			     # (so, on the first pass the column names are cool)
+			 } else {
+			  liklihood.df <- rbind(liklihood.df, temp2.df)
+			 }
+      
+  }
+
+return(liklihood.df)
+
+}
 
 
 ```
@@ -344,27 +506,28 @@ ave.df$contact_high <- ifelse( ave.df$contact=="oakMargin" , 1 , 0 )
 
           
 
-plotWeekly <- function(df, t) {
+plotWeekly <- function(df) {
 
 
-  ggplot(df, aes(x=week, y=aveSpiders, colour=cluster)) + 
+  ggplot(df, aes(x=week, y=totalSpiders, colour=cluster)) + 
       #geom_jitter(aes(x=week, y=aveSpiders), width = 0.1, height = 0.1, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = cluster) + 
     
       geom_jitter(aes(colour=cluster, fill = cluster), shape=21, size=5, alpha=.5) +
 
-      ylim(c(0, 2)) + 
-      # scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +
-      expand_limits(y=c(0,2)) + 
+      ylim(c(0, 31)) + 
+      expand_limits(y=c(0,31)) + 
+      scale_y_continuous(breaks = seq(min(0), max(31), by = 5)) +
       scale_x_continuous(breaks=seq(22,40,2)) +
-      labs(title=paste(t, " transect: ave spiders\ntrapped per day", sep=""),
+      labs(title=paste("total spiders\ntrapped per day", sep=""),
         subtitle=paste("", sep=""), 
-          y="average spiders per observation", 
+          y="spiders per day per trap postion", 
           x="week", 
           caption = paste("", sep="") ) +
 
       theme(legend.position = "bottom", legend.direction = "horizontal") +
       theme_bw() +
-      coord_fixed(ratio=5) # control the aspect ratio of the output
+      coord_fixed(ratio=1/4)  # control the aspect ratio of the output; "ratio" refers to the 
+                            # ratio of the axis limits themselves
 
 
 
@@ -379,22 +542,22 @@ plotWeekly <- function(df, t) {
 
 ```{r}
 
-dailyAverageByClusterTimeWeek <- function(df, ft, fc) {
+dailySumByClusterTimeWeek <- function(df, ft, fc) {
   
   # build and return a list of daily row average spiders for each week / cluster / time
   
-  dailyAverage.list <- df %>%
+  dailySum.list <- df %>%
     #dplyr::filter(transect == "oakMargin" & week == 23 & time == 'pm') %>%
     #dplyr::filter(position==1 | position==2 | position==3 | position==4) %>%
     dplyr::filter_(ft)  %>%
     dplyr::filter_(fc)  %>%
     dplyr::group_by(julian) %>%
-    dplyr::summarise(aveSpiders = mean(Thomisidae..crab.spider.) ) %>%
+    dplyr::summarise(aveSpiders = sum(Thomisidae..crab.spider.) ) %>%
     dplyr::select(-julian) %>%  # remove julian column
     as.list()                   # list now contains the average for
                                 # each of the julian days in the week
   
-  return(dailyAverage.list)
+  return(dailySum.list)
 }
 
 ```
@@ -442,6 +605,25 @@ m4.1 <- map( flist , data=d2 )
 precis( m4.1 )
 
   
+}
+
+```
+
+
+```{r}
+
+if (FALSE) {
+testme.df <- dplyr::tribble(~obs, ~week, ~y,  
+                             "obs1", 23, 'a',
+                              "obs2", 24, 'b',
+                              "obs3", 25, 'c',
+                              "obs4", 26, 'd',
+                              "obs5", 27, 'e',
+                              "obs6", 28, 'f')
+
+testme.df$population <- ifelse( (testme.df$week>23 & testme.df$week<25), 1,
+                               ifelse( (testme.df$week>24 & testme.df$week<27), 2,
+                                       3))
 }
 
 ```
