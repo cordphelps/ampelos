@@ -539,7 +539,10 @@ compareJaccardMultiWeekV4 <- function(data, ignoreBees, t, transectText) {
   # make one df for plotting
   plot.df <- dplyr::bind_rows(obs)
 
-  plotSimilarity(plot.df, transectText, captionComment)
+  #grid <- plotSimilarity(plot.df, transectText, captionComment)
+  gg <- plotSimilarity(plot.df, transectText, captionComment)
+
+  return(gg)
 
 }
 
@@ -569,6 +572,7 @@ plotSimilarity <- function(df, transectText, captionComment) {
       # https://stackoverflow.com/questions/7056836/how-to-fix-the-aspect-ratio-in-ggplot
 
   return(grid.arrange(gg, ncol=1, nrow=1))
+  #return(gg)
 
   }
 

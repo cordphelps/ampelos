@@ -75,7 +75,7 @@ plotDivIndividuals <- function(df, titleText, subText, captionText) {
       expand_limits(x=c(22,34)) +
       scale_x_continuous(breaks = seq(min(22), max(34), by = 2)) +
     
-      coord_fixed(ratio=.05) +  # control the aspect ratio of the output 
+      coord_fixed(ratio=.006) +  # control the aspect ratio of the output 
     
     #geom_smooth(aes(x=rowCounts, y=rowSum), method = "loess", size = 1.5) +
     #geom_smooth(aes(x=rowCounts, y=rowSum), method="lm", level=0.95) +
@@ -83,7 +83,7 @@ plotDivIndividuals <- function(df, titleText, subText, captionText) {
        
       labs(title=paste(titleText, sep=""),
         subtitle=paste(subText, sep=""), 
-          y="total number of individuals in sample", 
+          y="total individuals", 
           #x="total number of 'vane trap apparent' species in sample", 
           x="week",
           caption = paste(captionText, sep="") ) +
@@ -93,7 +93,7 @@ plotDivIndividuals <- function(df, titleText, subText, captionText) {
       
       # https://stackoverflow.com/questions/7056836/how-to-fix-the-aspect-ratio-in-ggplot
 
-  return(grid.arrange(gg, ncol=1, nrow=1))
+  return(gg)
 
   }
 
@@ -115,7 +115,7 @@ plotDivSpecies <- function(df, titleText, subText, captionText) {
       expand_limits(x=c(22,34)) +
       scale_x_continuous(breaks = seq(min(22), max(34), by = 2)) +
     
-      coord_fixed(ratio=.8) +  # control the aspect ratio of the output 
+      coord_fixed(ratio=.1) +  # control the aspect ratio of the output 
     
     #geom_smooth(aes(x=rowCounts, y=rowSum), method = "loess", size = 1.5) +
     #geom_smooth(aes(x=rowCounts, y=rowSum), method="lm", level=0.95) +
@@ -123,7 +123,7 @@ plotDivSpecies <- function(df, titleText, subText, captionText) {
        
       labs(title=paste(titleText, sep=""),
         subtitle=paste(subText, sep=""), 
-          y="total number of species in sample", 
+          y="total species", 
           #x="total number of 'vane trap apparent' species in sample", 
           x="week",
           caption = paste(captionText, sep="") ) +
@@ -177,7 +177,159 @@ div <- function(data, species, ignoreBees, t) {
                 "caption")
 
   }
+}
+
+  divV2 <- function(data, species, ignoreBees) {
+  
+  #data <- test.df
+  #ignoreBees <- TRUE
+  #data <- bugs.df
+  
+  dataOak <- bugsOnlyByWeek(data, iB=ignoreBees, tR="oakMargin")
+  dataControl <- bugsOnlyByWeek(data, iB=ignoreBees, tR="control")
+
+  
+  weeks.df <- dataOak %>%     # just weeks
+    dplyr::select(week) 
+  
+  dataOak <- dataOak %>%        # bugs only
+    dplyr::select(-week)
+  
+  rowSum <- NULL
+  rowCounts <- NULL
+  for (row in 1:nrow(dataOak)) {
+    rowSum[row] <- countRowIndividuals(dataOak, row)
+    rowCounts[row] <- countRowSpecies(dataOak, row) 
+  }
+  
+  inputOak.df <- cbind(dataOak, 
+                    data.frame(rowSum), 
+                    data.frame(rowCounts),
+                    weeks.df)
+
+  weeks.df <- dataControl %>%     # just weeks
+    dplyr::select(week) 
+  
+  dataControl <- dataControl %>%        # bugs only
+    dplyr::select(-week)
+  
+  rowSum <- NULL
+  rowCounts <- NULL
+  for (row in 1:nrow(dataControl)) {
+    rowSum[row] <- countRowIndividuals(dataControl, row)
+    rowCounts[row] <- countRowSpecies(dataControl, row) 
+  }
+  
+  inputControl.df <- cbind(dataControl, 
+                    data.frame(rowSum), 
+                    data.frame(rowCounts),
+                    weeks.df)
+
+  # inputControl.df and inputOak.df are columns of counts for each species plus
+  # a column 'rowSum' and a column 'rowCounts' indicating individual species presence
+  # rows represent weeks
+  
+  if (species == FALSE) {
+
+    gg <- plotDivIndividualsV2(dfOak=inputOak.df, dfControl=inputControl.df,
+                titleText=paste(" transect abundance",  sep=""), 
+                subText=paste("ignoreBees : ", ignoreBees, sep=""),
+                captionText="caption")
+  } else {
+
+    gg <- plotDivSpeciesV2(dfOak=inputOak.df, dfControl=inputControl.df,
+                titleText=paste(" transect species diversity",  sep=""), 
+                subText=paste("ignoreBees : ", ignoreBees, sep=""),
+                captionText="caption")
+
+  }
 
   return(gg)
 
 }
+
+plotDivSpeciesV2 <- function(dfOak, dfControl, titleText, subText, captionText) {
+
+
+  gg <- ggplot() + 
+
+      # geom_jitter(aes(x=rowCounts, y=rowSum, col=week), width = 0.1, height = 0.1, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
+      
+      geom_jitter(aes(x=week, y=rowCounts), data=dfOak, width = 0.1, height = 0.1, show.legend = TRUE, 
+        shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
+      geom_jitter(aes(x=week, y=rowCounts), data=dfControl, width = 0.1, height = 0.1, show.legend = TRUE, 
+        shape = 21, size=5, colour = "mediumvioletred", fill = "purple1") + 
+      
+
+      #ylim(c(0, 30)) +          # data zoom feature
+      expand_limits(y=c(0,30)) +
+      scale_y_continuous(breaks = seq(min(0), max(30), by = 5)) +
+    
+      #xlim(c(22, 40)) +          # data zoom feature
+      expand_limits(x=c(22,34)) +
+      scale_x_continuous(breaks = seq(min(22), max(34), by = 2)) +
+    
+      coord_fixed(ratio=.1) +  # control the aspect ratio of the output 
+    
+    #geom_smooth(aes(x=rowCounts, y=rowSum), method = "loess", size = 1.5) +
+    #geom_smooth(aes(x=rowCounts, y=rowSum), method="lm", level=0.95) +
+    #geom_smooth(aes(x=rowCounts, y=rowSum, colour = 'Exponential'), method = 'nls', formula = y ~ a*exp(b * x), se = FALSE, start = list(a=1,b=1), fullrange = T) +  
+       
+      labs(title=paste(titleText, sep=""),
+        subtitle=paste(subText, sep=""), 
+          y="total species", 
+          #x="total number of 'vane trap apparent' species in sample", 
+          x="week",
+          caption = paste(captionText, sep="") ) +
+      #theme(legend.position="none") +
+      theme_bw() +
+      theme(legend.position = "bottom", legend.direction = "horizontal") 
+      
+      # https://stackoverflow.com/questions/7056836/how-to-fix-the-aspect-ratio-in-ggplot
+
+  #return(grid.arrange(gg, ncol=1, nrow=1))
+      return(gg)
+
+  }
+
+  plotDivIndividualsV2 <- function(dfOak, dfControl, titleText, subText, captionText) {
+
+
+  gg <- ggplot() + 
+
+      # geom_jitter(aes(x=rowCounts, y=rowSum, col=week), width = 0.1, height = 0.1, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
+      
+      geom_jitter(aes(x=week, y=rowSum), data=dfOak, width = 0.1, height = 0.1, show.legend = TRUE, 
+        shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
+      geom_jitter(aes(x=week, y=rowSum), data=dfControl, width = 0.1, height = 0.1, show.legend = TRUE, 
+        shape = 21, size=5, colour = "mediumvioletred", fill = "purple1") + 
+
+      #ylim(c(0, 500)) +              # data zoom feature
+      expand_limits(y=c(0,500)) +
+      scale_y_continuous(breaks = seq(min(0), max(500), by = 50)) +
+    
+      #xlim(c(22, 40)) +              # data zoom feature
+      expand_limits(x=c(22,34)) +
+      scale_x_continuous(breaks = seq(min(22), max(34), by = 2)) +
+    
+      coord_fixed(ratio=.006) +  # control the aspect ratio of the output 
+    
+    #geom_smooth(aes(x=rowCounts, y=rowSum), method = "loess", size = 1.5) +
+    #geom_smooth(aes(x=rowCounts, y=rowSum), method="lm", level=0.95) +
+    #geom_smooth(aes(x=rowCounts, y=rowSum, colour = 'Exponential'), method = 'nls', formula = y ~ a*exp(b * x), se = FALSE, start = list(a=1,b=1), fullrange = T) +  
+       
+      labs(title=paste(titleText, sep=""),
+        subtitle=paste(subText, sep=""), 
+          y="total individuals", 
+          #x="total number of 'vane trap apparent' species in sample", 
+          x="week",
+          caption = paste(captionText, sep="") ) +
+      #theme(legend.position="none") +
+      theme_bw() +
+      theme(legend.position = "bottom", legend.direction = "horizontal") 
+      
+      # https://stackoverflow.com/questions/7056836/how-to-fix-the-aspect-ratio-in-ggplot
+
+  return(gg)
+
+  }

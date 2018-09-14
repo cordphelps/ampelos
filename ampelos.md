@@ -26,24 +26,27 @@ weekly composition of species and individuals?
 ``` r
 # (fig.keep='none' suppresses the plots temporarily)
 
-ggC <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="control")
-ggO <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="oakMargin")
+#ggC <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="control")
+#ggO <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="oakMargin")
+gg.Ind.joint <- divV2(bugs.df, species=FALSE, ignoreBees=FALSE)
 
-ggC2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="control")
-ggO2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="oakMargin")
+#ggC2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="control")
+#ggO2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="oakMargin")
+gg.Species.joint <- divV2(bugs.df, species=TRUE, ignoreBees=FALSE)
 ```
 
 ``` r
-grid.arrange(ggO2, ggC2, ncol=2, nrow=1)
+#grid.arrange(ggO2, ggC2, ncol=1, nrow=2)
+#arrangeGrob(ggO2, ggC2, ncol=1, nrow=2) # arrangeGrob : no graphical output
+#ggsave("./code/output/diversity1.png", plot=grid.arrange(ggO2, ggC2, ncol=1, nrow=2), width = 6, height = 4, units = "in")
+
+#grid.arrange(ggO, ggC, ncol=1, nrow=2)
+#ggsave("./code/output/diversity2.png", plot=grid.arrange(ggO, ggC, ncol=1, nrow=2), width = 6, height = 4, units = "in")
+
+grid.arrange(gg.Species.joint, gg.Ind.joint, ncol=1, nrow=2)
 ```
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-3-1.png)
-
-``` r
-grid.arrange(ggO, ggC, ncol=2, nrow=1)
-```
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-3-2.png)
 
 ![transect layout](./images/transectLayout.jpg)
 
@@ -71,7 +74,15 @@ gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-4-2.png)
 
 ``` r
-g <- arrangeGrob(gOak, gControl, nrow=2)
+g <- grid.arrange(gOak, gControl, nrow=2)
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-4-3.png)
+
+``` r
+# ggsave("./code/output/jaccardMulti.png", 
+       #plot=grid.arrange(gOak, gControl, nrow=2),
+       #width = 6, height = 4, units = "in")
 ```
 
 is there a difference in the spider populations for the two transects?
@@ -125,50 +136,25 @@ grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
 <img src="ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png" width="100%" />
 
 ``` r
-source('./code/bayes.R')
+if (FALSE) {
+  #source('./code/bayes.R')
 
-returnList <- evaluateDailySpiderCounts(bugs.df)
+  returnList <- evaluateDailySpiderCounts(bugs.df)
 
-lh.df <- returnList[[5]]
+  lh.df <- returnList[[5]]
 
-returnList[[6]] <- plotLikelihood(df=lh.df)
+  returnList[[6]] <- plotLikelihood(df=lh.df)
 
-print(returnList[[1]])
-```
+  print(returnList[[1]])
+  print(returnList[[6]])
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)
+  kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
 
-``` r
-print(returnList[[6]])
-```
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
-
-``` r
-kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
-```
-
-    ## 
-    ##  Kruskal-Wallis rank sum test
-    ## 
-    ## data:  likelihood by seasonalTimeframe
-    ## Kruskal-Wallis chi-squared = 0.088889, df = 2, p-value = 0.9565
-
-``` r
-pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
+  pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
                           p.adjust.method = "BH")
-```
 
-    ## 
-    ##  Pairwise comparisons using Wilcoxon rank sum test 
-    ## 
-    ## data:  lh.df$likelihood and lh.df$seasonalTimeframe 
-    ## 
-    ##       one two
-    ## two   1   -  
-    ## three 1   1  
-    ## 
-    ## P value adjustment method: BH
+}
+```
 
 using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (cluster analysis suggests trap segments 1-4, 5-7, and 8-10)
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

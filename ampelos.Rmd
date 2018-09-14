@@ -31,22 +31,29 @@ bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 
 # (fig.keep='none' suppresses the plots temporarily)
 
-ggC <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="control")
-ggO <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="oakMargin")
+#ggC <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="control")
+#ggO <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="oakMargin")
+gg.Ind.joint <- divV2(bugs.df, species=FALSE, ignoreBees=FALSE)
 
-ggC2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="control")
-ggO2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="oakMargin")
+#ggC2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="control")
+#ggO2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="oakMargin")
+gg.Species.joint <- divV2(bugs.df, species=TRUE, ignoreBees=FALSE)
 
 ```
 
 ```{r, echo=TRUE, include=TRUE, message=F, warning=F}
 
-grid.arrange(ggO2, ggC2, ncol=2, nrow=1)
+#grid.arrange(ggO2, ggC2, ncol=1, nrow=2)
+#arrangeGrob(ggO2, ggC2, ncol=1, nrow=2) # arrangeGrob : no graphical output
+#ggsave("./code/output/diversity1.png", plot=grid.arrange(ggO2, ggC2, ncol=1, nrow=2), width = 6, height = 4, units = "in")
 
-grid.arrange(ggO, ggC, ncol=2, nrow=1)
+#grid.arrange(ggO, ggC, ncol=1, nrow=2)
+#ggsave("./code/output/diversity2.png", plot=grid.arrange(ggO, ggC, ncol=1, nrow=2), width = 6, height = 4, units = "in")
 
+grid.arrange(gg.Species.joint, gg.Ind.joint, ncol=1, nrow=2)
 
 ```
+
 
 
 ![transect layout](./images/transectLayout.jpg)
@@ -70,9 +77,14 @@ gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
                                   t="control",
                                   transectText="control")
 
-g <- arrangeGrob(gOak, gControl, nrow=2)
+g <- grid.arrange(gOak, gControl, nrow=2)
+
+# ggsave("./code/output/jaccardMulti.png", 
+       #plot=grid.arrange(gOak, gControl, nrow=2),
+       #width = 6, height = 4, units = "in")
 
 ```
+
 
 
 ## is there a difference in the spider populations for the two transects?
@@ -133,21 +145,24 @@ grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
 
 ```{r, echo=TRUE, include=TRUE, message=F, warning=F}
 
-source('./code/bayes.R')
+if (FALSE) {
+  #source('./code/bayes.R')
 
-returnList <- evaluateDailySpiderCounts(bugs.df)
+  returnList <- evaluateDailySpiderCounts(bugs.df)
 
-lh.df <- returnList[[5]]
+  lh.df <- returnList[[5]]
 
-returnList[[6]] <- plotLikelihood(df=lh.df)
+  returnList[[6]] <- plotLikelihood(df=lh.df)
 
-print(returnList[[1]])
-print(returnList[[6]])
+  print(returnList[[1]])
+  print(returnList[[6]])
 
-kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
+  kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
 
-pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
+  pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
                           p.adjust.method = "BH")
+
+}
 
 
 ```
