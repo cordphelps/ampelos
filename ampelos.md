@@ -3,8 +3,8 @@ ampelos
 
 ![landscape](./photos/landscapeOak.JPG)
 
-how does a 'natural' field margin influence the population of beneficial insects?
----------------------------------------------------------------------------------
+how does a 'natural habitat' field margin influence the population of beneficial insects in an organic vineyard?
+----------------------------------------------------------------------------------------------------------------
 
 ``` r
 source("./code/bug-library.R")
@@ -12,6 +12,7 @@ source("./code/similarity.R")
 source("./code/jaccard-similarity.R")
 source("./code/diversity.R")
 source("./code/k-means.R")
+source('./code/bayes.R')
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
@@ -123,6 +124,52 @@ grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
 
 <img src="ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png" width="100%" />
 
+``` r
+source('./code/bayes.R')
+
+returnList <- evaluateDailySpiderCounts(bugs.df)
+
+lh.df <- returnList[[5]]
+
+returnList[[6]] <- plotLikelihood(df=lh.df)
+
+print(returnList[[1]])
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)
+
+``` r
+print(returnList[[6]])
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
+
+``` r
+kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
+```
+
+    ## 
+    ##  Kruskal-Wallis rank sum test
+    ## 
+    ## data:  likelihood by seasonalTimeframe
+    ## Kruskal-Wallis chi-squared = 0.088889, df = 2, p-value = 0.9565
+
+``` r
+pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
+                          p.adjust.method = "BH")
+```
+
+    ## 
+    ##  Pairwise comparisons using Wilcoxon rank sum test 
+    ## 
+    ## data:  lh.df$likelihood and lh.df$seasonalTimeframe 
+    ## 
+    ##       one two
+    ## two   1   -  
+    ## three 1   1  
+    ## 
+    ## P value adjustment method: BH
+
 using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (cluster analysis suggests trap segments 1-4, 5-7, and 8-10)
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -182,7 +229,7 @@ if (FALSE) {
 }
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-8-3.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-9-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-9-2.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-9-3.png)
 
 how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
 -------------------------------------------------------------------------------------------------------------------------------------------
@@ -192,7 +239,7 @@ m1 <- simMatrixV3(data=bugs.df, transect=quo("oakMargin"),
                                 transectText="oakMargin")
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-9-1.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-10-1.png" width="100%" />
 
 ``` r
 #g <- arrangeGrob(m1, m2, nrow=2)
@@ -203,7 +250,7 @@ m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
                                 transectText="control")
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-10-1.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-11-1.png" width="100%" />
 
 ``` r
 #g <- arrangeGrob(m1, m2, nrow=2)
@@ -220,7 +267,7 @@ does the crab spider population appear to change over time? Is there a differenc
 plotSpeciesTrendV2(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-11-1.png" width="100%" /><img src="ampelos_files/figure-markdown_github/unnamed-chunk-11-2.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-12-1.png" width="100%" /><img src="ampelos_files/figure-markdown_github/unnamed-chunk-12-2.png" width="100%" />
 
     ## NULL
 
@@ -239,7 +286,7 @@ plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", specie
 
     ## Picking joint bandwidth of 27.8
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 ``` r
 new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
@@ -251,7 +298,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 
     ## Picking joint bandwidth of 16.9
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-12-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-13-2.png)
 
 ``` r
 plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="oakMargin", when="pm", wk=1, caption=Sys.Date())
@@ -262,7 +309,7 @@ plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spide
 
     ## Picking joint bandwidth of 16.5
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-12-3.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-13-3.png)
 
 and the species counts?
 -----------------------
