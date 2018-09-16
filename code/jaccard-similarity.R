@@ -552,8 +552,15 @@ plotSimilarity <- function(df, transectText, captionComment) {
 
 
   gg <- ggplot(df) + 
-      geom_jitter(aes(x=week, y=1-SME), width = 0.1, height = 0.1, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
-      geom_jitter(aes(x=week, y=1-jaccard), width = 0.1, height = 0.1, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "purple1") + 
+      geom_jitter(aes(x=week, y=1-SME, colour = "mediumvioletred", fill = "plum1"), width = 0.1, height = 0.1, 
+        show.legend = TRUE, shape = 21, size=5) + 
+      geom_jitter(aes(x=week, y=1-jaccard, colour = "mediumvioletred", fill = "purple1"), width = 0.1, height = 0.1, 
+        show.legend = TRUE, shape = 21, size=5) + 
+
+      scale_fill_identity(name = 'method', guide = 'legend', breaks = c('plum1'='plum1','purple1'='purple1'), 
+        labels = c('SMC','Jaccard')) +
+      guides(colour=FALSE) +
+      theme(legend.position = "right", legend.direction = "vertical") +
 
       ylim(c(0, 1)) + 
       # scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +

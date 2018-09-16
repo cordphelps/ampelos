@@ -24,22 +24,6 @@ weekly composition of species and individuals?
 #### TO-DO: annotate charts with key dates ( spray events, cover crop collapse, veraision, )
 
 ``` r
-# (fig.keep='none' suppresses the plots temporarily)
-
-#ggC <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="control")
-#ggO <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="oakMargin")
-gg.Ind.joint <- divV2(bugs.df, species=FALSE, ignoreBees=FALSE)
-
-#ggC2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="control")
-#ggO2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="oakMargin")
-gg.Species.joint <- divV2(bugs.df, species=TRUE, ignoreBees=FALSE)
-```
-
-``` r
-#grid.arrange(ggO2, ggC2, ncol=1, nrow=2)
-#arrangeGrob(ggO2, ggC2, ncol=1, nrow=2) # arrangeGrob : no graphical output
-#ggsave("./code/output/diversity1.png", plot=grid.arrange(ggO2, ggC2, ncol=1, nrow=2), width = 6, height = 4, units = "in")
-
 #grid.arrange(ggO, ggC, ncol=1, nrow=2)
 #ggsave("./code/output/diversity2.png", plot=grid.arrange(ggO, ggC, ncol=1, nrow=2), width = 6, height = 4, units = "in")
 
@@ -73,18 +57,6 @@ gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-4-2.png)
 
-``` r
-g <- grid.arrange(gOak, gControl, nrow=2)
-```
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-4-3.png)
-
-``` r
-# ggsave("./code/output/jaccardMulti.png", 
-       #plot=grid.arrange(gOak, gControl, nrow=2),
-       #width = 6, height = 4, units = "in")
-```
-
 is there a difference in the spider populations for the two transects?
 ----------------------------------------------------------------------
 
@@ -116,27 +88,13 @@ are clusters appearing and do they persist across multiple weeks?
 -----------------------------------------------------------------
 
 ``` r
-clusterNumber <- 3
-df <- bugs.df
-species <- "Thomisidae..crab.spider."
-
-dataList <- buildClustersByWeek(df, t="control", species="Thomisidae..crab.spider.", cn=clusterNumber)
-
-cl1.gg <- kmPlot(list=dataList, transectText="control")
-
-dataList <- buildClustersByWeek(df, t="oakMargin", species="Thomisidae..crab.spider.", cn=clusterNumber)
-
-cl2.gg <- kmPlot(list=dataList, transectText="oakMargin")
-```
-
-``` r
 grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
 ```
 
 <img src="ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png" width="100%" />
 
 ``` r
-if (FALSE) {
+if (TRUE) {
   #source('./code/bayes.R')
 
   returnList <- evaluateDailySpiderCounts(bugs.df)
@@ -156,40 +114,25 @@ if (FALSE) {
 }
 ```
 
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
+
+    ## 
+    ##  Pairwise comparisons using Wilcoxon rank sum test 
+    ## 
+    ## data:  lh.df$likelihood and lh.df$seasonalTimeframe 
+    ## 
+    ##       one two
+    ## two   1   -  
+    ## three 1   1  
+    ## 
+    ## P value adjustment method: BH
+
 using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (cluster analysis suggests trap segments 1-4, 5-7, and 8-10)
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #### TO-DO: refine normalization method
 
 ``` r
-if (FALSE) {
-  positionText <- paste("\ntransect positions ", "1-4", sep="")
-  g3 <- compareTransectUsingQuosure(data=bugs.df, 
-                                 species=quo(Thomisidae..crab.spider.), 
-                                 operator="LT",
-                                 initialPosition=quo(5), 
-                                 secondaryPosition=quo(0),
-                                 positionText)
-  positionText <- paste("\ntransect positions ", "5-7", sep="")
-  g46 <- compareTransectUsingQuosure(data=bugs.df, 
-                                 species=quo(Thomisidae..crab.spider.), 
-                                 operator="BETWEEN",
-                                 initialPosition=quo(4), 
-                                 secondaryPosition=quo(8),
-                                 positionText)
-  positionText <- paste("\ntransect positions ", "8-10", sep="")
-  g7 <- compareTransectUsingQuosure(data=bugs.df, 
-                                 species=quo(Thomisidae..crab.spider.), 
-                                 operator="GT",
-                                 initialPosition=quo(7), 
-                                 secondaryPosition=quo(0),
-                                 positionText)
-  g <- arrangeGrob(g3, g46, g7, nrow=3)
-  newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = "")
-  ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
-  
-} else {
-  
   positionText <- paste("\ntransect positions ", "1-4", sep="")
   g3 <- compareTransectG2V1(data=bugs.df, 
                                  species=quo(Thomisidae..crab.spider.), 
@@ -197,6 +140,11 @@ if (FALSE) {
                                  initialPosition=quo(5), 
                                  secondaryPosition=quo(0),
                                  positionText)
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-9-1.png)
+
+``` r
   positionText <- paste("\ntransect positions ", "5-7", sep="")
   g46 <- compareTransectG2V1(data=bugs.df, 
                                  species=quo(Thomisidae..crab.spider.), 
@@ -204,6 +152,11 @@ if (FALSE) {
                                  initialPosition=quo(4), 
                                  secondaryPosition=quo(8),
                                  positionText)
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-9-2.png)
+
+``` r
   positionText <- paste("\ntransect positions ", "8-10", sep="")
   g7 <- compareTransectG2V1(data=bugs.df, 
                                  species=quo(Thomisidae..crab.spider.), 
@@ -211,11 +164,9 @@ if (FALSE) {
                                  initialPosition=quo(7), 
                                  secondaryPosition=quo(0),
                                  positionText)
-  
-}
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-9-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-9-2.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-9-3.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-9-3.png)
 
 how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
 -------------------------------------------------------------------------------------------------------------------------------------------
@@ -264,38 +215,28 @@ TO-DO: develop and apply normalization method
 ---------------------------------------------
 
 ``` r
-plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", speciesText="Crab Spider", where="control", when="pm", wk=1, caption=Sys.Date())
+new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
+
+plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="pm", wk=1, caption=Sys.Date())
 ```
 
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 27.8
+    ## Picking joint bandwidth of 18.8
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 ``` r
-new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
-plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="control", when="pm", wk=1, caption=Sys.Date())
+plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="am", wk=1, caption=Sys.Date())
 ```
 
     ## Scale for 'x' is already present. Adding another scale for 'x', which
     ## will replace the existing scale.
 
-    ## Picking joint bandwidth of 16.9
+    ## Picking joint bandwidth of 21.7
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-13-2.png)
-
-``` r
-plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="oakMargin", when="pm", wk=1, caption=Sys.Date())
-```
-
-    ## Scale for 'x' is already present. Adding another scale for 'x', which
-    ## will replace the existing scale.
-
-    ## Picking joint bandwidth of 16.5
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-13-3.png)
 
 and the species counts?
 -----------------------

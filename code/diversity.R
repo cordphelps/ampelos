@@ -255,10 +255,16 @@ plotDivSpeciesV2 <- function(dfOak, dfControl, titleText, subText, captionText) 
 
       # geom_jitter(aes(x=rowCounts, y=rowSum, col=week), width = 0.1, height = 0.1, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
       
-      geom_jitter(aes(x=week, y=rowCounts), data=dfOak, width = 0.1, height = 0.1, show.legend = TRUE, 
-        shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
-      geom_jitter(aes(x=week, y=rowCounts), data=dfControl, width = 0.1, height = 0.1, show.legend = TRUE, 
-        shape = 21, size=5, colour = "mediumvioletred", fill = "purple1") + 
+      geom_jitter(aes(x=week, y=rowCounts, colour = "mediumvioletred", fill = "plum1"), data=dfOak, width = 0.1, height = 0.1, show.legend = TRUE, 
+        shape = 21, size=5) + 
+      geom_jitter(aes(x=week, y=rowCounts, colour = "mediumvioletred", fill = "purple1"), data=dfControl, width = 0.1, height = 0.1, show.legend = TRUE, 
+        shape = 21, size=5) + 
+
+      scale_fill_identity(name = 'transect', guide = 'legend', breaks = c('plum1'='plum1','purple1'='purple1'), 
+        labels = c('oakMargin','control')) +
+      guides(colour=FALSE) +
+      theme(legend.position = "right", legend.direction = "vertical") +
+      #scale_colour_manual(name = 'the colour', values =c('black'='black','red'='red'), labels = c('oakMargin','control'))
       
 
       #ylim(c(0, 30)) +          # data zoom feature
@@ -282,8 +288,8 @@ plotDivSpeciesV2 <- function(dfOak, dfControl, titleText, subText, captionText) 
           x="week",
           caption = paste(captionText, sep="") ) +
       #theme(legend.position="none") +
-      theme_bw() +
-      theme(legend.position = "bottom", legend.direction = "horizontal") 
+      theme_bw() 
+      #theme(legend.position = "bottom", legend.direction = "horizontal") 
       
       # https://stackoverflow.com/questions/7056836/how-to-fix-the-aspect-ratio-in-ggplot
 
@@ -299,10 +305,15 @@ plotDivSpeciesV2 <- function(dfOak, dfControl, titleText, subText, captionText) 
 
       # geom_jitter(aes(x=rowCounts, y=rowSum, col=week), width = 0.1, height = 0.1, show.legend = TRUE, shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
       
-      geom_jitter(aes(x=week, y=rowSum), data=dfOak, width = 0.1, height = 0.1, show.legend = TRUE, 
-        shape = 21, size=5, colour = "mediumvioletred", fill = "plum1") + 
-      geom_jitter(aes(x=week, y=rowSum), data=dfControl, width = 0.1, height = 0.1, show.legend = TRUE, 
-        shape = 21, size=5, colour = "mediumvioletred", fill = "purple1") + 
+      geom_jitter(aes(x=week, y=rowSum, colour = "mediumvioletred", fill = "plum1"), data=dfOak, width = 0.1, height = 0.1, show.legend = TRUE, 
+        shape = 21, size=5) + 
+      geom_jitter(aes(x=week, y=rowSum, colour = "mediumvioletred", fill = "purple1"), data=dfControl, width = 0.1, height = 0.1, show.legend = TRUE, 
+        shape = 21, size=5) + 
+
+      scale_fill_identity(name = 'transect', guide = 'legend', breaks = c('plum1'='plum1','purple1'='purple1'), 
+        labels = c('oakMargin','control')) +
+      guides(colour=FALSE) +
+      theme(legend.position = "right", legend.direction = "vertical") +
 
       #ylim(c(0, 500)) +              # data zoom feature
       expand_limits(y=c(0,500)) +
@@ -325,8 +336,7 @@ plotDivSpeciesV2 <- function(dfOak, dfControl, titleText, subText, captionText) 
           x="week",
           caption = paste(captionText, sep="") ) +
       #theme(legend.position="none") +
-      theme_bw() +
-      theme(legend.position = "bottom", legend.direction = "horizontal") 
+      theme_bw() 
       
       # https://stackoverflow.com/questions/7056836/how-to-fix-the-aspect-ratio-in-ggplot
 

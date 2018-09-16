@@ -144,7 +144,7 @@ plotRidges <- function(data, combined, bugs, speciesText, where, when, wk, capti
     scale_discrete_manual(aesthetics = "point_shape", values = c(21, 22, 23, 24, 25)) +
     xlim(1,10) +
     # http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels#change-tick-mark-labels
-    scale_y_discrete(labels=c("0" = "none", "1" = "multiple")) +
+    scale_y_discrete(labels=c("0" = "none", "1" = "one or more")) +
     scale_x_continuous(breaks=seq(4,200,16), 
                        sec.axis = sec_axis(~.*.3048,
                                            breaks= seq(0, 80, 10),
@@ -1171,22 +1171,43 @@ compareTransectG2V1 <- function (data, species, operator, initialPosition, secon
 
   combo.df <- combo.df %>% 
   #dplyr::mutate(deltaMean=(oakEdgeMean-controlEdgeMean)/controlEdgeMean)
-  dplyr::mutate(deltaMean=(oakEdgeMean)/controlEdgeMean -1 ) 
+  # dplyr::mutate(deltaMean=(oakEdgeMean)/controlEdgeMean -1 ) 
+  dplyr::mutate(deltaMean=( oakEdgeMean)/controlEdgeMean ) 
   #dplyr::mutate( deltaMean=(oakEdgeMean-controlEdgeMean)**2 )
   
+  # assign("combo.df", combo.df, envir=.GlobalEnv)  # for debugging
+  # the dataframe contains columns 'julian', 'oakEdgeMean', 'controlEdgeMean', 'deltaMean'
 
-  assign("combo.df", combo.df, envir=.GlobalEnv)
+  # arbitraty week groupings (from bayes.R): "weeks 23-25",  "weeks 26-30", "weeks 31-34"
+  #
+  # "weeks 23-25" : julian range 155 - 175
+  # "weeks 26-30" : julian range 176 - 210
+  # "weeks 31-34" : julian range 211 - 238
 
+  # add a 'julianGroup' factor for geom_smooth ()
+  combo.df <- combo.df %>% dplyr::mutate(julianGroup = 
+    case_when( julian >= 155 & julian <= 175  ~ "red", 
+               julian >= 176 & julian <= 210  ~ "green",
+               julian >= 211 & julian <= 238  ~ "blue" ))
 
-  ggCompare1 <- ggplot(combo.df, aes(x=julian, y=deltaMean)) +
-      geom_point(shape=21) + 
-      geom_smooth(method="lm", level=0.89) +  
-      geom_hline(yintercept=0) +
-      ylim(-1.1,1.1) +
+assign("combo.df", combo.df, envir=.GlobalEnv)
+
+  ggCompare1 <- ggplot(combo.df, aes(x=julian, y=deltaMean), color=julianGroup, fill=julianGroup) +
+
+      #geom_point(data=subset(combo.df, (julian >= 155 & julian <= 175 )), aes(x=julian, y=deltaMean, fill='red'), shape=21) + 
+      geom_point(data=subset(combo.df, julianGroup=="red"), shape=21) +
+      geom_point(data=subset(combo.df, julianGroup=="green"), shape=21) +
+      geom_point(data=subset(combo.df, julianGroup=="blue"), shape=21) +
+      geom_smooth(method="lm", level=0.89, aes(line=julianGroup)) +   # aes() sections the data even though 'line' is undefined
+
+      #geom_hline(yintercept=0) +
+      xlim(154,239) +
+      ylim(-.1,3.1) +
+
       labs(title= paste("average spiders per trap ",
                         positionText,
-                        "\n(oak average - control average) / control average", sep=""), 
-           subtitle = paste("(89% confidence interval)", sep=""),
+                        "\n(oak average / control average)", sep=""), 
+           subtitle = paste("89% confidence interval", sep=""),
          x="julian day",
          y= "oakMargin fraction of control",
          caption=paste("120 observations per day", "\npositions 1 - 10 inclusive", sep="")) +
@@ -1202,6 +1223,7 @@ compareTransectG2V1 <- function (data, species, operator, initialPosition, secon
     theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
     theme_bw() 
     
+
   return(grid.arrange(ggCompare1, ncol=1, nrow=1))
 
 }
@@ -1269,4 +1291,156 @@ plotBugDistribution <- function (data, title, caption) {
     coord_fixed(ratio=2)
   
   return(grid.arrange(gg, ncol=1, nrow=1))
+}
+
+
+plotRidgesV2 <- function(data, combined, bugs, speciesText, when, wk, caption) {
+
+
+  # https://stackoverflow.com/questions/7310186/function-in-r-passing-a-dataframe-and-a-column-name
+
+  if (FALSE) {   # available for debug
+    # https://stackoverflow.com/questions/9726705/assign-multiple-objects-to-globalenv-from-within-a-function
+    assign("data", data, envir=.GlobalEnv)
+    assign("bugs", bugs, envir=.GlobalEnv)
+
+    assign("when", when, envir=.GlobalEnv)
+    assign("wk", wk, envir=.GlobalEnv)
+    assign("caption", caption, envir=.GlobalEnv)
+  }
+  
+  # https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html
+  
+  if (wk < 23 | wk > 52) {  # we definitely don't have a valid week
+    # this case indicates 'use data from all weeks'
+    cumulative <- "(cumulative)"
+    
+    if (when != "am" & when != "pm") {    # use all the data (am and pm) for each day
+      #filteredBugs.df <- filter(data, transect == where)
+    } else {                              # use partial data (am or pm) for each day
+      filteredBugs.df <- filter(data, time == when)
+    }
+    
+  } else {  #  we might have a 'valid' week (data for the specified week could be
+    #  missing....)
+    cumulative <- as.character(wk)
+    
+    if (when != "am" & when != "pm") {   # use all the data (am and pm) for each day
+      filteredBugs.df <- filter(data, week == wk)
+    } else {                             # use partial data (am or pm) for each day
+      filteredBugs.df <- filter(data, time == when & week == wk)
+    }
+    
+    
+  }
+  
+  
+  # simplify to include the trap position and the bug in the list
+  newBugs.df <- subset(filteredBugs.df, select= c("positionX", "transect", bugs))
+
+  # exclude counts == 0
+  newBugs.df <- newBugs.df %>% dplyr::filter(newColumn > 0)
+  
+  ################################################################################################
+  # get some stats to add to the plot
+
+  # note: nuance of using the > operator and sum()
+  # As a result you can SUM over this to find the number of values which are TRUE (>2000), 
+  # ie Count. While you may have been expecting this input to SUM the actual values themselves
+  # https://stackoverflow.com/questions/22690255/count-observations-greater-than-a-particular-value
+
+  spider_rows <- nrow(newBugs.df)
+  trapsWithSpiders <- nrow(newBugs.df[newBugs.df[,bugs] > 0, ])
+  # trapsWithSpiders <- sum(newBugs.df[,bugs])
+  percentOcurrence <- (trapsWithSpiders / spider_rows) * 100
+  # https://stackoverflow.com/questions/3443687/formatting-decimal-places-in-r
+  percentOcurrence <- format(round(percentOcurrence, 2), nsmall = 2)
+
+  ################################################################################################
+  
+  # get factors for geom_density_ridges
+  # (grouping by "count")
+  factor.list <- newBugs.df[,bugs]   #     
+  newBugs.df$geomFactors <- NULL                        
+  newBugs.df$geomFactors <- as.factor(factor.list)
+  
+  assign("newBugs.df", newBugs.df, envir=.GlobalEnv)
+  
+  #Density plots can be thought of as plots of smoothed histograms.
+  #The smoothness is controlled by a bandwidth parameter that is analogous 
+  #to the histogram binwidth.
+  #Most density plots use a kernel density estimate, but there are other 
+  #possible strategies; qualitatively the particular strategy rarely matters.
+  # https://homepage.divms.uiowa.edu/~luke/classes/STAT4580/histdens.html
+  
+  if (combined == FALSE) {
+    # the x axis data is multi-level
+  gg2 <- ggplot(newBugs.df, aes_string(x="positionX", y="geomFactors", fill="geomFactors")) +
+    geom_density_ridges(
+      #aes(point_color = spider, point_fill=spider, point_shape=spider),
+      # https://stackoverflow.com/questions/22309285/how-to-use-a-variable-to-specify-column-name-in-ggplot
+      aes_string(point_color = "geomFactors", point_fill="geomFactors", point_shape="geomFactors"),
+      alpha = .2, jittered_points = TRUE, show.legend=F, scale = 0.9) +
+
+    scale_point_color_hue(l = 40)  +
+    scale_discrete_manual(aesthetics = "point_shape", values = c(21, 22, 23, 24, 25) ) +
+    #stat_density_ridges(quantile_lines = TRUE, quantiles = 2, alpha = .2, jittered_points = TRUE) +
+    
+    xlim(1,10) +
+    # http://ggplot2.tidyverse.org/reference/sec_axis.html
+    scale_x_continuous(breaks=seq(4,200,16), 
+                       sec.axis = sec_axis(~.*.3048,
+                                           breaks= seq(0, 80, 10),
+                                           name= "trap distance from row start (m)"))  +
+    labs(title= paste(speciesText, " Probability Density\n", 
+                      "transect: ", where, sep=""), 
+         subtitle = paste("week: ", cumulative, ", collection time: ", when, 
+                          "\ntotal ", speciesText,  " observations: ", spider_rows,
+                          "\ntraps with ", speciesText, "s: ", percentOcurrence, " %", 
+                          sep=""),
+         x="trap distance from row start (ft)",
+         y= paste(speciesText, "\ncounts per trap", sep=""),
+         #caption="10 June 2018")
+         caption=paste(caption, 
+                       "\nhttps://en.wikipedia.org/wiki/Kernel_density_estimation", 
+                       sep="")) +
+    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
+    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
+    theme_bw()
+
+  } else {   # the x axis data combined for values > 0 ; adjust labels with scale_y_discrete()
+
+    gg2 <- ggplot(newBugs.df, aes(x=positionX, y=transect, fill=transect)) +
+
+      geom_density_ridges(aes(point_color = transect, point_fill = transect, point_shape = transect),
+                          alpha = .2, jittered_points = TRUE) +
+
+    scale_point_color_hue(l = 40)  +
+    scale_discrete_manual(aesthetics = "point_shape", values = c(21, 22, 23)) +
+
+    xlim(1,10) +
+    # http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels#change-tick-mark-labels
+    #scale_y_discrete(labels=c("0" = "none", "1" = "one or more")) +
+    scale_x_continuous(breaks=seq(4,200,16), 
+                       sec.axis = sec_axis(~.*.3048,
+                                           breaks= seq(0, 80, 10),
+                                           name= "trap distance from row start (m)"))  +
+    labs(title= paste(speciesText, " Probability Density",  sep=""), 
+         subtitle = paste("week: ", cumulative, ", collection time: ", when, sep=""),
+         x="trap distance from row start (ft)",
+         y= paste("counts per trap > 0", sep=""),
+         #caption="10 June 2018")
+         caption=paste(caption, 
+                       "\nhttps://en.wikipedia.org/wiki/Kernel_density_estimation", 
+                       sep="")) +
+    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
+    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
+    theme_bw()
+
+  }
+  
+  # grid.arrange(gg1, gg2, ncol=1, nrow=2)
+  # ggsave("joy1.png", height=8, width=8, dpi=120, type="cairo-png")
+  
+  return(gg2)
 }

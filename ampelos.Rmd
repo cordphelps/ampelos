@@ -27,25 +27,16 @@ bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 
 #### TO-DO: annotate charts with key dates ( spray events, cover crop collapse, veraision, )
 
-```{r, echo=TRUE, include=TRUE, message=F, warning=F, fig.keep='none'}
+```{r, echo=TRUE, include=FALSE, message=F, warning=F, fig.keep='none'}
 
 # (fig.keep='none' suppresses the plots temporarily)
 
-#ggC <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="control")
-#ggO <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="oakMargin")
 gg.Ind.joint <- divV2(bugs.df, species=FALSE, ignoreBees=FALSE)
-
-#ggC2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="control")
-#ggO2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="oakMargin")
 gg.Species.joint <- divV2(bugs.df, species=TRUE, ignoreBees=FALSE)
 
 ```
 
 ```{r, echo=TRUE, include=TRUE, message=F, warning=F}
-
-#grid.arrange(ggO2, ggC2, ncol=1, nrow=2)
-#arrangeGrob(ggO2, ggC2, ncol=1, nrow=2) # arrangeGrob : no graphical output
-#ggsave("./code/output/diversity1.png", plot=grid.arrange(ggO2, ggC2, ncol=1, nrow=2), width = 6, height = 4, units = "in")
 
 #grid.arrange(ggO, ggC, ncol=1, nrow=2)
 #ggsave("./code/output/diversity2.png", plot=grid.arrange(ggO, ggC, ncol=1, nrow=2), width = 6, height = 4, units = "in")
@@ -77,11 +68,6 @@ gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
                                   t="control",
                                   transectText="control")
 
-g <- grid.arrange(gOak, gControl, nrow=2)
-
-# ggsave("./code/output/jaccardMulti.png", 
-       #plot=grid.arrange(gOak, gControl, nrow=2),
-       #width = 6, height = 4, units = "in")
 
 ```
 
@@ -114,7 +100,7 @@ g30 <- plotBugDistribution(data=reducedData.df,
 
 ## are clusters appearing and do they persist across multiple weeks?
 
-```{r, echo=TRUE, include=TRUE, message=F, warning=F, fig.keep='none'}
+```{r, echo=TRUE, include=FALSE, message=F, warning=F, fig.keep='none'}
 
 
 clusterNumber <- 3
@@ -145,7 +131,7 @@ grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
 
 ```{r, echo=TRUE, include=TRUE, message=F, warning=F}
 
-if (FALSE) {
+if (TRUE) {
   #source('./code/bayes.R')
 
   returnList <- evaluateDailySpiderCounts(bugs.df)
@@ -175,34 +161,6 @@ if (FALSE) {
 
 ```{r, echo=TRUE, include=TRUE, message=F, warning=F}
 
-if (FALSE) {
-  positionText <- paste("\ntransect positions ", "1-4", sep="")
-  g3 <- compareTransectUsingQuosure(data=bugs.df, 
-                                 species=quo(Thomisidae..crab.spider.), 
-                                 operator="LT",
-                                 initialPosition=quo(5), 
-                                 secondaryPosition=quo(0),
-                                 positionText)
-  positionText <- paste("\ntransect positions ", "5-7", sep="")
-  g46 <- compareTransectUsingQuosure(data=bugs.df, 
-                                 species=quo(Thomisidae..crab.spider.), 
-                                 operator="BETWEEN",
-                                 initialPosition=quo(4), 
-                                 secondaryPosition=quo(8),
-                                 positionText)
-  positionText <- paste("\ntransect positions ", "8-10", sep="")
-  g7 <- compareTransectUsingQuosure(data=bugs.df, 
-                                 species=quo(Thomisidae..crab.spider.), 
-                                 operator="GT",
-                                 initialPosition=quo(7), 
-                                 secondaryPosition=quo(0),
-                                 positionText)
-  g <- arrangeGrob(g3, g46, g7, nrow=3)
-  newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = "")
-  ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
-  
-} else {
-  
   positionText <- paste("\ntransect positions ", "1-4", sep="")
   g3 <- compareTransectG2V1(data=bugs.df, 
                                  species=quo(Thomisidae..crab.spider.), 
@@ -225,10 +183,8 @@ if (FALSE) {
                                  secondaryPosition=quo(0),
                                  positionText)
   
-}
-
-
 ```
+
 
 
 ## how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
@@ -270,11 +226,13 @@ plotSpeciesTrendV2(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText
 ## TO-DO: develop and apply normalization method
 
 ```{r}
-plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", speciesText="Crab Spider", where="control", when="pm", wk=1, caption=Sys.Date())
 
 new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
-plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="control", when="pm", wk=1, caption=Sys.Date())
-plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="oakMargin", when="pm", wk=1, caption=Sys.Date())
+
+plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="pm", wk=1, caption=Sys.Date())
+
+plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="am", wk=1, caption=Sys.Date())
+
 ```
 
 ## and the species counts?
