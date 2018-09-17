@@ -3,8 +3,8 @@ ampelos
 
 ![landscape](./photos/landscapeOak.JPG)
 
-how does a 'natural' field margin influence the population of beneficial insects?
----------------------------------------------------------------------------------
+how does a 'natural habitat' field margin influence the population of beneficial insects in an organic vineyard?
+----------------------------------------------------------------------------------------------------------------
 
 ``` r
 source("./code/bug-library.R")
@@ -12,6 +12,7 @@ source("./code/similarity.R")
 source("./code/jaccard-similarity.R")
 source("./code/diversity.R")
 source("./code/k-means.R")
+source('./code/bayes.R')
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
@@ -23,26 +24,13 @@ weekly composition of species and individuals?
 #### TO-DO: annotate charts with key dates ( spray events, cover crop collapse, veraision, )
 
 ``` r
-# (fig.keep='none' suppresses the plots temporarily)
+#grid.arrange(ggO, ggC, ncol=1, nrow=2)
+#ggsave("./code/output/diversity2.png", plot=grid.arrange(ggO, ggC, ncol=1, nrow=2), width = 6, height = 4, units = "in")
 
-ggC <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="control")
-ggO <- div(bugs.df, species=FALSE, ignoreBees=FALSE, t="oakMargin")
-
-ggC2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="control")
-ggO2 <- div(bugs.df, species=TRUE, ignoreBees=FALSE, t="oakMargin")
-```
-
-``` r
-grid.arrange(ggO2, ggC2, ncol=2, nrow=1)
+grid.arrange(gg.Species.joint, gg.Ind.joint, ncol=1, nrow=2)
 ```
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-3-1.png)
-
-``` r
-grid.arrange(ggO, ggC, ncol=2, nrow=1)
-```
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-3-2.png)
 
 ![transect layout](./images/transectLayout.jpg)
 
@@ -68,10 +56,6 @@ gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
 ```
 
 ![](ampelos_files/figure-markdown_github/unnamed-chunk-4-2.png)
-
-``` r
-g <- arrangeGrob(gOak, gControl, nrow=2)
-```
 
 is there a difference in the spider populations for the two transects?
 ----------------------------------------------------------------------
@@ -104,24 +88,31 @@ are clusters appearing and do they persist across multiple weeks?
 -----------------------------------------------------------------
 
 ``` r
-clusterNumber <- 3
-df <- bugs.df
-species <- "Thomisidae..crab.spider."
-
-dataList <- buildClustersByWeek(df, t="control", species="Thomisidae..crab.spider.", cn=clusterNumber)
-
-cl1.gg <- kmPlot(list=dataList, transectText="control")
-
-dataList <- buildClustersByWeek(df, t="oakMargin", species="Thomisidae..crab.spider.", cn=clusterNumber)
-
-cl2.gg <- kmPlot(list=dataList, transectText="oakMargin")
-```
-
-``` r
 grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
 ```
 
 <img src="ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png" width="100%" />
+
+``` r
+if (FALSE) {
+  #source('./code/bayes.R')
+
+  returnList <- evaluateDailySpiderCounts(bugs.df)
+
+  lh.df <- returnList[[5]]
+
+  returnList[[6]] <- plotLikelihood(df=lh.df)
+
+  print(returnList[[1]])
+  print(returnList[[6]])
+
+  kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
+
+  pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
+                          p.adjust.method = "BH")
+
+}
+```
 
 using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (cluster analysis suggests trap segments 1-4, 5-7, and 8-10)
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -129,8 +120,8 @@ using the control transect as a baseline, how do the populations in the primary 
 #### TO-DO: refine normalization method
 
 ``` r
-positionText <- paste("\ntransect positions ", "1-4", sep="")
-g3 <- compareTransectUsingQuosure(data=bugs.df, 
+  positionText <- paste("\ntransect positions ", "1-4", sep="")
+  g3 <- compareTransectG2V1(data=bugs.df, 
                                  species=quo(Thomisidae..crab.spider.), 
                                  operator="LT",
                                  initialPosition=quo(5), 
@@ -138,11 +129,11 @@ g3 <- compareTransectUsingQuosure(data=bugs.df,
                                  positionText)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 ``` r
-positionText <- paste("\ntransect positions ", "5-7", sep="")
-g46 <- compareTransectUsingQuosure(data=bugs.df, 
+  positionText <- paste("\ntransect positions ", "5-7", sep="")
+  g46 <- compareTransectG2V1(data=bugs.df, 
                                  species=quo(Thomisidae..crab.spider.), 
                                  operator="BETWEEN",
                                  initialPosition=quo(4), 
@@ -150,11 +141,11 @@ g46 <- compareTransectUsingQuosure(data=bugs.df,
                                  positionText)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-9-2.png)
 
 ``` r
-positionText <- paste("\ntransect positions ", "8-10", sep="")
-g7 <- compareTransectUsingQuosure(data=bugs.df, 
+  positionText <- paste("\ntransect positions ", "8-10", sep="")
+  g7 <- compareTransectG2V1(data=bugs.df, 
                                  species=quo(Thomisidae..crab.spider.), 
                                  operator="GT",
                                  initialPosition=quo(7), 
@@ -162,13 +153,7 @@ g7 <- compareTransectUsingQuosure(data=bugs.df,
                                  positionText)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-3.png)
-
-``` r
-g <- arrangeGrob(g3, g46, g7, nrow=3)
-newFile <- paste("ampelos-", format(Sys.time(), "%d-%m-%Y-%H%M"), ".pdf", sep = "")
-ggsave(file=newFile, g, width=20, height=30, device = "pdf", units = "cm") #saves g
-```
+![](ampelos_files/figure-markdown_github/unnamed-chunk-9-3.png)
 
 how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
 -------------------------------------------------------------------------------------------------------------------------------------------
@@ -178,7 +163,7 @@ m1 <- simMatrixV3(data=bugs.df, transect=quo("oakMargin"),
                                 transectText="oakMargin")
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-9-1.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-10-1.png" width="100%" />
 
 ``` r
 #g <- arrangeGrob(m1, m2, nrow=2)
@@ -189,7 +174,7 @@ m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
                                 transectText="control")
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-10-1.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-11-1.png" width="100%" />
 
 ``` r
 #g <- arrangeGrob(m1, m2, nrow=2)
@@ -206,7 +191,7 @@ does the crab spider population appear to change over time? Is there a differenc
 plotSpeciesTrendV2(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-11-1.png" width="100%" /><img src="ampelos_files/figure-markdown_github/unnamed-chunk-11-2.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-12-1.png" width="100%" /><img src="ampelos_files/figure-markdown_github/unnamed-chunk-12-2.png" width="100%" />
 
     ## NULL
 
@@ -217,38 +202,12 @@ TO-DO: develop and apply normalization method
 ---------------------------------------------
 
 ``` r
-plotRidges(data=bugs.df, combined=FALSE, bugs="Thomisidae..crab.spider.", speciesText="Crab Spider", where="control", when="pm", wk=1, caption=Sys.Date())
-```
-
-    ## Scale for 'x' is already present. Adding another scale for 'x', which
-    ## will replace the existing scale.
-
-    ## Picking joint bandwidth of 27.8
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-12-1.png)
-
-``` r
 new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
-plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="control", when="pm", wk=1, caption=Sys.Date())
+
+v2.1 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="pm", wk=1, caption=Sys.Date())
+
+v2.2 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="am", wk=1, caption=Sys.Date())
 ```
-
-    ## Scale for 'x' is already present. Adding another scale for 'x', which
-    ## will replace the existing scale.
-
-    ## Picking joint bandwidth of 17
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-12-2.png)
-
-``` r
-plotRidges(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", where="oakMargin", when="pm", wk=1, caption=Sys.Date())
-```
-
-    ## Scale for 'x' is already present. Adding another scale for 'x', which
-    ## will replace the existing scale.
-
-    ## Picking joint bandwidth of 16.6
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-12-3.png)
 
 and the species counts?
 -----------------------
@@ -272,10 +231,10 @@ percentage
 Diptera..Agromyzidae..leafminer..
 </td>
 <td style="text-align:right;">
-880
+893
 </td>
 <td style="text-align:right;">
-19.20
+19.09
 </td>
 </tr>
 <tr>
@@ -286,7 +245,7 @@ Braconid.wasp
 73
 </td>
 <td style="text-align:right;">
-1.59
+1.56
 </td>
 </tr>
 <tr>
@@ -294,10 +253,10 @@ Braconid.wasp
 Halictus.sp....3.part..native.bee.
 </td>
 <td style="text-align:right;">
-476
+522
 </td>
 <td style="text-align:right;">
-10.39
+11.16
 </td>
 </tr>
 <tr>
@@ -308,7 +267,7 @@ pencilBug
 60
 </td>
 <td style="text-align:right;">
-1.31
+1.28
 </td>
 </tr>
 <tr>
@@ -316,10 +275,10 @@ pencilBug
 Agapostemon.sp....green..native.bee.
 </td>
 <td style="text-align:right;">
-77
+81
 </td>
 <td style="text-align:right;">
-1.68
+1.73
 </td>
 </tr>
 <tr>
@@ -330,7 +289,7 @@ Osmia.sp...native.bee.
 62
 </td>
 <td style="text-align:right;">
-1.35
+1.33
 </td>
 </tr>
 <tr>
@@ -338,10 +297,10 @@ Osmia.sp...native.bee.
 Honey.Bee
 </td>
 <td style="text-align:right;">
-471
+476
 </td>
 <td style="text-align:right;">
-10.28
+10.17
 </td>
 </tr>
 <tr>
@@ -349,10 +308,10 @@ Honey.Bee
 Bombus.californicus..bumble.
 </td>
 <td style="text-align:right;">
-277
+279
 </td>
 <td style="text-align:right;">
-6.04
+5.96
 </td>
 </tr>
 <tr>
@@ -360,10 +319,10 @@ Bombus.californicus..bumble.
 Thomisidae..crab.spider.
 </td>
 <td style="text-align:right;">
-678
+680
 </td>
 <td style="text-align:right;">
-14.79
+14.53
 </td>
 </tr>
 <tr>
@@ -371,10 +330,10 @@ Thomisidae..crab.spider.
 spider.other
 </td>
 <td style="text-align:right;">
-168
+171
 </td>
 <td style="text-align:right;">
-3.67
+3.65
 </td>
 </tr>
 <tr>
@@ -382,10 +341,10 @@ spider.other
 ladyBug
 </td>
 <td style="text-align:right;">
-42
+46
 </td>
 <td style="text-align:right;">
-0.92
+0.98
 </td>
 </tr>
 <tr>
@@ -396,7 +355,7 @@ Lygus.hesperus..western.tarnished.plant.bug.
 37
 </td>
 <td style="text-align:right;">
-0.81
+0.79
 </td>
 </tr>
 <tr>
@@ -407,7 +366,7 @@ pentamonidae...stinkBug.
 15
 </td>
 <td style="text-align:right;">
-0.33
+0.32
 </td>
 </tr>
 <tr>
@@ -415,10 +374,10 @@ pentamonidae...stinkBug.
 other
 </td>
 <td style="text-align:right;">
-1197
+1213
 </td>
 <td style="text-align:right;">
-26.12
+25.92
 </td>
 </tr>
 <tr>
@@ -429,7 +388,7 @@ checkerspot.butterfly
 27
 </td>
 <td style="text-align:right;">
-0.59
+0.58
 </td>
 </tr>
 <tr>
@@ -437,10 +396,10 @@ checkerspot.butterfly
 Pyralidae..Snout.Moth.
 </td>
 <td style="text-align:right;">
-16
+17
 </td>
 <td style="text-align:right;">
-0.35
+0.36
 </td>
 </tr>
 <tr>
@@ -451,7 +410,7 @@ Diabrotica.undecimpunctata..Cucumber.Beetle.
 18
 </td>
 <td style="text-align:right;">
-0.39
+0.38
 </td>
 </tr>
 <tr>
@@ -462,7 +421,7 @@ Orius..pirate.bug.
 9
 </td>
 <td style="text-align:right;">
-0.20
+0.19
 </td>
 </tr>
 </tbody>
