@@ -1204,6 +1204,8 @@ assign("combo.df", combo.df, envir=.GlobalEnv)
       xlim(154,239) +
       ylim(-.1,3.1) +
 
+      geom_hline(yintercept=1) + 
+
       labs(title= paste("average spiders per trap ",
                         positionText,
                         "\n(oak average / control average)", sep=""), 
@@ -1419,6 +1421,7 @@ plotRidgesV2 <- function(data, combined, bugs, speciesText, when, wk, caption) {
     scale_discrete_manual(aesthetics = "point_shape", values = c(21, 22, 23)) +
 
     xlim(1,10) +
+
     # http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels#change-tick-mark-labels
     #scale_y_discrete(labels=c("0" = "none", "1" = "one or more")) +
     scale_x_continuous(breaks=seq(4,200,16), 
