@@ -131,7 +131,7 @@ grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
 
 ```{r, echo=TRUE, include=TRUE, message=F, warning=F}
 
-if (FALSE) {
+if (TRUE) {
   #source('./code/bayes.R')
 
   returnList <- evaluateDailySpiderCounts(bugs.df)

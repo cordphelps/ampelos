@@ -94,7 +94,7 @@ grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
 <img src="ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png" width="100%" />
 
 ``` r
-if (FALSE) {
+if (TRUE) {
   #source('./code/bayes.R')
 
   returnList <- evaluateDailySpiderCounts(bugs.df)
@@ -113,6 +113,19 @@ if (FALSE) {
 
 }
 ```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
+
+    ## 
+    ##  Pairwise comparisons using Wilcoxon rank sum test 
+    ## 
+    ## data:  lh.df$likelihood and lh.df$seasonalTimeframe 
+    ## 
+    ##       one two
+    ## two   1   -  
+    ## three 1   1  
+    ## 
+    ## P value adjustment method: BH
 
 using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (cluster analysis suggests trap segments 1-4, 5-7, and 8-10)
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
