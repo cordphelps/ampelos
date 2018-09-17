@@ -217,26 +217,10 @@ TO-DO: develop and apply normalization method
 ``` r
 new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
 
-plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="pm", wk=1, caption=Sys.Date())
+v2.1 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="pm", wk=1, caption=Sys.Date())
+
+v2.2 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="am", wk=1, caption=Sys.Date())
 ```
-
-    ## Scale for 'x' is already present. Adding another scale for 'x', which
-    ## will replace the existing scale.
-
-    ## Picking joint bandwidth of 18.8
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-13-1.png)
-
-``` r
-plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="am", wk=1, caption=Sys.Date())
-```
-
-    ## Scale for 'x' is already present. Adding another scale for 'x', which
-    ## will replace the existing scale.
-
-    ## Picking joint bandwidth of 21.7
-
-![](ampelos_files/figure-markdown_github/unnamed-chunk-13-2.png)
 
 and the species counts?
 -----------------------
