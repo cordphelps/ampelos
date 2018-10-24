@@ -1,0 +1,125 @@
+---
+title: "clusterSim"
+output: github_document
+---
+
+
+
+```{r, echo=T, message=T, warning=T}
+
+# Visualize cluster data using box plots
+# http://www.sthda.com/english/wiki/kruskal-wallis-test-in-r
+
+if (FALSE) {
+
+}
+  
+source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
+bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
+
+# cluster level filtering (select specific rows)
+# parameter level filtering (select transect / time / )
+
+library(dplyr)
+
+spider.df <- bugs.df %>%
+  dplyr::select(-positionX, -julian) %>%
+  dplyr::select(-Agapostemon.sp....green..native.bee., -Bombus.californicus..bumble., -Braconid.wasp, -checkerspot.butterfly, -Diabrotica.undecimpunctata..Cucumber.Beetle., -Diptera..Agromyzidae..leafminer.., -Halictus.sp....3.part..native.bee., -Honey.Bee, -ladyBug, -Lygus.hesperus..western.tarnished.plant.bug., -Orius..pirate.bug., -Osmia.sp...native.bee., -other, -pencilBug, -pentamonidae...stinkBug., -Pyralidae..Snout.Moth., -spider.other) 
+
+oakCluster1.df <- spider.df %>%
+  dplyr::filter( time == "pm",  transect == "oakMargin") %>%
+  #dplyr::filter(transect == "oakMargin") %>%
+  dplyr::filter(position >= 0 & position <= 4) %>%
+  dplyr::group_by( week ) %>%
+  dplyr::summarise( 
+    sp_by_week = sum( Thomisidae..crab.spider. , na.rm = TRUE ) , 
+    count = n(),
+    mean = mean(Thomisidae..crab.spider., na.rm = TRUE),
+    sd = sd(Thomisidae..crab.spider., na.rm = TRUE),
+    median = median(Thomisidae..crab.spider., na.rm = TRUE),
+    IQR = IQR(Thomisidae..crab.spider., na.rm = TRUE)
+      ) %>%
+  dplyr::mutate(cluster = "cl1")
+
+
+# (let ggplot() do the work for grouping and calculating)
+oakCluster1.df <- spider.df %>%
+  #dplyr::filter( time == "pm",  transect == "oakMargin") %>%
+  dplyr::filter(transect == "oakMargin") %>%
+  dplyr::filter(position >= 0 & position <= 4) %>%
+  dplyr::mutate(cluster = "cl1")
+
+oakCluster2.df <- spider.df %>%
+  #dplyr::filter( time == "pm",  transect == "oakMargin") %>%
+  dplyr::filter(transect == "oakMargin") %>%
+  dplyr::filter(position >= 5 & position <= 7) %>%
+  dplyr::mutate(cluster = "cl2")
+
+oakCluster3.df <- spider.df %>%
+  #dplyr::filter( time == "pm",  transect == "oakMargin") %>%
+  dplyr::filter(transect == "oakMargin") %>%
+  dplyr::filter(position >= 8 & position <= 10) %>%
+  dplyr::mutate(cluster = "cl3") %>%
+  dplyr::group_by( week ) %>%
+  dplyr::summarise( 
+    mean = mean(Thomisidae..crab.spider., na.rm = TRUE)
+  )
+
+clusters.df <- dplyr::bind_rows(oakCluster1.df, oakCluster2.df, oakCluster3.df)
+
+oakCluster8.df <- spider.df %>%
+  #dplyr::filter( time == "pm",  transect == "oakMargin") %>%
+  dplyr::filter(transect == "oakMargin") %>%
+  dplyr::filter(position == 8) %>%
+  dplyr::mutate(cluster = "cl3") %>%
+  dplyr::group_by( week ) %>%
+  dplyr::summarise( 
+    mean8 = mean(Thomisidae..crab.spider., na.rm = TRUE)
+  )
+
+oakCluster9.df <- spider.df %>%
+  #dplyr::filter( time == "pm",  transect == "oakMargin") %>%
+  dplyr::filter(transect == "oakMargin") %>%
+  dplyr::filter(position == 9) %>%
+  dplyr::mutate(cluster = "cl3") %>%
+  dplyr::group_by( week ) %>%
+  dplyr::summarise( 
+    mean9 = mean(Thomisidae..crab.spider., na.rm = TRUE),
+    cluster = "cl3"
+  )
+
+oakCluster10.df <- spider.df %>%
+  #dplyr::filter( time == "pm",  transect == "oakMargin") %>%
+  dplyr::filter(transect == "oakMargin") %>%
+  dplyr::filter(position == 10) %>%
+  dplyr::mutate(cluster = "cl3") %>%
+  dplyr::group_by( week ) %>%
+  dplyr::summarise( 
+    mean10 = mean(Thomisidae..crab.spider., na.rm = TRUE)
+  )
+
+library(ggplot2)
+library(scales) # to access break formatting functions
+library(RColorBrewer) # customise the colours of the boxes by adding the scale_fill_brewer to the plot
+
+# **************
+#  caution: boxplots are designed to illustrate CONTINUOUS variables 
+# **************
+p10 <- ggplot(clusters.df, aes(x = as.factor(week), 
+                                  y = Thomisidae..crab.spider.,
+                                  fill = cluster )) +
+        # geom_boxplot(fill = "purple", colour = "plum", alpha = 0.7) +
+        geom_boxplot(alpha = 0.7) +
+        scale_fill_brewer(palette = "Accent") +
+        scale_x_discrete(name = "week") +
+        scale_y_continuous(name = "crab spiders observed") +
+        # scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+              # labels = trans_format("log10", math_format(10^.x))) +
+        # geom_jitter() +
+        ggtitle("this is a title") +
+        theme_bw()
+
+
+```
+
+

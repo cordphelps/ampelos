@@ -15,6 +15,7 @@ source("./code/similarity.R")
 source("./code/jaccard-similarity.R")
 source("./code/diversity.R")
 source("./code/k-means.R")
+source("./code/clusterSimilarity.R")
 source('./code/bayes.R')
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
@@ -100,7 +101,7 @@ g30 <- plotBugDistribution(data=reducedData.df,
 
 ## are clusters appearing and do they persist across multiple weeks?
 
-```{r, echo=TRUE, include=FALSE, message=F, warning=F, fig.keep='none'}
+```{r, echo=T, include=T, message=F, warning=T, fig.keep='none'}
 
 
 clusterNumber <- 3
@@ -120,6 +121,9 @@ cl2.gg <- kmPlot(list=dataList, transectText="oakMargin")
 ```
 
 
+
+
+
 ```{r, out.width = "100%", echo=TRUE, include=TRUE, message=F, warning=F}
 
 grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
@@ -127,6 +131,29 @@ grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
 
 ```
 
+#### (control cluster #2 is slightly wider than oakMargin cluster #2)
+
+## how do the clusters compare to each other across multiple weeks?
+
+```{r, echo=TRUE, include=TRUE, message=F, warning=F }
+
+df <- clusterSetup()
+
+
+cluster.df <- clusterAccumulate(df, "control", "pm")
+clusterBoxplot(cluster.df, "control", "pm")
+
+cluster.df <- clusterAccumulate(df, "oakMargin", "pm")
+clusterBoxplot(cluster.df, "oakMargin", "pm")
+
+cluster.df <- clusterAccumulate(df, "control", "am")
+clusterBoxplot(cluster.df, "control", "am")
+
+cluster.df <- clusterAccumulate(df, "oakMargin", "am")
+clusterBoxplot(cluster.df, "oakMargin", "am")
+
+
+```
 
 
 ```{r, echo=TRUE, include=TRUE, message=F, warning=F}
