@@ -12,6 +12,7 @@ source("./code/similarity.R")
 source("./code/jaccard-similarity.R")
 source("./code/diversity.R")
 source("./code/k-means.R")
+source("./code/clusterSimilarity.R")
 source('./code/bayes.R')
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
@@ -88,10 +89,60 @@ are clusters appearing and do they persist across multiple weeks?
 -----------------------------------------------------------------
 
 ``` r
+clusterNumber <- 3
+df <- bugs.df
+species <- "Thomisidae..crab.spider."
+
+dataList <- buildClustersByWeek(df, t="control", species="Thomisidae..crab.spider.", cn=clusterNumber)
+
+cl1.gg <- kmPlot(list=dataList, transectText="control")
+
+dataList <- buildClustersByWeek(df, t="oakMargin", species="Thomisidae..crab.spider.", cn=clusterNumber)
+
+cl2.gg <- kmPlot(list=dataList, transectText="oakMargin")
+```
+
+``` r
 grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
 ```
 
 <img src="ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png" width="100%" />
+
+#### (control cluster \#2 is slightly wider than oakMargin cluster \#2)
+
+how do the clusters compare to each other across multiple weeks?
+----------------------------------------------------------------
+
+``` r
+df <- clusterSetup()
+
+
+cluster.df <- clusterAccumulate(df, "control", "pm")
+clusterBoxplot(cluster.df, "control", "pm")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)
+
+``` r
+cluster.df <- clusterAccumulate(df, "oakMargin", "pm")
+clusterBoxplot(cluster.df, "oakMargin", "pm")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
+
+``` r
+cluster.df <- clusterAccumulate(df, "control", "am")
+clusterBoxplot(cluster.df, "control", "am")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-3.png)
+
+``` r
+cluster.df <- clusterAccumulate(df, "oakMargin", "am")
+clusterBoxplot(cluster.df, "oakMargin", "am")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-4.png)
 
 ``` r
 if (TRUE) {
@@ -114,7 +165,7 @@ if (TRUE) {
 }
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-9-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-9-2.png)
 
     ## 
     ##  Pairwise comparisons using Wilcoxon rank sum test 
@@ -142,7 +193,7 @@ using the control transect as a baseline, how do the populations in the primary 
                                  positionText)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 ``` r
   positionText <- paste("\ntransect positions ", "5-7", sep="")
@@ -154,7 +205,7 @@ using the control transect as a baseline, how do the populations in the primary 
                                  positionText)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-9-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-10-2.png)
 
 ``` r
   positionText <- paste("\ntransect positions ", "8-10", sep="")
@@ -166,7 +217,7 @@ using the control transect as a baseline, how do the populations in the primary 
                                  positionText)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-9-3.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-10-3.png)
 
 how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
 -------------------------------------------------------------------------------------------------------------------------------------------
@@ -176,7 +227,7 @@ m1 <- simMatrixV3(data=bugs.df, transect=quo("oakMargin"),
                                 transectText="oakMargin")
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-10-1.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-11-1.png" width="100%" />
 
 ``` r
 #g <- arrangeGrob(m1, m2, nrow=2)
@@ -187,7 +238,7 @@ m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
                                 transectText="control")
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-11-1.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-12-1.png" width="100%" />
 
 ``` r
 #g <- arrangeGrob(m1, m2, nrow=2)
@@ -204,7 +255,7 @@ does the crab spider population appear to change over time? Is there a differenc
 plotSpeciesTrendV2(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-12-1.png" width="100%" /><img src="ampelos_files/figure-markdown_github/unnamed-chunk-12-2.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/unnamed-chunk-13-1.png" width="100%" /><img src="ampelos_files/figure-markdown_github/unnamed-chunk-13-2.png" width="100%" />
 
     ## NULL
 
