@@ -165,3 +165,115 @@ clusterAccumulate <- function(spider.df, t, daytime) {
   
 }
 
+
+clusterAccumulateTotal <- function(spider.df, t) {
+  
+  cluster1.df <- spider.df %>%
+    dplyr::filter( transect == t) %>%
+    dplyr::filter(position == 1) %>%
+    dplyr::group_by( week ) %>%
+    dplyr::summarise( 
+      spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+      cluster = "cl1"
+    )
+  
+  cluster2.df <- spider.df %>%
+    dplyr::filter( transect == t) %>%
+    dplyr::filter(position == 2) %>%
+    dplyr::group_by( week ) %>%
+    dplyr::summarise( 
+      spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+      cluster = "cl1"
+    )
+  
+  cluster3.df <- spider.df %>%
+    dplyr::filter( transect == t) %>%
+    dplyr::filter(position == 3) %>%
+    dplyr::group_by( week ) %>%
+    dplyr::summarise( 
+      spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+      cluster = "cl1"
+    )
+  
+  if (t == "control") {
+    cluster4.df <- spider.df %>%
+      dplyr::filter( transect == t) %>%
+      dplyr::filter(position == 4) %>%
+      dplyr::group_by( week ) %>%
+      dplyr::summarise( 
+        spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+        cluster = "cl1"
+      )
+  } else {
+    cluster4.df <- spider.df %>%
+      dplyr::filter( transect == t) %>%
+      dplyr::filter(position == 4) %>%
+      dplyr::group_by( week ) %>%
+      dplyr::summarise( 
+        spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+        cluster = "cl2"
+      )
+  }
+  
+  
+  cluster5.df <- spider.df %>%
+    dplyr::filter( transect == t) %>%
+    dplyr::filter(position == 5) %>%
+    dplyr::group_by( week ) %>%
+    dplyr::summarise( 
+      spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+      cluster = "cl2"
+    )
+  
+  cluster6.df <- spider.df %>%
+    dplyr::filter( transect == t) %>%
+    dplyr::filter(position == 6) %>%
+    dplyr::group_by( week ) %>%
+    dplyr::summarise( 
+      spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+      cluster = "cl2"
+    )
+  
+  cluster7.df <- spider.df %>%
+    dplyr::filter( transect == t) %>%
+    dplyr::filter(position == 7) %>%
+    dplyr::group_by( week ) %>%
+    dplyr::summarise( 
+      spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+      cluster = "cl2"
+    )
+  
+  
+  cluster8.df <- spider.df %>%
+    dplyr::filter( transect == t) %>%
+    dplyr::filter(position == 8) %>%
+    dplyr::group_by( week ) %>%
+    dplyr::summarise( 
+      spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+      cluster = "cl3"
+    )
+  
+  cluster9.df <- spider.df %>%
+    dplyr::filter( transect == t) %>%
+    dplyr::filter(position == 9) %>%
+    dplyr::group_by( week ) %>%
+    dplyr::summarise( 
+      spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+      cluster = "cl3"
+    )
+  
+  cluster10.df <- spider.df %>%
+    dplyr::filter( transect == t) %>%
+    dplyr::filter(position == 10) %>%
+    dplyr::group_by( week ) %>%
+    dplyr::summarise( 
+      spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+      cluster = "cl3"
+    )
+  
+  clusters.df <- bind_rows(cluster1.df, cluster2.df, cluster3.df, cluster4.df, cluster5.df, cluster6.df, cluster7.df, cluster8.df, cluster9.df, cluster10.df)
+  
+  
+  return(clusters.df)
+  
+}

@@ -116,33 +116,47 @@ how do the clusters compare to each other across multiple weeks?
 ``` r
 df <- clusterSetup()
 
+ 
+cluster.df <- clusterAccumulateTotal(df, "control")
+clusterBoxplot(cluster.df, "control", "(am pm)")
+```
 
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)
+
+``` r
+cluster.df <- clusterAccumulateTotal(df, "oakMargin")
+clusterBoxplot(cluster.df, "oakMargin", "(am pm)")
+```
+
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
+
+``` r
 cluster.df <- clusterAccumulate(df, "control", "pm")
 clusterBoxplot(cluster.df, "control", "pm")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-3.png)
 
 ``` r
 cluster.df <- clusterAccumulate(df, "oakMargin", "pm")
 clusterBoxplot(cluster.df, "oakMargin", "pm")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-4.png)
 
 ``` r
 cluster.df <- clusterAccumulate(df, "control", "am")
 clusterBoxplot(cluster.df, "control", "am")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-3.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-5.png)
 
 ``` r
 cluster.df <- clusterAccumulate(df, "oakMargin", "am")
 clusterBoxplot(cluster.df, "oakMargin", "am")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-4.png)
+![](ampelos_files/figure-markdown_github/unnamed-chunk-8-6.png)
 
 ``` r
 if (TRUE) {

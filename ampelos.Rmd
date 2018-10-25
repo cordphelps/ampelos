@@ -139,6 +139,13 @@ grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
 
 df <- clusterSetup()
 
+ 
+cluster.df <- clusterAccumulateTotal(df, "control")
+clusterBoxplot(cluster.df, "control", "(am pm)")
+
+cluster.df <- clusterAccumulateTotal(df, "oakMargin")
+clusterBoxplot(cluster.df, "oakMargin", "(am pm)")
+
 
 cluster.df <- clusterAccumulate(df, "control", "pm")
 clusterBoxplot(cluster.df, "control", "pm")
