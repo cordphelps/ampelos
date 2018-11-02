@@ -17,8 +17,6 @@ if (FALSE) {
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 
-# cluster level filtering (select specific rows)
-# parameter level filtering (select transect / time / )
 
 library(dplyr)
 
@@ -67,37 +65,123 @@ oakCluster3.df <- spider.df %>%
 
 clusters.df <- dplyr::bind_rows(oakCluster1.df, oakCluster2.df, oakCluster3.df)
 
-oakCluster8.df <- spider.df %>%
-  #dplyr::filter( time == "pm",  transect == "oakMargin") %>%
-  dplyr::filter(transect == "oakMargin") %>%
-  dplyr::filter(position == 8) %>%
-  dplyr::mutate(cluster = "cl3") %>%
+
+```
+
+
+```{r}
+
+
+t <- "control"
+time <- "pm"
+
+cluster1.df <- spider.df %>%
+  dplyr::filter( time == time,  transect == t) %>%
+  dplyr::filter(position == 1) %>%
   dplyr::group_by( week ) %>%
   dplyr::summarise( 
-    mean8 = mean(Thomisidae..crab.spider., na.rm = TRUE)
+    spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+    cluster = "cl1"
   )
 
-oakCluster9.df <- spider.df %>%
-  #dplyr::filter( time == "pm",  transect == "oakMargin") %>%
-  dplyr::filter(transect == "oakMargin") %>%
-  dplyr::filter(position == 9) %>%
-  dplyr::mutate(cluster = "cl3") %>%
+cluster2.df <- spider.df %>%
+  dplyr::filter( time == time,  transect == t) %>%
+  dplyr::filter(position == 2) %>%
   dplyr::group_by( week ) %>%
   dplyr::summarise( 
-    mean9 = mean(Thomisidae..crab.spider., na.rm = TRUE),
+    spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+    cluster = "cl1"
+  )
+
+cluster3.df <- spider.df %>%
+  dplyr::filter( time == time,  transect == t) %>%
+  dplyr::filter(position == 3) %>%
+  dplyr::group_by( week ) %>%
+  dplyr::summarise( 
+    spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+    cluster = "cl1"
+  )
+
+if (t == "control") {
+  cluster4.df <- spider.df %>%
+    dplyr::filter( time == time,  transect == t) %>%
+    dplyr::filter(position == 4) %>%
+    dplyr::group_by( week ) %>%
+    dplyr::summarise( 
+      spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+      cluster = "cl1"
+    )
+} else {
+  cluster4.df <- spider.df %>%
+    dplyr::filter( time == time,  transect == t) %>%
+    dplyr::filter(position == 4) %>%
+    dplyr::group_by( week ) %>%
+    dplyr::summarise( 
+      spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+      cluster = "cl2"
+    )
+}
+
+
+cluster5.df <- spider.df %>%
+  dplyr::filter( time == time,  transect == t) %>%
+  dplyr::filter(position == 5) %>%
+  dplyr::group_by( week ) %>%
+  dplyr::summarise( 
+    spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+    cluster = "cl2"
+  )
+
+cluster6.df <- spider.df %>%
+  dplyr::filter( time == time,  transect == t) %>%
+  dplyr::filter(position == 6) %>%
+  dplyr::group_by( week ) %>%
+  dplyr::summarise( 
+    spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+    cluster = "cl2"
+  )
+
+cluster7.df <- spider.df %>%
+  dplyr::filter( time == time,  transect == t) %>%
+  dplyr::filter(position == 7) %>%
+  dplyr::group_by( week ) %>%
+  dplyr::summarise( 
+    spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+    cluster = "cl2"
+  )
+
+
+cluster8.df <- spider.df %>%
+  dplyr::filter( time == time,  transect == t) %>%
+  dplyr::filter(position == 8) %>%
+  dplyr::group_by( week ) %>%
+  dplyr::summarise( 
+    spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
     cluster = "cl3"
   )
 
-oakCluster10.df <- spider.df %>%
-  #dplyr::filter( time == "pm",  transect == "oakMargin") %>%
-  dplyr::filter(transect == "oakMargin") %>%
-  dplyr::filter(position == 10) %>%
-  dplyr::mutate(cluster = "cl3") %>%
+cluster9.df <- spider.df %>%
+  dplyr::filter( time == time,  transect == t) %>%
+  dplyr::filter(position == 9) %>%
   dplyr::group_by( week ) %>%
   dplyr::summarise( 
-    mean10 = mean(Thomisidae..crab.spider., na.rm = TRUE)
+    spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+    cluster = "cl3"
   )
 
+cluster10.df <- spider.df %>%
+  dplyr::filter( time == time,  transect == t) %>%
+  dplyr::filter(position == 10) %>%
+  dplyr::group_by( week ) %>%
+  dplyr::summarise( 
+    spiders = mean(Thomisidae..crab.spider., na.rm = TRUE),
+    cluster = "cl3"
+  )
+
+clusters.df <- bind_rows(cluster1.df, cluster2.df, cluster3.df, cluster4.df, cluster5.df, cluster6.df, cluster7.df, cluster8.df, cluster9.df, cluster10.df)
+  
+  
+  
 library(ggplot2)
 library(scales) # to access break formatting functions
 library(RColorBrewer) # customise the colours of the boxes by adding the scale_fill_brewer to the plot
@@ -106,20 +190,41 @@ library(RColorBrewer) # customise the colours of the boxes by adding the scale_f
 #  caution: boxplots are designed to illustrate CONTINUOUS variables 
 # **************
 p10 <- ggplot(clusters.df, aes(x = as.factor(week), 
-                                  y = Thomisidae..crab.spider.,
+                                  y = spiders,
                                   fill = cluster )) +
         # geom_boxplot(fill = "purple", colour = "plum", alpha = 0.7) +
         geom_boxplot(alpha = 0.7) +
-        scale_fill_brewer(palette = "Accent") +
+        scale_fill_manual(values=c("red", "green", "blue")) +
+  #scale_fill_brewer(palette = "Accent") +
         scale_x_discrete(name = "week") +
         scale_y_continuous(name = "crab spiders observed") +
         # scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
               # labels = trans_format("log10", math_format(10^.x))) +
         # geom_jitter() +
-        ggtitle("this is a title") +
+        ggtitle(paste("cluster comparisons by week\n", "transect: ", t, ", daytime: ", time, sep="")) +
         theme_bw()
 
+p10
 
 ```
 
+
+```{r}
+setwd("/Users/rcphelps/code/thesis/ampelos/")
+source("./code/clusterSimilarity.R")
+
+clusterSetup()
+
+cluster.df <- clusterOakPM()
+
+clusterBoxplot(cluster.df, "oakMargin", "pm")
+
+cluster.df <- clusterControlPM()
+
+clusterBoxplot(cluster.df, "control", "pm")
+
+
+
+
+```
 

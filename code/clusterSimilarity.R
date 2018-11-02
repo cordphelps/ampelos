@@ -2,6 +2,8 @@
 clusterSetup <- function() {
   # Visualize cluster data using box plots
   # http://www.sthda.com/english/wiki/kruskal-wallis-test-in-r
+  # http://t-redactyl.io/blog/2016/04/creating-plots-in-r-using-ggplot2-part-10-boxplots.html
+  
 
   if (FALSE) {
   
