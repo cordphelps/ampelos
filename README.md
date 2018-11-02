@@ -31,7 +31,7 @@ weekly composition of species and individuals?
 grid.arrange(gg.Species.joint, gg.Ind.joint, ncol=1, nrow=2)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](ampelos_files/figure-markdown_github/diversityArrange-1.png)
 
 ![transect layout](./images/transectLayout.jpg)
 
@@ -48,7 +48,7 @@ gOak <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
                                   transectText="oakMargin")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](ampelos_files/figure-markdown_github/similarity-1.png)
 
 ``` r
 gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
@@ -56,7 +56,7 @@ gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
                                   transectText="control")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-4-2.png)
+![](ampelos_files/figure-markdown_github/similarity-2.png)
 
 is there a difference in the spider populations for the two transects?
 ----------------------------------------------------------------------
@@ -69,7 +69,7 @@ g24 <- plotBugDistribution(data=reducedData.df,
                           caption="stuff")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](ampelos_files/figure-markdown_github/overheadCompare-1.png)
 
 ``` r
 reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(30), species=quo(Thomisidae..crab.spider.))
@@ -79,7 +79,7 @@ g30 <- plotBugDistribution(data=reducedData.df,
                           caption="stuff")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-5-2.png)
+![](ampelos_files/figure-markdown_github/overheadCompare-2.png)
 
 ``` r
 # g <- arrangeGrob(g1, g2, nrow=1)
@@ -106,7 +106,7 @@ cl2.gg <- kmPlot(list=dataList, transectText="oakMargin")
 grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-7-1.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/clustersArrange-1.png" width="100%" />
 
 #### (control cluster \#2 is slightly wider than oakMargin cluster \#2)
 
@@ -121,42 +121,42 @@ cluster.df <- clusterAccumulateTotal(df, "control")
 clusterBoxplot(cluster.df, "control", "(am pm)")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-1.png)
 
 ``` r
 cluster.df <- clusterAccumulateTotal(df, "oakMargin")
 clusterBoxplot(cluster.df, "oakMargin", "(am pm)")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-2.png)
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-2.png)
 
 ``` r
 cluster.df <- clusterAccumulate(df, "control", "pm")
 clusterBoxplot(cluster.df, "control", "pm")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-3.png)
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-3.png)
 
 ``` r
 cluster.df <- clusterAccumulate(df, "oakMargin", "pm")
 clusterBoxplot(cluster.df, "oakMargin", "pm")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-4.png)
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-4.png)
 
 ``` r
 cluster.df <- clusterAccumulate(df, "control", "am")
 clusterBoxplot(cluster.df, "control", "am")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-5.png)
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-5.png)
 
 ``` r
 cluster.df <- clusterAccumulate(df, "oakMargin", "am")
 clusterBoxplot(cluster.df, "oakMargin", "am")
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-8-6.png)
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-6.png)
 
 ``` r
 if (TRUE) {
@@ -179,7 +179,7 @@ if (TRUE) {
 }
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-9-1.png)![](ampelos_files/figure-markdown_github/unnamed-chunk-9-2.png)
+![](ampelos_files/figure-markdown_github/clusterBayes-1.png)![](ampelos_files/figure-markdown_github/clusterBayes-2.png)
 
     ## 
     ##  Pairwise comparisons using Wilcoxon rank sum test 
@@ -207,7 +207,7 @@ using the control transect as a baseline, how do the populations in the primary 
                                  positionText)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](ampelos_files/figure-markdown_github/clusterTrends-1.png)
 
 ``` r
   positionText <- paste("\ntransect positions ", "5-7", sep="")
@@ -219,7 +219,7 @@ using the control transect as a baseline, how do the populations in the primary 
                                  positionText)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-10-2.png)
+![](ampelos_files/figure-markdown_github/clusterTrends-2.png)
 
 ``` r
   positionText <- paste("\ntransect positions ", "8-10", sep="")
@@ -231,7 +231,7 @@ using the control transect as a baseline, how do the populations in the primary 
                                  positionText)
 ```
 
-![](ampelos_files/figure-markdown_github/unnamed-chunk-10-3.png)
+![](ampelos_files/figure-markdown_github/clusterTrends-3.png)
 
 how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
 -------------------------------------------------------------------------------------------------------------------------------------------
@@ -241,7 +241,7 @@ m1 <- simMatrixV3(data=bugs.df, transect=quo("oakMargin"),
                                 transectText="oakMargin")
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-11-1.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/speciesMatrixOak-1.png" width="100%" />
 
 ``` r
 #g <- arrangeGrob(m1, m2, nrow=2)
@@ -252,7 +252,7 @@ m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
                                 transectText="control")
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-12-1.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/speciesMatrixControl-1.png" width="100%" />
 
 ``` r
 #g <- arrangeGrob(m1, m2, nrow=2)
@@ -269,7 +269,7 @@ does the crab spider population appear to change over time? Is there a differenc
 plotSpeciesTrendV2(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
 ```
 
-<img src="ampelos_files/figure-markdown_github/unnamed-chunk-13-1.png" width="100%" /><img src="ampelos_files/figure-markdown_github/unnamed-chunk-13-2.png" width="100%" />
+<img src="ampelos_files/figure-markdown_github/populations-1.png" width="100%" /><img src="ampelos_files/figure-markdown_github/populations-2.png" width="100%" />
 
     ## NULL
 
