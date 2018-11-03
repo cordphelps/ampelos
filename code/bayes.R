@@ -109,6 +109,12 @@ evaluateDailySpiderCounts <- function(df) {
   
   returnList[[1]] <- plotWeekly(total.df)
   
+  ## total.df
+  ##
+  ## multiple records per week with columns
+  ## week, transect, time, cluster, totalSpiders
+  ##
+  
   returnList <- generateLikelihood(df=total.df, 
                                    list=returnList,
                                    showPlot=FALSE)
@@ -190,10 +196,21 @@ plotLikelihood <- function(df) {
 
 generateLikelihood <- function(df, list, showPlot) {
   
-  library(rethinking)
+  if("rethinking" %in% (.packages())){
+    detach("package:rethinking", unload=TRUE) 
+  }
+
+  # https://bookdown.org/connect/#/apps/1850/access
+  library(brms)
   
   # build and return a df of likelihood (the probability that the
   # spider population is influenced by the oakMargin) by cluster by week
+  
+  ## total.df ( = df)
+  ##
+  ## multiple records per week with columns
+  ## week, transect, time, cluster, totalSpiders
+  ##
   
   
   # estimate different mean populations across 3 groups of weeks reflecting the 
@@ -206,6 +223,7 @@ generateLikelihood <- function(df, list, showPlot) {
   # generate nrow(ave.df) random population numbers with a normal distribution
   # t.df$population <- rnorm(nrow(t.df), mean=50, sd=5)
   
+  set.seed(10.2) # make the results reproducible
   
   df$population <- ifelse( (df$week>22 & df$week<26), rnorm(nrow(df), mean=75, sd=15),
                            ifelse( (df$week>25 & df$week<31), rnorm(nrow(df), mean=25, sd=8),
@@ -217,8 +235,12 @@ generateLikelihood <- function(df, list, showPlot) {
   df$contact_high <- ifelse( df$transect=="oakMargin" , 1 , 0 )
   
   cl.st.list <- list()  # for each cluster  
-  # build list of dataframes represting the  
-  # seasonal population 
+  # build list of dataframes represting the seasonal population 
+  #
+  # this is a list of 9
+  # 34 observations of 8 variables
+  # week, transect, time, cluster, totalSpiders, population, log_pop, contact_high
+  #
   cl.st.list[[1]] <- df %>% dplyr::filter(week < 26 & cluster == 'one')
   cl.st.list[[2]] <- df %>% dplyr::filter(week > 25 & week < 31 & cluster == 'one')
   cl.st.list[[3]] <- df %>% dplyr::filter(week > 30 & cluster == 'one')
@@ -249,38 +271,33 @@ generateLikelihood <- function(df, list, showPlot) {
   
   for (i in 1:length(cl.st.list)) {  # build model for each seasonal timeframe
     
-    ## R code 10.41
-    m10.10 <- map(
-      alist(
-        totalSpiders ~ dpois( lambda ),
-        #totalSpiders ~ dgamma( lambda ),
-        log(lambda) <- a + bp*log_pop +
-          bc*contact_high + bpc*contact_high*log_pop,
-        a ~ dnorm(0,100),
-        c(bp,bc,bpc) ~ dnorm(0,1)
-      ),
-      data=cl.st.list[[i]] )
     
-    ## R code 10.42
-    list[[2]] <- precis(m10.10,corr=TRUE)
-    if (showPlot == TRUE) {
-      list[[3]] <- plot(precis(m10.10))  # line graph
+    if (TRUE) {
+      
+      b10.10 <-
+        brm(data = cl.st.list[[i]], family = poisson,
+            totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop,
+            prior = c(prior(normal(0, 100), class = Intercept),
+                      prior(normal(0, 1), class = b)),
+            iter = 3000, warmup = 1000, chains = 4, cores = 4)
+      
+      print(b10.10)
+      
+      post <-
+        posterior_samples(b10.10)
+      
+      post <-
+        post %>%
+        mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`)*8),
+               lambda_low  = exp(b_Intercept + b_log_pop*8)) %>% 
+        mutate(diff        = lambda_high - lambda_low) 
+      
+      like.df <- post %>%
+        summarise(sum = sum(diff > 0)/length(diff))
+      
     }
     
-    ## R code 10.43
-    post <- extract.samples(m10.10)
-    lambda_high <- exp( post$a + post$bc + (post$bp + post$bpc)*2)
-    lambda_low <- exp( post$a + post$bp*2 )
-    
-    if (showPlot == TRUE) {
-      list[[4]] <- plot(post)  # (faceted plot)
-    }
-    
-    fig10.8 <- data.frame(lh=lambda_high, ll=lambda_low, delta=lambda_high-lambda_low)
-    
-    ## R code 10.44
-    diff <- lambda_high - lambda_low
-    # sum(diff > 0)/length(diff)
+
     
     # figure out which cluster we are referring to
     if (i < 4) {
@@ -300,7 +317,7 @@ generateLikelihood <- function(df, list, showPlot) {
       seasonalTimeframe <- "three"
     }      
     
-    temp2.df <- data.frame(cluster, seasonalTimeframe, sum(diff > 0)/length(diff) )
+    temp2.df <- data.frame(cluster, seasonalTimeframe, like.df$sum) 
     # column names need to match for rbind() to work
     names(temp2.df) <- c("cluster", "seasonalTimeframe", "likelihood")
     

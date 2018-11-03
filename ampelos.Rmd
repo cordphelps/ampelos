@@ -163,7 +163,7 @@ clusterBoxplot(cluster.df, "oakMargin", "am")
 ```
 
 
-```{r clusterBayes, echo=TRUE, include=TRUE, message=F, warning=F}
+```{r clusterBayes, echo=TRUE, include=TRUE, results="hide", message=F, warning=F}
 
 if (TRUE) {
   #source('./code/bayes.R')
@@ -177,10 +177,10 @@ if (TRUE) {
   print(returnList[[1]])
   print(returnList[[6]])
 
-  kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
+  # kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
 
-  pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
-                          p.adjust.method = "BH")
+  # pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
+     #                     p.adjust.method = "BH")
 
 }
 
