@@ -133,6 +133,8 @@ plotLikelihood <- function(df) {
   
   library(gridExtra)
   
+  colors <- c("one" = "red", "two" = "green", "three" = "blue")
+  
   gg <- ggplot(df, aes(x=seasonalTimeframe, y=likelihood)) +
     
     geom_point(aes(colour = factor(cluster),
@@ -145,11 +147,13 @@ plotLikelihood <- function(df) {
     #scale_x_continuous(breaks=seq(22,40,2)) +
     labs(title=paste("'likelihood' of an oakMargin effect\non the spider population", sep=""),
          subtitle=paste("subtitle ", sep=""), 
-         y="probability", 
+         y="plausibility", 
          x="seasonal timeframe", 
          caption = paste("", sep="") ) +
     
-    scale_color_manual(name="cluster postions", labels = c("1-4", "5-7", "8-10"), values = c("red", "green", "blue")) +
+    scale_color_manual(name="cluster postions", 
+                       labels = c("1-4", "5-7", "8-10"), 
+                       values = colors) +
     
     scale_x_discrete(labels=c("one" = "weeks 23-25", "two" = "weeks 26-30",
                               "three" = "weeks 31-34")) +
@@ -162,6 +166,8 @@ plotLikelihood <- function(df) {
     theme(legend.position = "bottom", legend.direction = "horizontal") +
     theme_bw() +
     coord_fixed() # control the aspect ratio of the output
+  
+  
   
   if (FALSE) {
     # is there a significant difference in these likelihood measures?
@@ -332,6 +338,8 @@ generateLikelihood <- function(df, list, showPlot) {
   }
   
   list[[5]] <- likelihood.df
+  
+  # list2env(list, envir = .GlobalEnv)
   
   return(list)
   

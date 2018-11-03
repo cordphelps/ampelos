@@ -182,11 +182,19 @@ if (TRUE) {
   # pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
      #                     p.adjust.method = "BH")
 
+  
 }
 
 
 ```
 
+
+
+```{r kable1, results='asis', echo=FALSE, message=F, warning=F}
+
+knitr::kable(returnList[[5]])
+
+```
 
 ## using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (cluster analysis suggests trap segments 1-4, 5-7, and 8-10)
 
@@ -271,7 +279,7 @@ v2.2 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="
 
 ## and the species counts?
 
-```{r kable, results='asis', echo=FALSE, message=F, warning=F}
+```{r kable2, results='asis', echo=FALSE, message=F, warning=F}
 
 bugList <- colnames(bugs.df[,5:22])
 trim.tbl <- bugs.df %>% select(5:22) %>% colSums() %>% t()
