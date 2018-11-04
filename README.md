@@ -184,8 +184,6 @@ if (TRUE) {
 
 ![](ampelos_files/figure-markdown_github/clusterBayes-1.png)![](ampelos_files/figure-markdown_github/clusterBayes-2.png)
 
-
-
 <table>
 <thead>
 <tr>
@@ -196,7 +194,7 @@ cluster
 seasonalTimeframe
 </th>
 <th style="text-align:right;">
-likelihood
+plausibility
 </th>
 </tr>
 </thead>
@@ -209,7 +207,7 @@ one
 one
 </td>
 <td style="text-align:right;">
-0.670000
+0.655875
 </td>
 </tr>
 <tr>
@@ -220,7 +218,7 @@ one
 two
 </td>
 <td style="text-align:right;">
-0.331000
+0.317000
 </td>
 </tr>
 <tr>
@@ -231,7 +229,7 @@ one
 three
 </td>
 <td style="text-align:right;">
-0.458750
+0.444500
 </td>
 </tr>
 <tr>
@@ -242,7 +240,7 @@ two
 one
 </td>
 <td style="text-align:right;">
-0.529875
+0.529625
 </td>
 </tr>
 <tr>
@@ -253,7 +251,7 @@ two
 two
 </td>
 <td style="text-align:right;">
-0.365625
+0.359125
 </td>
 </tr>
 <tr>
@@ -264,7 +262,7 @@ two
 three
 </td>
 <td style="text-align:right;">
-0.535500
+0.528500
 </td>
 </tr>
 <tr>
@@ -275,7 +273,7 @@ three
 one
 </td>
 <td style="text-align:right;">
-0.299000
+0.294000
 </td>
 </tr>
 <tr>
@@ -286,7 +284,7 @@ three
 two
 </td>
 <td style="text-align:right;">
-0.385000
+0.391500
 </td>
 </tr>
 <tr>
@@ -297,13 +295,14 @@ three
 three
 </td>
 <td style="text-align:right;">
-0.705875
+0.697250
 </td>
 </tr>
 </tbody>
 </table>
-using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (cluster analysis suggests trap segments 1-4, 5-7, and 8-10)
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### using the control transect as a baseline, how do the populations in the primary transect segments compare over time?
+
+### (cluster analysis suggests trap segments 1-4, 5-7, and 8-10)
 
 #### TO-DO: refine normalization method
 

@@ -135,7 +135,7 @@ plotLikelihood <- function(df) {
   
   colors <- c("one" = "red", "two" = "green", "three" = "blue")
   
-  gg <- ggplot(df, aes(x=seasonalTimeframe, y=likelihood)) +
+  gg <- ggplot(df, aes(x=seasonalTimeframe, y=plausibility)) +
     
     geom_point(aes(colour = factor(cluster),
                    fill = factor(cluster), 
@@ -145,7 +145,7 @@ plotLikelihood <- function(df) {
     ylim(c(0, 1)) + 
     expand_limits(y=c(0,1)) + 
     #scale_x_continuous(breaks=seq(22,40,2)) +
-    labs(title=paste("'likelihood' of an oakMargin effect\non the spider population", sep=""),
+    labs(title=paste("'plausibility' of an oakMargin effect\non the spider population", sep=""),
          subtitle=paste("subtitle ", sep=""), 
          y="plausibility", 
          x="seasonal timeframe", 
@@ -325,7 +325,7 @@ generateLikelihood <- function(df, list, showPlot) {
     
     temp2.df <- data.frame(cluster, seasonalTimeframe, like.df$sum) 
     # column names need to match for rbind() to work
-    names(temp2.df) <- c("cluster", "seasonalTimeframe", "likelihood")
+    names(temp2.df) <- c("cluster", "seasonalTimeframe", "plausibility")
     
     # tack it on
     if (!exists('likelihood.df')) {

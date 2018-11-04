@@ -163,6 +163,8 @@ clusterBoxplot(cluster.df, "oakMargin", "am")
 ```
 
 
+### How plausible is it that an oakMargin transect row will have more spiders than a control transect row?
+
 ```{r clusterBayes, echo=TRUE, include=TRUE, results="hide", message=F, warning=F}
 
 if (TRUE) {
@@ -188,7 +190,7 @@ if (TRUE) {
 
 ```
 
-### How plausible is it a oakMargin transect row will have more spiders than a control transect row?
+
 
 ```{r kable1, results='asis', echo=FALSE, message=F, warning=F}
 
@@ -196,7 +198,9 @@ knitr::kable(returnList[[5]])
 
 ```
 
-## using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (cluster analysis suggests trap segments 1-4, 5-7, and 8-10)
+
+### using the control transect as a baseline, how do the populations in the primary transect segments compare over time? 
+### (cluster analysis suggests trap segments 1-4, 5-7, and 8-10)
 
 #### TO-DO: refine normalization method
 
