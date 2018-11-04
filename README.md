@@ -158,6 +158,8 @@ clusterBoxplot(cluster.df, "oakMargin", "am")
 
 ![](ampelos_files/figure-markdown_github/clusterBoxPlots-6.png)
 
+### How plausible is it that an oakMargin transect row will have more spiders than a control transect row?
+
 ``` r
 if (TRUE) {
   #source('./code/bayes.R')
@@ -182,7 +184,7 @@ if (TRUE) {
 
 ![](ampelos_files/figure-markdown_github/clusterBayes-1.png)![](ampelos_files/figure-markdown_github/clusterBayes-2.png)
 
-### How plausible is it a oakMargin transect row will have more spiders than a control transect row?
+
 
 <table>
 <thead>
