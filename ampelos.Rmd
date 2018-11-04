@@ -188,7 +188,7 @@ if (TRUE) {
 
 ```
 
-
+### How plausible is it a oakMargin transect row will have more spiders than a control transect row?
 
 ```{r kable1, results='asis', echo=FALSE, message=F, warning=F}
 

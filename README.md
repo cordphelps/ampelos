@@ -171,27 +171,135 @@ if (TRUE) {
   print(returnList[[1]])
   print(returnList[[6]])
 
-  kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
+  # kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
 
-  pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
-                          p.adjust.method = "BH")
+  # pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
+     #                     p.adjust.method = "BH")
 
+  
 }
 ```
 
 ![](ampelos_files/figure-markdown_github/clusterBayes-1.png)![](ampelos_files/figure-markdown_github/clusterBayes-2.png)
 
-    ## 
-    ##  Pairwise comparisons using Wilcoxon rank sum test 
-    ## 
-    ## data:  lh.df$likelihood and lh.df$seasonalTimeframe 
-    ## 
-    ##       one two
-    ## two   1   -  
-    ## three 1   1  
-    ## 
-    ## P value adjustment method: BH
+### How plausible is it a oakMargin transect row will have more spiders than a control transect row?
 
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+cluster
+</th>
+<th style="text-align:left;">
+seasonalTimeframe
+</th>
+<th style="text-align:right;">
+likelihood
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+one
+</td>
+<td style="text-align:left;">
+one
+</td>
+<td style="text-align:right;">
+0.670000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+one
+</td>
+<td style="text-align:left;">
+two
+</td>
+<td style="text-align:right;">
+0.331000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+one
+</td>
+<td style="text-align:left;">
+three
+</td>
+<td style="text-align:right;">
+0.458750
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+two
+</td>
+<td style="text-align:left;">
+one
+</td>
+<td style="text-align:right;">
+0.529875
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+two
+</td>
+<td style="text-align:left;">
+two
+</td>
+<td style="text-align:right;">
+0.365625
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+two
+</td>
+<td style="text-align:left;">
+three
+</td>
+<td style="text-align:right;">
+0.535500
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+three
+</td>
+<td style="text-align:left;">
+one
+</td>
+<td style="text-align:right;">
+0.299000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+three
+</td>
+<td style="text-align:left;">
+two
+</td>
+<td style="text-align:right;">
+0.385000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+three
+</td>
+<td style="text-align:left;">
+three
+</td>
+<td style="text-align:right;">
+0.705875
+</td>
+</tr>
+</tbody>
+</table>
 using the control transect as a baseline, how do the populations in the primary transect segments compare over time? (cluster analysis suggests trap segments 1-4, 5-7, and 8-10)
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
