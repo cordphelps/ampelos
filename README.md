@@ -207,7 +207,7 @@ one
 one
 </td>
 <td style="text-align:right;">
-0.655875
+0.657500
 </td>
 </tr>
 <tr>
@@ -218,7 +218,7 @@ one
 two
 </td>
 <td style="text-align:right;">
-0.317000
+0.317250
 </td>
 </tr>
 <tr>
@@ -229,7 +229,7 @@ one
 three
 </td>
 <td style="text-align:right;">
-0.444500
+0.443125
 </td>
 </tr>
 <tr>
@@ -240,7 +240,7 @@ two
 one
 </td>
 <td style="text-align:right;">
-0.529625
+0.530750
 </td>
 </tr>
 <tr>
@@ -251,7 +251,7 @@ two
 two
 </td>
 <td style="text-align:right;">
-0.359125
+0.367750
 </td>
 </tr>
 <tr>
@@ -262,7 +262,7 @@ two
 three
 </td>
 <td style="text-align:right;">
-0.528500
+0.527000
 </td>
 </tr>
 <tr>
@@ -273,7 +273,7 @@ three
 one
 </td>
 <td style="text-align:right;">
-0.294000
+0.288375
 </td>
 </tr>
 <tr>
@@ -284,7 +284,7 @@ three
 two
 </td>
 <td style="text-align:right;">
-0.391500
+0.379125
 </td>
 </tr>
 <tr>
@@ -295,53 +295,11 @@ three
 three
 </td>
 <td style="text-align:right;">
-0.697250
+0.697500
 </td>
 </tr>
 </tbody>
 </table>
-### using the control transect as a baseline, how do the populations in the primary transect segments compare over time?
-
-### (cluster analysis suggests trap segments 1-4, 5-7, and 8-10)
-
-#### TO-DO: refine normalization method
-
-``` r
-  positionText <- paste("\ntransect positions ", "1-4", sep="")
-  g3 <- compareTransectG2V1(data=bugs.df, 
-                                 species=quo(Thomisidae..crab.spider.), 
-                                 operator="LT",
-                                 initialPosition=quo(5), 
-                                 secondaryPosition=quo(0),
-                                 positionText)
-```
-
-![](ampelos_files/figure-markdown_github/clusterTrends-1.png)
-
-``` r
-  positionText <- paste("\ntransect positions ", "5-7", sep="")
-  g46 <- compareTransectG2V1(data=bugs.df, 
-                                 species=quo(Thomisidae..crab.spider.), 
-                                 operator="BETWEEN",
-                                 initialPosition=quo(4), 
-                                 secondaryPosition=quo(8),
-                                 positionText)
-```
-
-![](ampelos_files/figure-markdown_github/clusterTrends-2.png)
-
-``` r
-  positionText <- paste("\ntransect positions ", "8-10", sep="")
-  g7 <- compareTransectG2V1(data=bugs.df, 
-                                 species=quo(Thomisidae..crab.spider.), 
-                                 operator="GT",
-                                 initialPosition=quo(7), 
-                                 secondaryPosition=quo(0),
-                                 positionText)
-```
-
-![](ampelos_files/figure-markdown_github/clusterTrends-3.png)
-
 how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
 -------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -393,8 +351,18 @@ new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1,
 
 v2.1 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="pm", wk=1, caption=Sys.Date())
 
-v2.2 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="am", wk=1, caption=Sys.Date())
+print(v2.1)
 ```
+
+![](ampelos_files/figure-markdown_github/ridges-1.png)
+
+``` r
+v2.2 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="am", wk=1, caption=Sys.Date())
+
+print(v2.2)
+```
+
+![](ampelos_files/figure-markdown_github/ridges-2.png)
 
 and the species counts?
 -----------------------
