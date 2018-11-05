@@ -19,8 +19,7 @@ source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/dat
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 ```
 
-weekly composition of species and individuals?
-----------------------------------------------
+### weekly composition of species and individuals?
 
 #### TO-DO: annotate charts with key dates ( spray events, cover crop collapse, veraision, )
 
@@ -35,10 +34,9 @@ grid.arrange(gg.Species.joint, gg.Ind.joint, ncol=1, nrow=2)
 
 ![transect layout](./images/transectLayout.jpg)
 
-each of the two transects consists of 3 rows of 10 traps in each row. Is the total insect population relatively uniform among the 3 rows of a transect? Does this uniformity change over time? Compute the Jaccard Index for each week: the index *'is a statistic used for comparing the similarity and diversity of sample sets.'*
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### each of the two transects consists of 3 rows of 10 traps in each row. Is the total insect population relatively uniform among the 3 rows of a transect? Does this uniformity change over time? Compute the Jaccard Index for each week: the index *'is a statistic used for comparing the similarity and diversity of sample sets.'*
 
-#### Note that *'... the SMC counts both mutual presences (when an attribute is present in both sets) and mutual absence (when an attribute is absent in both sets) as matches and compares it to the total number of attributes in the universe, whereas the Jaccard index only counts mutual presence as matches and compares it to the number of attributes that have been chosen by at least one of the two sets.'* (<https://en.wikipedia.org/wiki/Jaccard_index>)
+##### Note that *'... the SMC counts both mutual presences (when an attribute is present in both sets) and mutual absence (when an attribute is absent in both sets) as matches and compares it to the total number of attributes in the universe, whereas the Jaccard index only counts mutual presence as matches and compares it to the number of attributes that have been chosen by at least one of the two sets.'* (<https://en.wikipedia.org/wiki/Jaccard_index>)
 
 ``` r
 library(dplyr)
@@ -58,8 +56,29 @@ gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
 
 ![](ampelos_files/figure-markdown_github/similarity-2.png)
 
-is there a difference in the spider populations for the two transects?
-----------------------------------------------------------------------
+### the crab spider is a dominant species in the vineyard. How are they distributed along the length of the row?
+
+#### TO-DO: develop and apply normalization method
+
+``` r
+new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
+
+v2.1 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="pm", wk=1, caption=Sys.Date())
+
+print(v2.1)
+```
+
+![](ampelos_files/figure-markdown_github/ridges-1.png)
+
+``` r
+v2.2 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="am", wk=1, caption=Sys.Date())
+
+print(v2.2)
+```
+
+![](ampelos_files/figure-markdown_github/ridges-2.png)
+
+### is there a difference in the spider populations for the two transects?
 
 ``` r
 reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(24), species=quo(Thomisidae..crab.spider.))
@@ -85,8 +104,7 @@ g30 <- plotBugDistribution(data=reducedData.df,
 # g <- arrangeGrob(g1, g2, nrow=1)
 ```
 
-are clusters appearing and do they persist across multiple weeks?
------------------------------------------------------------------
+### are clusters appearing and do they persist across multiple weeks?
 
 ``` r
 clusterNumber <- 3
@@ -109,54 +127,6 @@ grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
 <img src="ampelos_files/figure-markdown_github/clustersArrange-1.png" width="100%" />
 
 #### (control cluster \#2 is slightly wider than oakMargin cluster \#2)
-
-how do the clusters compare to each other across multiple weeks?
-----------------------------------------------------------------
-
-``` r
-df <- clusterSetup()
-
- 
-cluster.df <- clusterAccumulateTotal(df, "control")
-clusterBoxplot(cluster.df, "control", "(am pm)")
-```
-
-![](ampelos_files/figure-markdown_github/clusterBoxPlots-1.png)
-
-``` r
-cluster.df <- clusterAccumulateTotal(df, "oakMargin")
-clusterBoxplot(cluster.df, "oakMargin", "(am pm)")
-```
-
-![](ampelos_files/figure-markdown_github/clusterBoxPlots-2.png)
-
-``` r
-cluster.df <- clusterAccumulate(df, "control", "pm")
-clusterBoxplot(cluster.df, "control", "pm")
-```
-
-![](ampelos_files/figure-markdown_github/clusterBoxPlots-3.png)
-
-``` r
-cluster.df <- clusterAccumulate(df, "oakMargin", "pm")
-clusterBoxplot(cluster.df, "oakMargin", "pm")
-```
-
-![](ampelos_files/figure-markdown_github/clusterBoxPlots-4.png)
-
-``` r
-cluster.df <- clusterAccumulate(df, "control", "am")
-clusterBoxplot(cluster.df, "control", "am")
-```
-
-![](ampelos_files/figure-markdown_github/clusterBoxPlots-5.png)
-
-``` r
-cluster.df <- clusterAccumulate(df, "oakMargin", "am")
-clusterBoxplot(cluster.df, "oakMargin", "am")
-```
-
-![](ampelos_files/figure-markdown_github/clusterBoxPlots-6.png)
 
 ### How plausible is it that an oakMargin transect row will have more spiders than a control transect row?
 
@@ -207,7 +177,7 @@ one
 one
 </td>
 <td style="text-align:right;">
-0.657500
+0.663750
 </td>
 </tr>
 <tr>
@@ -218,7 +188,7 @@ one
 two
 </td>
 <td style="text-align:right;">
-0.317250
+0.328000
 </td>
 </tr>
 <tr>
@@ -229,7 +199,7 @@ one
 three
 </td>
 <td style="text-align:right;">
-0.443125
+0.452000
 </td>
 </tr>
 <tr>
@@ -240,7 +210,7 @@ two
 one
 </td>
 <td style="text-align:right;">
-0.530750
+0.534875
 </td>
 </tr>
 <tr>
@@ -251,7 +221,7 @@ two
 two
 </td>
 <td style="text-align:right;">
-0.367750
+0.363750
 </td>
 </tr>
 <tr>
@@ -262,7 +232,7 @@ two
 three
 </td>
 <td style="text-align:right;">
-0.527000
+0.548750
 </td>
 </tr>
 <tr>
@@ -273,7 +243,7 @@ three
 one
 </td>
 <td style="text-align:right;">
-0.288375
+0.310875
 </td>
 </tr>
 <tr>
@@ -284,7 +254,7 @@ three
 two
 </td>
 <td style="text-align:right;">
-0.379125
+0.382625
 </td>
 </tr>
 <tr>
@@ -295,38 +265,59 @@ three
 three
 </td>
 <td style="text-align:right;">
-0.697500
+0.701750
 </td>
 </tr>
 </tbody>
 </table>
-how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
--------------------------------------------------------------------------------------------------------------------------------------------
+### how do the clusters compare to each other across multiple weeks?
 
 ``` r
-m1 <- simMatrixV3(data=bugs.df, transect=quo("oakMargin"),
-                                transectText="oakMargin")
+df <- clusterSetup()
+
+ 
+cluster.df <- clusterAccumulateTotal(df, "control")
+clusterBoxplot(cluster.df, "control", "(am pm)")
 ```
 
-<img src="ampelos_files/figure-markdown_github/speciesMatrixOak-1.png" width="100%" />
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-1.png)
 
 ``` r
-#g <- arrangeGrob(m1, m2, nrow=2)
+cluster.df <- clusterAccumulateTotal(df, "oakMargin")
+clusterBoxplot(cluster.df, "oakMargin", "(am pm)")
 ```
+
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-2.png)
 
 ``` r
-m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
-                                transectText="control")
+cluster.df <- clusterAccumulate(df, "control", "pm")
+clusterBoxplot(cluster.df, "control", "pm")
 ```
 
-<img src="ampelos_files/figure-markdown_github/speciesMatrixControl-1.png" width="100%" />
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-3.png)
 
 ``` r
-#g <- arrangeGrob(m1, m2, nrow=2)
+cluster.df <- clusterAccumulate(df, "oakMargin", "pm")
+clusterBoxplot(cluster.df, "oakMargin", "pm")
 ```
 
-does the crab spider population appear to change over time? Is there a difference between the two transects?
-------------------------------------------------------------------------------------------------------------
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-4.png)
+
+``` r
+cluster.df <- clusterAccumulate(df, "control", "am")
+clusterBoxplot(cluster.df, "control", "am")
+```
+
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-5.png)
+
+``` r
+cluster.df <- clusterAccumulate(df, "oakMargin", "am")
+clusterBoxplot(cluster.df, "oakMargin", "am")
+```
+
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-6.png)
+
+### does the crab spider population appear to change over time? Is there a difference between the two transects?
 
 ``` r
 # pass variables to dyplr pipes
@@ -340,32 +331,7 @@ plotSpeciesTrendV2(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText
 
     ## NULL
 
-the crab spider is a dominant species in the vineyard. How are they distributed along the length of the row?
-------------------------------------------------------------------------------------------------------------
-
-TO-DO: develop and apply normalization method
----------------------------------------------
-
-``` r
-new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
-
-v2.1 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="pm", wk=1, caption=Sys.Date())
-
-print(v2.1)
-```
-
-![](ampelos_files/figure-markdown_github/ridges-1.png)
-
-``` r
-v2.2 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="am", wk=1, caption=Sys.Date())
-
-print(v2.2)
-```
-
-![](ampelos_files/figure-markdown_github/ridges-2.png)
-
-and the species counts?
------------------------
+### and the species counts?
 
 <table>
 <thead>
@@ -581,27 +547,46 @@ Orius..pirate.bug.
 </tr>
 </tbody>
 </table>
-bottom of the Oak Transect; bird repellant streamers indicating the prevailing wind direction
----------------------------------------------------------------------------------------------
+### how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
+
+``` r
+m1 <- simMatrixV3(data=bugs.df, transect=quo("oakMargin"),
+                                transectText="oakMargin")
+```
+
+<img src="ampelos_files/figure-markdown_github/speciesMatrixOak-1.png" width="100%" />
+
+``` r
+#g <- arrangeGrob(m1, m2, nrow=2)
+```
+
+``` r
+m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
+                                transectText="control")
+```
+
+<img src="ampelos_files/figure-markdown_github/speciesMatrixControl-1.png" width="100%" />
+
+``` r
+#g <- arrangeGrob(m1, m2, nrow=2)
+```
+
+### bottom of the Oak Transect; bird repellant streamers indicating the prevailing wind direction
 
 ![landscape](./photos/windDirection.JPG)
 
-top of the Control Transect
----------------------------
+### top of the Control Transect
 
 ![landscape](./photos/topOfControl.JPG)
 
-bottom of the Control Transect with bird repellant streamers
-------------------------------------------------------------
+### bottom of the Control Transect with bird repellant streamers
 
 ![landscape](./photos/bottomOfControl.JPG)
 
-typical trap positioning; bowl in the fruit zone, vanes intersecting the canopy
--------------------------------------------------------------------------------
+### typical trap positioning; bowl in the fruit zone, vanes intersecting the canopy
 
 ![landscape](./photos/typicalTrap.JPG)
 
-example trap sequence
----------------------
+### example trap sequence
 
 ![landscape](./photos/trapSequence.JPG)
