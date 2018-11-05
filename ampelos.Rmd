@@ -199,40 +199,6 @@ knitr::kable(returnList[[5]])
 ```
 
 
-### using the control transect as a baseline, how do the populations in the primary transect segments compare over time? 
-### (cluster analysis suggests trap segments 1-4, 5-7, and 8-10)
-
-#### TO-DO: refine normalization method
-
-
-```{r clusterTrends, echo=TRUE, include=TRUE, message=F, warning=F}
-
-  positionText <- paste("\ntransect positions ", "1-4", sep="")
-  g3 <- compareTransectG2V1(data=bugs.df, 
-                                 species=quo(Thomisidae..crab.spider.), 
-                                 operator="LT",
-                                 initialPosition=quo(5), 
-                                 secondaryPosition=quo(0),
-                                 positionText)
-  positionText <- paste("\ntransect positions ", "5-7", sep="")
-  g46 <- compareTransectG2V1(data=bugs.df, 
-                                 species=quo(Thomisidae..crab.spider.), 
-                                 operator="BETWEEN",
-                                 initialPosition=quo(4), 
-                                 secondaryPosition=quo(8),
-                                 positionText)
-  positionText <- paste("\ntransect positions ", "8-10", sep="")
-  g7 <- compareTransectG2V1(data=bugs.df, 
-                                 species=quo(Thomisidae..crab.spider.), 
-                                 operator="GT",
-                                 initialPosition=quo(7), 
-                                 secondaryPosition=quo(0),
-                                 positionText)
-  
-```
-
-
-
 ## how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
 
 ```{r speciesMatrixOak, out.width = "100%", echo=TRUE, include=TRUE, message=F, warning=F }
@@ -277,7 +243,11 @@ new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1,
 
 v2.1 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="pm", wk=1, caption=Sys.Date())
 
+print(v2.1)
+
 v2.2 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="am", wk=1, caption=Sys.Date())
+
+print(v2.2)
 
 ```
 

@@ -174,246 +174,6 @@ plotRidges <- function(data, combined, bugs, speciesText, where, when, wk, capti
 }
 
 
-plotSpeciesTrend <- function(data, bugs, speciesText, where, when, caption) {
-  # bugs has to come in as a pointer
-  # speciesText is presentable text for the plot labels, 'quo_name(bugs)' gets the mashed df column label
-  
-  # https://stackoverflow.com/questions/9726705/assign-multiple-objects-to-globalenv-from-within-a-function
-  # assign("data", data, envir=.GlobalEnv)
-  # assign("bugs", bugs, envir=.GlobalEnv)
-  # assign("where", where, envir=.GlobalEnv)
-  # assign("when", when, envir=.GlobalEnv)
-  # assign("wk", wk, envir=.GlobalEnv)
-  # assign("caption", caption, envir=.GlobalEnv)
-  
-
-  
-  # https://stackoverflow.com/questions/1660124/how-to-sum-a-variable-by-group
-  # dyplr group: https://stackoverflow.com/questions/48714625/error-in-data-frame-unused-argument
-  # dyplr multiple groups: https://stackoverflow.com/questions/21653295/dplyr-issues-when-using-group-bymultiple-variables
-  
-
-  ########### stand-alone dplyr test code ##########
-  if (FALSE) {   # this is essentially a multi-line comment
-    temp.df <- bugs.df %>%
-      filter( time == "pm",  transect == "oakMargin") %>%
-      group_by( week ) %>%
-      summarise( sp_by_week = sum( Thomisidae..crab.spider. , na.rm = TRUE ) , n=n()) %>%
-      mutate(ave_per_week = sp_by_week / (n / 30))
-
-      sp_percent <- sum(temp.df$sp_by_week) / sum(temp.df$n)
-
-    new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
-
-
-
-  }
-  ########### end stand-alone dplyr test code ##########
-
-
-  temp.df <- bugs.df %>%
-    #filter( time == "pm",  transect == "oakMargin") %>%
-    filter(transect == "oakMargin") %>%
-    group_by( week ) %>%
-    summarise( sp_by_week = sum( !!bugs , na.rm = TRUE ) , n=n()) %>%
-    mutate(ave_per_week = sp_by_week / (n / 30))
-  
-  # get statistics
-  sp_percentOak <- sum(temp.df$sp_by_week) / sum(temp.df$n) * 100
-  sp_percentOak <- format(round(sp_percentOak, 2), nsmall = 2)
-
-  temp.df <- bugs.df %>%
-    filter( time == "pm",  transect == "control") %>%
-    group_by( week ) %>%
-    summarise( sp_by_week = sum( !!bugs , na.rm = TRUE ) , n=n()) %>%
-    mutate(ave_per_week = sp_by_week / (n / 30))
-  
-  # get statistics
-  sp_percentControl <- sum(temp.df$sp_by_week) / sum(temp.df$n) * 100
-  sp_percentControl <- format(round(sp_percentControl, 2), nsmall = 2)
-  
-  
-  oakPM.df <- data %>%
-    filter( time == "pm",  transect == "oakMargin") %>%
-    group_by( week ) %>%
-    summarise( oakPMtotal = sum( !!bugs , na.rm = TRUE ) ) 
-  
-  controlPM.df <- data %>%
-    filter( time == "pm",  transect == "control") %>%
-    group_by( week ) %>%
-    summarise( controlPMtotal = sum( !!bugs , na.rm = TRUE ) ) 
-  
-  # join the data frames
-  pm.df <- merge(oakPM.df, controlPM.df)
-  
-  oakAM.df <- data %>%
-    filter( time == "am",  transect == "oakMargin") %>%
-    group_by( week ) %>%
-    summarise( oakAMtotal = sum( !!bugs , na.rm = TRUE ) ) 
-  
-  controlAM.df <- data %>%
-    filter( time == "am",  transect == "control") %>%
-    group_by( week ) %>%
-    summarise( controlAMtotal = sum( !!bugs , na.rm = TRUE ) )  
-  
-  # join the data frames
-  am.df <- merge(oakAM.df, controlAM.df)
-  
-  sliced.df <- merge(am.df, pm.df)
-    
-  assign("sliced.df", sliced.df, envir=.GlobalEnv)
-  
-  ggOAK <- ggplot(sliced.df, aes(x=week, y=oakPMtotal)) +
-    geom_point(shape=21) +
-    geom_line(aes(x=week, y=oakPMtotal, colour="afternoon")) +
-    geom_point(aes(x=week, y=oakAMtotal), shape=22) +
-    geom_line(aes(x=week, y=oakAMtotal, colour="morning")) +   
-    ylim(0,100) +
-    labs(title= paste(speciesText, " Population Counts", 
-                      "\ntransect: oakMargin", sep=""), 
-         subtitle = paste("\ntraps with ", speciesText, "s: ", sp_percentOak, " %", 
-                          sep=""),
-         x="week number",
-         y= "weekly total",
-         caption=paste(caption, "\n(NO CAPTION)", sep="")) +
-    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
-    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
-    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
-    theme(legend.title=element_blank(), 
-          legend.box.background = element_rect(colour = "black"),
-          panel.border = element_rect(colour = "black", fill=NA)) + 
-    # Put bottom-right corner of legend box in bottom-right corner of graph
-    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
-    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
-    theme_bw() 
-
-    ggCONTROL <- ggplot(sliced.df, aes(x=week, y=controlPMtotal)) +
-      geom_point(shape=21) +
-      geom_line(aes(x=week, y=controlPMtotal, colour="afternoon")) +
-      geom_point(aes(x=week, y=controlAMtotal), shape=22) +
-      geom_line(aes(x=week, y=controlAMtotal, colour="morning")) +   
-      ylim(0,100) +
-      labs(title= paste(speciesText, " Population Counts",
-                        "\ntransect: control", sep=""), 
-           subtitle = paste("\ntraps with ", speciesText, "s: ", sp_percentControl, " %", 
-                           sep=""),
-         x="week number",
-         y= "weekly total",
-         caption=paste(caption, "\n(NO CAPTION)", sep="")) +
-    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
-    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
-    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
-    theme(legend.title=element_blank(), 
-          legend.box.background = element_rect(colour = "black"),
-          panel.border = element_rect(colour = "black", fill=NA)) + 
-    # Put bottom-right corner of legend box in bottom-right corner of graph
-    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
-    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
-    theme_bw() 
-    
-  grid.arrange(ggOAK, ggCONTROL, ncol=2, nrow=1)
-
-
-
-  ######################################################################################
-  ######################################################################################
-  ######################################################################################
-
-  ######## develop the same graphs, but by day (not week)
-
-  oakPM.df <- data %>%
-    filter( time == "pm",  transect == "oakMargin") %>%
-    group_by( julian ) %>%
-    summarise( oakPMtotal = sum( !!bugs , na.rm = TRUE ) ) 
-  
-  controlPM.df <- data %>%
-    filter( time == "pm",  transect == "control") %>%
-    group_by( julian ) %>%
-    summarise( controlPMtotal = sum( !!bugs , na.rm = TRUE ) ) 
-  
-  # join the data frames
-  pm.df <- merge(oakPM.df, controlPM.df)
-  
-  oakAM.df <- data %>%
-    filter( time == "am",  transect == "oakMargin") %>%
-    group_by( julian ) %>%
-    summarise( oakAMtotal = sum( !!bugs , na.rm = TRUE ) ) 
-  
-  controlAM.df <- data %>%
-    filter( time == "am",  transect == "control") %>%
-    group_by( julian ) %>%
-    summarise( controlAMtotal = sum( !!bugs , na.rm = TRUE ) )  
-  
-  # join the data frames
-  am.df <- merge(oakAM.df, controlAM.df)
-  
-  sliced.df <- merge(am.df, pm.df)
-    
-  assign("sliced.df", sliced.df, envir=.GlobalEnv)
-  
-  ggOAK <- ggplot(sliced.df, aes(x=julian, y=oakPMtotal)) +
-    geom_point(shape=21) +
-    geom_line(aes(x=julian, y=oakPMtotal, colour="afternoon")) +
-    geom_point(aes(x=julian, y=oakAMtotal), shape=22) +
-    geom_line(aes(x=julian, y=oakAMtotal, colour="morning")) +   
-    ylim(0,100) +
-    labs(title= paste(speciesText, " Population Counts", 
-                      "\ntransect: oakMargin", sep=""), 
-         subtitle = paste("\ntraps with ", speciesText, "s: ", sp_percentOak, " %", 
-                          sep=""),
-         x="julian day",
-         y= "daily total",
-         caption=paste(caption, "\n(NO CAPTION)", sep="")) +
-    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
-    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
-    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
-    theme(legend.title=element_blank(), 
-          legend.box.background = element_rect(colour = "black"),
-          panel.border = element_rect(colour = "black", fill=NA)) + 
-    # Put bottom-right corner of legend box in bottom-right corner of graph
-    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
-    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
-    theme_bw() 
-
-    ggCONTROL <- ggplot(sliced.df, aes(x=julian, y=controlPMtotal)) +
-      geom_point(shape=21) +
-      geom_line(aes(x=julian, y=controlPMtotal, colour="afternoon")) +
-      geom_point(aes(x=julian, y=controlAMtotal), shape=22) +
-      geom_line(aes(x=julian, y=controlAMtotal, colour="morning")) +   
-      ylim(0,100) +
-      labs(title= paste(speciesText, " Population Counts",
-                        "\ntransect: control", sep=""), 
-           subtitle = paste("\ntraps with ", speciesText, "s: ", sp_percentControl, " %", 
-                           sep=""),
-         x="julian day",
-         y= "daily total",
-         caption=paste(caption, "\n(NO CAPTION)", sep="")) +
-    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
-    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
-    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
-    theme(legend.title=element_blank(), 
-          legend.box.background = element_rect(colour = "black"),
-          panel.border = element_rect(colour = "black", fill=NA)) + 
-    # Put bottom-right corner of legend box in bottom-right corner of graph
-    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
-    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
-    theme_bw() 
-    
-  grid.arrange(ggOAK, ggCONTROL, ncol=2, nrow=1)
-
-
-
-
-  # ggsave("joy1.png", height=8, width=8, dpi=120, type="cairo-png")
-  
-  return()
-}
-
-
 
 plotSpeciesTrendV2 <- function(data, bugs, speciesText, where, when, caption) {
   # bugs has to come in as a pointer
@@ -647,147 +407,6 @@ fmt_dcimals <- function(decimals=0){
 
 
 
-compareTransect <- function () {
-
-
-#####################################################
-  # https://stackoverflow.com/questions/29554796/meaning-of-band-width-in-ggplot-geom-smooth-lm
-
-
-    oak.df <- bugs.df %>% 
-    dplyr::filter(position<4, time=="pm", transect=="oakMargin") %>% 
-    dplyr::group_by(julian) %>% 
-    dplyr::summarise(oakEdgeMean=mean(Thomisidae..crab.spider.))
-
-  center.df <- bugs.df %>% 
-    dplyr::filter(position<4, time=="pm", transect=="control") %>% 
-    dplyr::group_by(julian) %>% 
-    dplyr::summarise(controlEdgeMean=mean(Thomisidae..crab.spider.))
-
-    combo.df <- merge(oak.df, center.df)
-
-  combo.df <- combo.df %>% 
-    dplyr::mutate(deltaMean=(oakEdgeMean-controlEdgeMean)/controlEdgeMean)
-
-  assign("combo.df", combo.df, envir=.GlobalEnv)
-
-    ggCompare1 <- ggplot(combo.df, aes(x=julian, y=deltaMean)) +
-      geom_point(shape=21) + 
-      geom_smooth(method="lm", level=0.95) +  
-      geom_hline(yintercept=0) +
-      ylim(-1.1,1.1) +
-      labs(title= paste("average spiders per trap ",
-                        "\ntransect positions 1 - 3",
-                        "\noakMargin as a fraction of control", sep=""), 
-           subtitle = paste("(95% confidence interval)", sep=""),
-         x="julian day",
-         y= "oakMargin fraction of control",
-         caption=paste("120 observations per day", "\npositions 1 - 10 inclusive", sep="")) +
-    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
-    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
-    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
-    theme(legend.title=element_blank(), 
-          legend.box.background = element_rect(colour = "black"),
-          panel.border = element_rect(colour = "black", fill=NA)) + 
-    # Put bottom-right corner of legend box in bottom-right corner of graph
-    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
-    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5))
-    
-  grid.arrange(ggCompare1, ncol=1, nrow=1)
-
-
-    oak.df <- bugs.df %>% 
-    dplyr::filter(between(position, 3, 7), time=="pm", transect=="oakMargin") %>% 
-    dplyr::group_by(julian) %>% 
-    dplyr::summarise(oakEdgeMean=mean(Thomisidae..crab.spider.))
-
-  center.df <- bugs.df %>% 
-    dplyr::filter(between(position, 3, 7), time=="pm", transect=="control") %>% 
-    dplyr::group_by(julian) %>% 
-    dplyr::summarise(controlEdgeMean=mean(Thomisidae..crab.spider.))
-
-    combo.df <- merge(oak.df, center.df)
-
-  combo.df <- combo.df %>% 
-    dplyr::mutate(deltaMean=(oakEdgeMean-controlEdgeMean)/controlEdgeMean)
-
-  assign("combo.df", combo.df, envir=.GlobalEnv)
-
-    ggCompare2 <- ggplot(combo.df, aes(x=julian, y=deltaMean)) +
-      geom_point(shape=21) + 
-      geom_smooth(method="lm", level=0.95) +  
-      geom_hline(yintercept=0) +
-      ylim(-1.1,1.1) +
-      labs(title= paste("average spiders per trap ",
-                        "\ntransect positions 4 - 6",
-                        "\noakMargin as a fraction of control", sep=""), 
-           subtitle = paste("(95% confidence interval)", sep=""),
-         x="julian day",
-         y= "oakMargin fraction of control",
-         caption=paste("120 observations per day", "\npositions 1 - 10 inclusive", sep="")) +
-    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
-    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
-    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
-    theme(legend.title=element_blank(), 
-          legend.box.background = element_rect(colour = "black"),
-          panel.border = element_rect(colour = "black", fill=NA)) + 
-    # Put bottom-right corner of legend box in bottom-right corner of graph
-    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
-    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5))
-    
-  grid.arrange(ggCompare2, ncol=1, nrow=1)
-
-
-    oak.df <- bugs.df %>% 
-    dplyr::filter(position>6, time=="pm", transect=="oakMargin") %>% 
-    dplyr::group_by(julian) %>% 
-    dplyr::summarise(oakEdgeMean=mean(Thomisidae..crab.spider.))
-
-  center.df <- bugs.df %>% 
-    dplyr::filter(position>6, time=="pm", transect=="control") %>% 
-    dplyr::group_by(julian) %>% 
-    dplyr::summarise(controlEdgeMean=mean(Thomisidae..crab.spider.))
-
-    combo.df <- merge(oak.df, center.df)
-
-  combo.df <- combo.df %>% 
-    dplyr::mutate(deltaMean=(oakEdgeMean-controlEdgeMean)/controlEdgeMean)
-
-
-
-    ggCompare3 <- ggplot(combo.df, aes(x=julian, y=deltaMean)) +
-      geom_point(shape=21) + 
-      geom_smooth(method="lm", level=0.95) +  
-      geom_hline(yintercept=0) +
-      ylim(-1.1,1.1) +
-      labs(title= paste("average spiders per trap ",
-                        "\ntransect positions 7 - 10",
-                        "\noakMargin as a fraction of control", sep=""), 
-           subtitle = paste("(95% confidence interval)", sep=""),
-         x="julian day",
-         y= "oakMargin fraction of control",
-         caption=paste("120 observations per day", "\npositions 1 - 10 inclusive", sep="")) +
-    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
-    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
-    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
-    theme(legend.title=element_blank(), 
-          legend.box.background = element_rect(colour = "black"),
-          panel.border = element_rect(colour = "black", fill=NA)) + 
-    # Put bottom-right corner of legend box in bottom-right corner of graph
-    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
-    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5))
-    
-  grid.arrange(ggCompare3, ncol=1, nrow=1)
-
-  g <- arrangeGrob(ggCompare1, ggCompare2, ggCompare3, nrow=3) #generates g
-  
-  return(g)
-
-}
-
 bugCount <- function() {
   
   total <- sum(bugs.df$DBfly, na.rm=TRUE) +
@@ -838,250 +457,6 @@ bigTable <- function(df) {
 
 
 
-compareTransectUsingQuosure <- function (data, species, operator, initialPosition, secondaryPosition, positionText) {
-
-  # Programming with dplyr, Different input variable (how and when to quote/unquote)
-  # https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
-
-  # This function provides the flexibility to configure the dplyr::filter() position argument on-the-fly,
-  # we need to support the following cases
-  #
-  # filter(position < initialPosition)
-  # filter(position > initialPosition)
-  # filter(between(position, initialPosition, secondaryPosition))
-
-  #####################################################
-  # https://stackoverflow.com/questions/29554796/meaning-of-band-width-in-ggplot-geom-smooth-lm
-
-  #species <- enquo(species)
-  #initialPosition <- enquo(initialPosition)
-  #secondaryPosition <- enquo(secondaryPosition)
-
-  if (FALSE) {   # available for debug
-    # https://stackoverflow.com/questions/9726705/assign-multiple-objects-to-globalenv-from-within-a-function
-    assign("data", data, envir=.GlobalEnv)
-    assign("species", species, envir=.GlobalEnv)
-    assign("operator", operator, envir=.GlobalEnv)
-    assign("initialPosition", initialPosition, envir=.GlobalEnv)
-    assign("secondaryPosition", secondaryPosition, envir=.GlobalEnv)
-  }
-
-  if (operator == "BETWEEN") {
-
-      oak.df <- data %>% 
-      dplyr::filter(between(position, !!initialPosition , !!secondaryPosition), time=="pm", transect=="oakMargin") %>% 
-      dplyr::group_by(julian) %>% 
-      dplyr::summarise(oakEdgeMean=mean(!!species))
-
-      center.df <- data %>% 
-      dplyr::filter(between(position, !!initialPosition , !!secondaryPosition), time=="pm", transect=="control") %>% 
-      dplyr::group_by(julian) %>% 
-      dplyr::summarise(controlEdgeMean=mean(!!species))
-      
-
-  } else {
-
-    if (operator == "LT") {
-
-      oak.df <- data %>% 
-      # dplyr::filter(position < !! initialPosition, time=="pm", transect=="oakMargin") %>% 
-      dplyr::filter(position < !! initialPosition, transect=="oakMargin") %>% 
-      dplyr::group_by(julian) %>% 
-      dplyr::summarise(oakEdgeMean=mean(!!species))
-
-      center.df <- data %>% 
-      # dplyr::filter(position < !! initialPosition, time=="pm", transect=="control") %>% 
-      dplyr::filter(position < !! initialPosition, transect=="control") %>% 
-      dplyr::group_by(julian) %>% 
-      dplyr::summarise(controlEdgeMean=mean(!!species))
-
-      ip <- initialPosition 
-      positionString <- paste("\ntransect positions < ", ip , sep="")
-
-    } else if (operator == "GT") {
-
-      oak.df <- data %>% 
-      dplyr::filter(position > !! initialPosition, transect=="oakMargin") %>% 
-      dplyr::group_by(julian) %>% 
-      dplyr::summarise(oakEdgeMean=mean(!! species))
-
-      center.df <- data %>% 
-      dplyr::filter(position > !! initialPosition, transect=="control") %>% 
-      dplyr::group_by(julian) %>% 
-      dplyr::summarise(controlEdgeMean=mean(!! species))
-
-      ip <- initialPosition
-      positionString <- paste("\ntransect positions > ", ip , sep="")
-
-    } else {
-
-      message( paste("compareTransectUsingQuosure(): ", operator, " not supported", sep=""))
-      stop()
-
-    }
-
-  }
-
-  combo.df <- merge(oak.df, center.df)
-
-  combo.df <- combo.df %>% 
-  dplyr::mutate(deltaMean=(oakEdgeMean-controlEdgeMean)/controlEdgeMean)
-
-
-  assign("combo.df", combo.df, envir=.GlobalEnv)
-
-
-  ggCompare1 <- ggplot(combo.df, aes(x=julian, y=deltaMean)) +
-      geom_point(shape=21) + 
-      geom_smooth(method="lm", level=0.95) +  
-      geom_hline(yintercept=0) +
-      ylim(-1.1,1.1) +
-      labs(title= paste("average spiders per trap ",
-                        positionText,
-                        "\n(oak average - control average) / control average", sep=""), 
-           subtitle = paste("(95% confidence interval)", sep=""),
-         x="julian day",
-         y= "oakMargin fraction of control",
-         caption=paste("120 observations per day", "\npositions 1 - 10 inclusive", sep="")) +
-    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
-    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
-    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
-    theme(legend.title=element_blank(), 
-          legend.box.background = element_rect(colour = "black"),
-          panel.border = element_rect(colour = "black", fill=NA)) + 
-    # Put bottom-right corner of legend box in bottom-right corner of graph
-    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
-    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
-    theme_bw() 
-    
-  return(grid.arrange(ggCompare1, ncol=1, nrow=1))
-
-}
-
-
-
-compareTransectUsingQuosureV2 <- function (data, species, operator, initialPosition, secondaryPosition, positionText) {
-
-  # Programming with dplyr, Different input variable (how and when to quote/unquote)
-  # https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
-
-  # This function provides the flexibility to configure the dplyr::filter() position argument on-the-fly,
-  # we need to support the following cases
-  #
-  # filter(position < initialPosition)
-  # filter(position > initialPosition)
-  # filter(between(position, initialPosition, secondaryPosition))
-
-  #####################################################
-  # https://stackoverflow.com/questions/29554796/meaning-of-band-width-in-ggplot-geom-smooth-lm
-
-  #species <- enquo(species)
-  #initialPosition <- enquo(initialPosition)
-  #secondaryPosition <- enquo(secondaryPosition)
-
-  if (FALSE) {   # available for debug
-    # https://stackoverflow.com/questions/9726705/assign-multiple-objects-to-globalenv-from-within-a-function
-    assign("data", data, envir=.GlobalEnv)
-    assign("species", species, envir=.GlobalEnv)
-    assign("operator", operator, envir=.GlobalEnv)
-    assign("initialPosition", initialPosition, envir=.GlobalEnv)
-    assign("secondaryPosition", secondaryPosition, envir=.GlobalEnv)
-  }
-
-  if (operator == "BETWEEN") {
-
-      oak.df <- data %>% 
-      dplyr::filter(between(position, !!initialPosition , !!secondaryPosition), time=="pm", transect=="oakMargin") %>% 
-      dplyr::group_by(julian) %>% 
-      dplyr::summarise(oakEdgeMean=mean(!!species))
-
-      center.df <- data %>% 
-      dplyr::filter(between(position, !!initialPosition , !!secondaryPosition), time=="pm", transect=="control") %>% 
-      dplyr::group_by(julian) %>% 
-      dplyr::summarise(controlEdgeMean=mean(!!species))
-      
-
-  } else {
-
-    if (operator == "LT") {
-
-      oak.df <- data %>% 
-      # dplyr::filter(position < !! initialPosition, time=="pm", transect=="oakMargin") %>% 
-      dplyr::filter(position < !! initialPosition, transect=="oakMargin") %>% 
-      dplyr::group_by(julian) %>% 
-      dplyr::summarise(oakEdgeMean=mean(!!species))
-
-      center.df <- data %>% 
-      # dplyr::filter(position < !! initialPosition, time=="pm", transect=="control") %>% 
-      dplyr::filter(position < !! initialPosition, transect=="control") %>% 
-      dplyr::group_by(julian) %>% 
-      dplyr::summarise(controlEdgeMean=mean(!!species))
-
-      ip <- initialPosition 
-      positionString <- paste("\ntransect positions < ", ip , sep="")
-
-    } else if (operator == "GT") {
-
-      oak.df <- data %>% 
-      dplyr::filter(position > !! initialPosition, transect=="oakMargin") %>% 
-      dplyr::group_by(julian) %>% 
-      dplyr::summarise(oakEdgeMean=mean(!! species))
-
-      center.df <- data %>% 
-      dplyr::filter(position > !! initialPosition, transect=="control") %>% 
-      dplyr::group_by(julian) %>% 
-      dplyr::summarise(controlEdgeMean=mean(!! species))
-
-      ip <- initialPosition
-      positionString <- paste("\ntransect positions > ", ip , sep="")
-
-    } else {
-
-      message( paste("compareTransectUsingQuosure(): ", operator, " not supported", sep=""))
-      stop()
-
-    }
-
-  }
-
-  combo.df <- merge(oak.df, center.df)
-
-  combo.df <- combo.df %>% 
-  dplyr::mutate(deltaMean=(oakEdgeMean-controlEdgeMean)/controlEdgeMean)
-  
-
-  assign("combo.df", combo.df, envir=.GlobalEnv)
-
-
-  ggCompare1 <- ggplot(combo.df, aes(x=julian, y=deltaMean)) +
-      geom_point(shape=21) + 
-      geom_smooth(method="lm", level=0.95) +  
-      geom_hline(yintercept=0) +
-      ylim(-1.1,1.1) +
-      labs(title= paste("average spiders per trap ",
-                        positionText,
-                        "\n(oak average - control average) / control average", sep=""), 
-           subtitle = paste("(95% confidence interval)", sep=""),
-         x="julian day",
-         y= "oakMargin fraction of control",
-         caption=paste("120 observations per day", "\npositions 1 - 10 inclusive", sep="")) +
-    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
-    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
-    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
-    theme(legend.title=element_blank(), 
-          legend.box.background = element_rect(colour = "black"),
-          panel.border = element_rect(colour = "black", fill=NA)) + 
-    # Put bottom-right corner of legend box in bottom-right corner of graph
-    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
-    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
-    theme_bw() 
-    
-  return(grid.arrange(ggCompare1, ncol=1, nrow=1))
-
-}
-
 
 compareTransectG2V1 <- function (data, species, operator, initialPosition, secondaryPosition, positionText) {
 
@@ -1101,6 +476,33 @@ compareTransectG2V1 <- function (data, species, operator, initialPosition, secon
   #species <- enquo(species)
   #initialPosition <- enquo(initialPosition)
   #secondaryPosition <- enquo(secondaryPosition)
+  
+  #######################################
+  # rMarkdown
+  #
+  #positionText <- paste("\ntransect positions ", "1-4", sep="")
+  #g3 <- compareTransectG2V1(data=bugs.df, 
+                            #species=quo(Thomisidae..crab.spider.), 
+                            #operator="LT",
+                            #initialPosition=quo(5), 
+                            #secondaryPosition=quo(0),
+                            #positionText)
+  #positionText <- paste("\ntransect positions ", "5-7", sep="")
+  #g46 <- compareTransectG2V1(data=bugs.df, 
+                             #species=quo(Thomisidae..crab.spider.), 
+                             #operator="BETWEEN",
+                             #initialPosition=quo(4), 
+                             #secondaryPosition=quo(8),
+                             #positionText)
+  #positionText <- paste("\ntransect positions ", "8-10", sep="")
+  #g7 <- compareTransectG2V1(data=bugs.df, 
+                            #species=quo(Thomisidae..crab.spider.), 
+                            #operator="GT",
+                            #initialPosition=quo(7), 
+                            #secondaryPosition=quo(0),
+                            #positionText)
+  #
+  #######################################
 
   if (FALSE) {   # available for debug
     # https://stackoverflow.com/questions/9726705/assign-multiple-objects-to-globalenv-from-within-a-function
@@ -1170,10 +572,10 @@ compareTransectG2V1 <- function (data, species, operator, initialPosition, secon
   combo.df <- merge(oak.df, center.df)
 
   combo.df <- combo.df %>% 
-  #dplyr::mutate(deltaMean=(oakEdgeMean-controlEdgeMean)/controlEdgeMean)
-  # dplyr::mutate(deltaMean=(oakEdgeMean)/controlEdgeMean -1 ) 
-  dplyr::mutate(deltaMean=( oakEdgeMean)/controlEdgeMean ) 
-  #dplyr::mutate( deltaMean=(oakEdgeMean-controlEdgeMean)**2 )
+    dplyr::mutate(deltaMean=as.numeric( oakEdgeMean/controlEdgeMean ) )
+  
+  combo.df <- combo.df %>% filter(!is.na(deltaMean), !is.infinite(deltaMean))
+
   
   # assign("combo.df", combo.df, envir=.GlobalEnv)  # for debugging
   # the dataframe contains columns 'julian', 'oakEdgeMean', 'controlEdgeMean', 'deltaMean'
@@ -1192,17 +594,20 @@ compareTransectG2V1 <- function (data, species, operator, initialPosition, secon
 
 assign("combo.df", combo.df, envir=.GlobalEnv)
 
-  ggCompare1 <- ggplot(combo.df, aes(x=julian, y=deltaMean), color=julianGroup, fill=julianGroup) +
+# https://stackoverflow.com/questions/29880210/as-numeric-removes-decimal-places-in-r-how-to-change
 
-      #geom_point(data=subset(combo.df, (julian >= 155 & julian <= 175 )), aes(x=julian, y=deltaMean, fill='red'), shape=21) + 
-      geom_point(data=subset(combo.df, julianGroup=="red"), shape=21) +
-      geom_point(data=subset(combo.df, julianGroup=="green"), shape=21) +
-      geom_point(data=subset(combo.df, julianGroup=="blue"), shape=21) +
-      geom_smooth(method="lm", level=0.89, aes(line=julianGroup)) +   # aes() sections the data even though 'line' is undefined
+  ggCompare1 <- ggplot(data=combo.df, shape=21) +
+      # ggplot really only likes to draw legends for things that have aesthetic mappings.
+      #
+      geom_point(data=subset(combo.df, julianGroup=="red"), aes(x=julian, y=deltaMean, color=julianGroup, fill=julianGroup) ) +
+      geom_point(data=subset(combo.df, julianGroup=="green"), aes(x=julian, y=deltaMean, color=julianGroup, fill=julianGroup) ) +
+      geom_point(data=subset(combo.df, julianGroup=="blue"), aes(x=julian, y=deltaMean, color=julianGroup, fill=julianGroup) ) +
+      geom_smooth(method="lm", level=0.89, aes(x=julian, y=deltaMean, color=julianGroup)) +   # aes() sections the data even though 'line' is undefined
 
+      # aes(color=julianGroup, fill=julianGroup),
       #geom_hline(yintercept=0) +
       xlim(154,239) +
-      ylim(-.1,3.1) +
+      ylim(-.1,1.2) +
 
       geom_hline(yintercept=1) + 
 
@@ -1213,17 +618,15 @@ assign("combo.df", combo.df, envir=.GlobalEnv)
          x="julian day",
          y= "oakMargin fraction of control",
          caption=paste("120 observations per day", "\npositions 1 - 10 inclusive", sep="")) +
-    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
-    scale_colour_manual(values=c(afternoon="red", morning="blue")) + 
-    # https://stackoverflow.com/questions/47584766/draw-a-box-around-a-legend-ggplot2
-    theme(legend.title=element_blank(), 
+
+      theme(legend.title=element_blank(), 
           legend.box.background = element_rect(colour = "black"),
           panel.border = element_rect(colour = "black", fill=NA)) + 
-    # Put bottom-right corner of legend box in bottom-right corner of graph
-    theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
-    theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
-    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
-    theme_bw() 
+      # Put bottom-right corner of legend box in bottom-right corner of graph
+      theme(legend.justification=c(1,0), legend.position=c(.9,.7)) +
+      theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
+      theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
+      theme_bw() 
     
 
   return(grid.arrange(ggCompare1, ncol=1, nrow=1))
