@@ -1,78 +1,57 @@
 CIMIS
 ================
 
-``` r
-ampelos.ambient <- plot_grid(ambient231,
-                             
-            label_size=12, 
-            label_fontface = "plain",
-            axis="t",
-            align = "v",
-            ncol = 1,
-            #rel_heights = c(1),      # applies to rows
-            rel_widths = c(1),    # applies to columns
-            scale = c(1)
-          )
+    ## Scale for 'y' is already present. Adding another scale for 'y', which
+    ## will replace the existing scale.
 
-  # it is difficult to adjust the space between plots with plot_grid()
-  # https://github.com/wilkelab/cowplot/issues/31
-  # 
-  
-  print(ampelos.ambient)
-```
+    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
 
-![](CIMIS-api_files/figure-markdown_github/unnamed-chunk-3-1.png)
+    ## Warning: Removed 2 rows containing missing values (geom_point).
+
+    ## Scale for 'y' is already present. Adding another scale for 'y', which
+    ## will replace the existing scale.
+
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 9 rows containing missing values (geom_point).
+
+    ## Scale for 'y' is already present. Adding another scale for 'y', which
+    ## will replace the existing scale.
 
 ``` r
-  ampelos.ground <- plot_grid(ground231,
-                             
-            label_size=12, 
-            label_fontface = "plain",
-            axis="t",
-            align = "v",
-            ncol = 1,
-            #rel_heights = c(1),      # applies to rows
-            rel_widths = c(1),    # applies to columns
-            scale = c(1)
-          )
-
-  # it is difficult to adjust the space between plots with plot_grid()
-  # https://github.com/wilkelab/cowplot/issues/31
-  # 
-  
-  print(ampelos.ground)
+print(ambient231)
 ```
 
-![](CIMIS-api_files/figure-markdown_github/unnamed-chunk-3-2.png)
+![](CIMIS-api_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
 ``` r
-  ampelos.humidity <- plot_grid(humidity231,
-
-            axis="t",
-            align = "v",
-            ncol = 1,
-            #rel_heights = c(1),      # applies to rows
-            rel_widths = c(1),    # applies to columns
-            scale = c(1)
-          )
-  
-  print(ampelos.humidity)
+print(precip231)
 ```
 
-![](CIMIS-api_files/figure-markdown_github/unnamed-chunk-3-3.png)
+![](CIMIS-api_files/figure-markdown_github/unnamed-chunk-2-2.png)
 
 ``` r
-  ampelos.wind <- plot_grid(wind231,
-          
-            axis="t",
-            align = "v",
-            ncol = 1,
-            #rel_heights = c(1),      # applies to rows
-            rel_widths = c(1),    # applies to columns
-            scale = c(1)
-          )
-  
-  print(ampelos.wind)
+print(humidity231)
 ```
 
-![](CIMIS-api_files/figure-markdown_github/unnamed-chunk-3-4.png)
+    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 2 rows containing missing values (geom_point).
+
+![](CIMIS-api_files/figure-markdown_github/unnamed-chunk-2-3.png)
+
+``` r
+print(ground231)
+```
+
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 9 rows containing missing values (geom_point).
+
+![](CIMIS-api_files/figure-markdown_github/unnamed-chunk-2-4.png)
+
+``` r
+print(wind231)
+```
+
+![](CIMIS-api_files/figure-markdown_github/unnamed-chunk-2-5.png)

@@ -2,10 +2,6 @@
 title: "CIMIS"
 output: github_document
 ---
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 
 ```{r, echo=F, message=F, warning=F}
 # read CIMIS data via the public API and plot results
@@ -24,6 +20,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(jsonlite)
 library(gridExtra)
 library(cowplot)
+
+source("bug-library.R")
 
 if (FALSE) {
   cimisKey <- fromJSON("./PRIVATE-CIMIS-API-KEY.json")
@@ -57,157 +55,179 @@ if (FALSE) {
 #
 # CIMIS data items : http://et.water.ca.gov/Rest/Index
 # 
-
+df2.df$DayPrecip <- as.numeric(df2.df$DayPrecip.Value)
 df2.df$DayAirTmpAvg <- as.numeric(df2.df$DayAirTmpAvg.Value)
 df2.df$DayAirTmpMin <- as.numeric(df2.df$DayAirTmpMin.Value)
 df2.df$DayAirTmpMax <- as.numeric(df2.df$DayAirTmpMax.Value)
 df2.df$DaySoilTmpAvg <- as.numeric(df2.df$DaySoilTmpAvg.Value)
 df2.df$DayRelHumAvg <- as.numeric(df2.df$DayRelHumAvg.Value)
 df2.df$DayWindSpdAvg <- as.numeric(df2.df$DayWindSpdAvg.Value)
-df2.df$Julian <- as.numeric(df2.df$Julian)
+df2.df$julian <- as.numeric(df2.df$Julian)
 
 # convert more vars as necessary
+
+assign("df2.df", df2.df, envir=.GlobalEnv)
   
 ```
 
-```{r, echo=F, message=F, warning=F}
+```{r cimis, echo=F, message=T, warning=T}
 library(ggplot2)
+library(dplyr)
 
-ambient231 <- ggplot(data = df2.df, aes(x=Julian)) + 
-  geom_line(aes(y = DayAirTmpMax), colour = "red") +
-  geom_line(aes(y = DayAirTmpAvg), colour = "green") +
-  geom_line(aes(y = DayAirTmpMin), colour = "blue") +
+ambient231 <- ggplot(data = df2.df, aes(x=julian)) + 
+  
+  geom_point(aes(y = DayAirTmpMax, colour = "max"), shape=21) +
+  geom_point(aes(y = DayAirTmpAvg, colour = "avg"), shape=21) +
+  geom_point(aes(y = DayAirTmpMin, colour = "min"), shape=21) +
+  
+  geom_smooth(data = df2.df, aes(x=julian, y = DayAirTmpMax), method="loess", se=FALSE, col="red") +
+  geom_smooth(data = df2.df, aes(x=julian, y = DayAirTmpAvg), method="loess", se=FALSE, col="green") +
+  geom_smooth(data = df2.df, aes(x=julian, y = DayAirTmpMin), method="loess", se=FALSE, col="blue") +
+  
+  scale_colour_manual("daily \ntemperatures",
+          values=c(max="red", avg="green", min="blue"),
+          labels = c(max="maximum", avg="average", min="minimum")) +   # manual legend
+  
+  geom_vline(xintercept=152, linetype="dotted", alpha=.75) +  # june 1
+  geom_vline(xintercept=182, linetype="dotted", alpha=.75) +  # july 1
+  geom_vline(xintercept=213, linetype="dotted", alpha=.75) +  # august 1
+  
+  geom_label(aes(x = 152, y = -2, label = "1 June")) +
+  geom_label(aes(x = 182, y = 0, label = "1 July")) +
+  geom_label(aes(x = 213, y = -2, label = "1 August")) +
+  
   ylim(-10,40) +
-  scale_y_continuous(breaks=seq(-10,40,10), 
+  scale_y_continuous(breaks=seq(-10,40,5), 
                        sec.axis = sec_axis(~.*(9/5) + 32,
                                            breaks= seq(0, 110, 10),
                                            name= "air temp (F)"))  +
-  labs(title = paste("Ambient Temperatures", sep=""), 
-      subtitle = paste("CIMIS station #231", sep=""),
-      y = "air temp (C)") +
-  theme_bw() +
-  theme(axis.title.y.right = element_text(angle = 90))
   
-humidity231 <- ggplot(data = df2.df, aes(x=Julian, y=DayRelHumAvg)) + 
+  labs(title = paste("2018 Ambient Temperatures", sep=""), 
+      subtitle = paste("CIMIS Station #231, Lompoc, California", sep=""),
+      x = "julian day", y = "air temp (C)") +
+
+  theme_bw() +
+  theme(axis.title.y.right = element_text(angle = 90)) 
+# +
+#  theme(legend.position="bottom")
+
+savePDF(image=ambient231, filenameNoExt="cimis-ambient231")
+
+
+temp.df <- df2.df %>% dplyr::filter(DayPrecip>0)
+  
+precip231 <- ggplot(data = temp.df, aes(x=julian, y=DayPrecip)) + 
+  
+  geom_point(shape=21) +
+  geom_smooth(method="loess", se=FALSE, col="blue") +
+  
+  geom_vline(xintercept=152, linetype="dotted", alpha=.75) +  # june 1
+  geom_vline(xintercept=182, linetype="dotted", alpha=.75) +  # july 1
+  geom_vline(xintercept=213, linetype="dotted", alpha=.75) +  # august 1
+  
+  geom_label(aes(x = 152, y = 3, label = "1 June")) +
+  geom_label(aes(x = 182, y = 3, label = "1 July")) +
+  geom_label(aes(x = 213, y = 3, label = "1 August")) +
+  
+  scale_y_continuous(breaks=seq(0,100,10))  +
+  xlim(0,250) +
+  labs(x = "julian day", y = "precipitation (mm)") +
+  labs(title= paste("2018 Average Precipitation", sep=""), 
+         subtitle = paste("CIMIS Station #231, Lompoc, California", sep="")) +
+   
+  theme_bw() +
+  theme(legend.position="none")
+
+savePDF(image=precip231, filenameNoExt="cimis-precip231")
+  
+  
+humidity231 <- ggplot(data = df2.df, aes(x=julian, y=DayRelHumAvg)) + 
   # geom_line(aes(y = DayRelHumAvg), colour = "blue") +
   geom_point(shape=21) + 
-  geom_smooth(method="lm", level=0.95) +  
-  geom_vline(xintercept=175) +
+  geom_smooth(method="loess", se=FALSE, col="blue") +  
+  
+  geom_vline(xintercept=152, linetype="dotted", alpha=.75) +  # june 1
+  geom_vline(xintercept=182, linetype="dotted", alpha=.75) +  # july 1
+  geom_vline(xintercept=213, linetype="dotted", alpha=.75) +  # august 1
+  
+  geom_label(aes(x = 152, y = 12, label = "1 June")) +
+  geom_label(aes(x = 182, y = 12, label = "1 July")) +
+  geom_label(aes(x = 213, y = 12, label = "1 August")) +
+  
+  #geom_vline(xintercept=175) +  # stylet oil
   # ylim(-10,40) +
   scale_y_continuous(breaks=seq(0,100,10))  +
-  labs(y = "average relative humidity (%)") +
-  labs(title= paste("Average Relative Humidity", sep=""), 
-         subtitle = paste("CIMIS station #231", sep="")) +
-  annotate("segment", x = 120, xend = 175, y = 60, yend = 70,
-  colour = "blue") +
+  labs(x = "julian day", y = "average relative humidity (%)") +
+  labs(title= paste("2018 Average Relative Humidity", sep=""), 
+         subtitle = paste("CIMIS Station #231, Lompoc, California", sep="")) +
+   
   theme_bw() +
-  annotate("text", x = 100, y = 60, label = "spray stylet oil")
+  theme(legend.position="none")
 
-ground231 <- ggplot(data = df2.df, aes(x=Julian, y=DaySoilTmpAvg)) + 
+savePDF(image=humidity231, filenameNoExt="cimis-humidity231")
+  
+
+ground231 <- ggplot(data = df2.df, aes(x=julian, y=DaySoilTmpAvg)) + 
   geom_point(shape=21) + 
-  geom_smooth(method="lm", level=0.95) +  
-  geom_vline(xintercept=175) +
+  geom_smooth(method="loess", se=FALSE, col="blue") + 
+  
+  geom_vline(xintercept=152, linetype="dotted", alpha=.75) +  # june 1
+  geom_vline(xintercept=182, linetype="dotted", alpha=.75) +  # july 1
+  geom_vline(xintercept=213, linetype="dotted", alpha=.75) +  # august 1
+  
+  geom_label(aes(x = 152, y = 10, label = "1 June")) +
+  geom_label(aes(x = 182, y = 10, label = "1 July")) +
+  geom_label(aes(x = 213, y = 10, label = "1 August")) +
+  
   ylim(0,40) +
   expand_limits(y = 40) +
-  # scale_y_continuous(breaks=seq(0,40,10),
-  scale_y_continuous(
+  #scale_y_continuous(breaks=seq(0,40,10),
+  scale_y_continuous(breaks=seq(0,40,10),
     sec.axis = sec_axis(~.*(9/5) + 32,
                         breaks= seq(0, 110, 10),
                         name= "temp (F)")) +
-  labs(x = "julian", y = "temp (C)") +
-  labs(title = paste("Average Soil Temperature", sep=""), 
-        subtitle = paste("CIMIS station #231", sep=""),
-        caption=paste("sensor located 15 cm (6 in) below soil surface", 
-                     "\n under irrigated grass", sep="") )  +
+  labs(x = "julian day", y = "temp (C)") +
+  labs(title = paste("2018 Average Soil Temperature 15 cm below soil surface", sep=""), 
+        subtitle = paste("CIMIS Station #231, Lompoc, California", sep=""),
+        caption=paste("sensor located under irrigated grass", sep="") )  +
   theme_bw() +
-  theme(axis.title.y.right = element_text(angle = 90)) 
+  theme(axis.title.y.right = element_text(angle = 90)) +
+  theme(legend.position="none")
 
-wind231 <- ggplot(data = df2.df, aes(x=Julian, y=DayWindSpdAvg)) + 
+savePDF(image=ground231, filenameNoExt="cimis-ground231")
+
+wind231 <- ggplot(data = df2.df, aes(x=julian, y=DayWindSpdAvg)) + 
   geom_point(shape=21) + 
-  geom_smooth(method="lm", level=0.95) +  
+  geom_smooth(method="loess", se=FALSE, col="blue") +  
+  
+  geom_vline(xintercept=152, linetype="dotted", alpha=.75) +  # june 1
+  geom_vline(xintercept=182, linetype="dotted", alpha=.75) +  # july 1
+  geom_vline(xintercept=213, linetype="dotted", alpha=.75) +  # august 1
+  
+  geom_label(aes(x = 152, y = 0, label = "1 June")) +
+  geom_label(aes(x = 182, y = 0, label = "1 July")) +
+  geom_label(aes(x = 213, y = 0, label = "1 August")) +
 
   ylim(0,10) +
   expand_limits(y = 10) +
   # scale_y_continuous(breaks=seq(0,40,10),
-  scale_y_continuous(
-    sec.axis = sec_axis(~.*(9/5) + 32,
-                        breaks= seq(0, 10, 1),
-                        name= "meters/second")) +
-  labs(x = "julian", y = "meters/second") +
-  labs(title = paste("Average Wind Speed", sep=""), 
-        subtitle = paste("CIMIS station #231", sep=""),
+  scale_y_continuous() +
+  labs(x = "julian day", y = "meters/second") +
+  labs(title = paste("2018 Average Wind Speed", sep=""), 
+        subtitle = paste("CIMIS Station #231, Lompoc, California", sep=""),
         caption=paste("", sep="") )  +
   theme_bw() +
   theme(axis.title.y.right = element_text(angle = 90)) 
 
+savePDF(image=wind231, filenameNoExt="cimis-wind231")
+
 ```
 
-
-```{r, echo=T, message=F, warning=F}
-
-
-ampelos.ambient <- plot_grid(ambient231,
-                             
-            label_size=12, 
-            label_fontface = "plain",
-            axis="t",
-            align = "v",
-            ncol = 1,
-            #rel_heights = c(1),      # applies to rows
-            rel_widths = c(1),    # applies to columns
-            scale = c(1)
-          )
-
-  # it is difficult to adjust the space between plots with plot_grid()
-  # https://github.com/wilkelab/cowplot/issues/31
-  # 
-  
-  print(ampelos.ambient)
-  
-  ampelos.ground <- plot_grid(ground231,
-                             
-            label_size=12, 
-            label_fontface = "plain",
-            axis="t",
-            align = "v",
-            ncol = 1,
-            #rel_heights = c(1),      # applies to rows
-            rel_widths = c(1),    # applies to columns
-            scale = c(1)
-          )
-
-  # it is difficult to adjust the space between plots with plot_grid()
-  # https://github.com/wilkelab/cowplot/issues/31
-  # 
-  
-  print(ampelos.ground)
-  
-  
-  
-  
-  ampelos.humidity <- plot_grid(humidity231,
-
-            axis="t",
-            align = "v",
-            ncol = 1,
-            #rel_heights = c(1),      # applies to rows
-            rel_widths = c(1),    # applies to columns
-            scale = c(1)
-          )
-  
-  print(ampelos.humidity)
-  
-  ampelos.wind <- plot_grid(wind231,
-          
-            axis="t",
-            align = "v",
-            ncol = 1,
-            #rel_heights = c(1),      # applies to rows
-            rel_widths = c(1),    # applies to columns
-            scale = c(1)
-          )
-  
-  print(ampelos.wind)
-
+```{r}
+print(ambient231)
+print(precip231)
+print(humidity231)
+print(ground231)
+print(wind231)
 ```
 

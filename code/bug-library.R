@@ -22,6 +22,16 @@ library(tidyverse)
 library(knitr)
 library(kableExtra)
 
+savePDF <- function(image, filenameNoExt) {
+   
+  filename <- paste("./output/", filenameNoExt, ".pdf", sep="")
+  
+  # 6 inches = 15.24 cm
+  ggsave(filename, plot = image,
+         width = 15.24, height = 10.16, units = "cm")
+  
+}
+
 
 plotRidges <- function(data, combined, bugs, speciesText, where, when, wk, caption) {
 
