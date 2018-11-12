@@ -177,7 +177,7 @@ one
 one
 </td>
 <td style="text-align:right;">
-0.663750
+0.668750
 </td>
 </tr>
 <tr>
@@ -188,7 +188,7 @@ one
 two
 </td>
 <td style="text-align:right;">
-0.328000
+0.314625
 </td>
 </tr>
 <tr>
@@ -199,7 +199,7 @@ one
 three
 </td>
 <td style="text-align:right;">
-0.452000
+0.451750
 </td>
 </tr>
 <tr>
@@ -210,7 +210,7 @@ two
 one
 </td>
 <td style="text-align:right;">
-0.534875
+0.532000
 </td>
 </tr>
 <tr>
@@ -221,7 +221,7 @@ two
 two
 </td>
 <td style="text-align:right;">
-0.363750
+0.359375
 </td>
 </tr>
 <tr>
@@ -232,7 +232,7 @@ two
 three
 </td>
 <td style="text-align:right;">
-0.548750
+0.543250
 </td>
 </tr>
 <tr>
@@ -243,7 +243,7 @@ three
 one
 </td>
 <td style="text-align:right;">
-0.310875
+0.283750
 </td>
 </tr>
 <tr>
@@ -254,7 +254,7 @@ three
 two
 </td>
 <td style="text-align:right;">
-0.382625
+0.393875
 </td>
 </tr>
 <tr>
@@ -265,7 +265,7 @@ three
 three
 </td>
 <td style="text-align:right;">
-0.701750
+0.708875
 </td>
 </tr>
 </tbody>
@@ -320,14 +320,50 @@ clusterBoxplot(cluster.df, "oakMargin", "am")
 ### does the crab spider population appear to change over time? Is there a difference between the two transects?
 
 ``` r
-# pass variables to dyplr pipes
-# https://stackoverflow.com/questions/27975124/pass-arguments-to-dplyr-functions
-#plotSpeciesTrend(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), #speciesText="Crab Spider", where="control", when="pm", #caption=Sys.Date())
-
-plotSpeciesTrendV2(data=bugs.df, bugs=quo(Thomisidae..crab.spider.), speciesText="Crab Spider", where="control", when="pm", caption=Sys.Date())
+plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-<img src="ampelos_files/figure-markdown_github/populations-1.png" width="100%" /><img src="ampelos_files/figure-markdown_github/populations-2.png" width="100%" />
+![](ampelos_files/figure-markdown_github/population-trends-1.png)
+
+    ## NULL
+
+``` r
+plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+```
+
+![](ampelos_files/figure-markdown_github/population-trends-2.png)
+
+    ## NULL
+
+``` r
+plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+```
+
+![](ampelos_files/figure-markdown_github/population-trends-3.png)
+
+    ## NULL
+
+``` r
+plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+```
+
+![](ampelos_files/figure-markdown_github/population-trends-4.png)
+
+    ## NULL
+
+``` r
+plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+```
+
+![](ampelos_files/figure-markdown_github/population-trends-5.png)
+
+    ## NULL
+
+``` r
+plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+```
+
+![](ampelos_files/figure-markdown_github/population-trends-6.png)
 
     ## NULL
 
