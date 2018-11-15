@@ -192,27 +192,35 @@ knitr::kable(returnList[[5]])
 
 ```{r clusterBoxPlots, echo=TRUE, include=TRUE, message=F, warning=F }
 
-df <- clusterSetup()
+# strip out the other arthropods and misc stuff
+input.df <- clusterSetup()
 
- 
-cluster.df <- clusterAccumulateTotal(df, "control")
-clusterBoxplot(cluster.df, "control", "(am pm)")
+# for each 'position', get spiders and assign to a cluster number
 
-cluster.df <- clusterAccumulateTotal(df, "oakMargin")
-clusterBoxplot(cluster.df, "oakMargin", "(am pm)")
+#   !!!!!!!! function can't handle "both" !!!!!!!!!!!!!!
+#cluster.df <- clusterAccumulateTotal(df, "control", "both")
+#clusterBoxplot(cluster.df, "control", "(24 hours)")
 
 
-cluster.df <- clusterAccumulate(df, "control", "pm")
+#cluster.df <- clusterAccumulateTotal(df, "oakMargin", "both")
+#clusterBoxplot(cluster.df, "oakMargin", "(24 hours)")
+
+
+cluster.df <- clusterAccumulate(df=input.df, t="control", daytime="pm")
 clusterBoxplot(cluster.df, "control", "pm")
+clusterStats(df=input.df, t="control", daytime="pm")
 
-cluster.df <- clusterAccumulate(df, "oakMargin", "pm")
+cluster.df <- clusterAccumulate(df=input.df, t="oakMargin", daytime="pm")
 clusterBoxplot(cluster.df, "oakMargin", "pm")
+clusterStats(df=input.df, t="oakMargin", daytime="pm")
 
 cluster.df <- clusterAccumulate(df, "control", "am")
 clusterBoxplot(cluster.df, "control", "am")
+clusterStats(df=input.df, t="control", daytime="am")
 
 cluster.df <- clusterAccumulate(df, "oakMargin", "am")
 clusterBoxplot(cluster.df, "oakMargin", "am")
+clusterStats(df=input.df, t="oakMargin", daytime="am")
 
 
 ```

@@ -382,44 +382,190 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
   sp_percentControl <- sum(temp.df$sp_by_week) / sum(temp.df$n) * 100
   sp_percentControl <- format(round(sp_percentControl, 2), nsmall = 2)
   
+  # partition the dataframes into 3 cluster components, plot each
+  #
+  # clusters are "
+  #
+  # oakMargin: cluster 1 = trap position 1 - 4
+  #            cluster 2 = trap position 5 - 7
+  #            cluster 3 = trap position 8 - 10
+  #
+  # control:   cluster 1 = trap position 1 - 3
+  #            cluster 2 = trap position 4 - 7
+  #            cluster 3 = trap position 8 - 10
+  # 
+  
   
   oakPM.df <- data %>%
     filter( time == "pm",  transect == "oakMargin") %>%
     group_by( week ) %>%
     summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
   
+  oakPMcluster1.df <- data %>%
+    filter( time == "pm",  transect == "oakMargin") %>%
+    filter( position >= 1 & position <= 4) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+  oakPMcluster2.df <- data %>%
+    filter( time == "pm",  transect == "oakMargin") %>%
+    filter( position >= 5 & position <= 7) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+  oakPMcluster3.df <- data %>%
+    filter( time == "pm",  transect == "oakMargin") %>%
+    filter( position >= 8 & position <= 10) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+  
+  oakPMcluster.list <- list()
+  oakPMcluster.list[[1]] <- oakPMcluster1.df
+  oakPMcluster.list[[2]] <- oakPMcluster2.df
+  oakPMcluster.list[[3]] <- oakPMcluster3.df
+  
+  
   controlPM.df <- data %>%
     filter( time == "pm",  transect == "control") %>%
     group_by( week ) %>%
     summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
   
-  # join the data frames
-  pm.df <- merge(oakPM.df, controlPM.df)
+  controlPMcluster1.df <- data %>%
+    filter( time == "pm",  transect == "control") %>%
+    filter( position >= 1 & position <= 3) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) )  
+  controlPMcluster2.df <- data %>%
+    filter( time == "pm",  transect == "control") %>%
+    filter( position >= 4 & position <= 7) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+  controlPMcluster3.df <- data %>%
+    filter( time == "pm",  transect == "control") %>%
+    filter( position >= 8 & position <= 10) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+  
+  controlPMcluster.list <- list()
+  controlPMcluster.list[[1]] <- controlPMcluster1.df
+  controlPMcluster.list[[2]] <- controlPMcluster2.df
+  controlPMcluster.list[[3]] <- controlPMcluster3.df
+
+
   
   oakAM.df <- data %>%
     filter( time == "am",  transect == "oakMargin") %>%
     group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) )
+
+  oakAMcluster1.df <- data %>%
+    filter( time == "am",  transect == "oakMargin") %>%
+    filter( position >= 1 & position <= 4) %>%
+    group_by( week ) %>%
     summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+  oakAMcluster2.df <- data %>%
+    filter( time == "am",  transect == "oakMargin") %>%
+    filter( position >= 5 & position <= 7) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+  oakAMcluster3.df <- data %>%
+    filter( time == "am",  transect == "oakMargin") %>%
+    filter( position >= 8 & position <= 10) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+  
+  oakAMcluster.list <- list()
+  oakAMcluster.list[[1]] <- oakAMcluster1.df
+  oakAMcluster.list[[2]] <- oakAMcluster2.df
+  oakAMcluster.list[[3]] <- oakAMcluster3.df
+
+
+
   
   controlAM.df <- data %>%
     filter( time == "am",  transect == "control") %>%
     group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) )
+
+  controlAMcluster1.df <- data %>%
+    filter( time == "am",  transect == "control") %>%
+    filter( position >= 1 & position <= 3) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) )  
+  controlAMcluster2.df <- data %>%
+    filter( time == "am",  transect == "control") %>%
+    filter( position >= 4 & position <= 7) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+  controlAMcluster3.df <- data %>%
+    filter( time == "am",  transect == "control") %>%
+    filter( position >= 8 & position <= 10) %>%
+    group_by( week ) %>%
     summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
   
-  # join the data frames
-  am.df <- merge(oakAM.df, controlAM.df)
+  controlAMcluster.list <- list()
+  controlAMcluster.list[[1]] <- controlAMcluster1.df
+  controlAMcluster.list[[2]] <- controlAMcluster2.df
+  controlAMcluster.list[[3]] <- controlAMcluster3.df
+
   
-  sliced.df <- merge(am.df, pm.df)
+
   
   oakAllDay.df <- data %>%
     filter( transect == "oakMargin") %>%
     group_by( week ) %>%
     summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+
+  oakAllDaycluster1.df <- data %>%
+    filter(transect == "oakMargin") %>%
+    filter( position >= 1 & position <= 4) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+  oakAllDaycluster2.df <- data %>%
+    filter(transect == "oakMargin") %>%
+    filter( position >= 5 & position <= 7) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+  oakAllDaycluster3.df <- data %>%
+    filter(transect == "oakMargin") %>%
+    filter( position >= 8 & position <= 10) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+  
+  oakAllDayCluster.list <- list()
+  oakAllDayCluster.list[[1]] <- oakAllDaycluster1.df
+  oakAllDayCluster.list[[2]] <- oakAllDaycluster2.df
+  oakAllDayCluster.list[[3]] <- oakAllDaycluster3.df
+
+
+
+
   
   controlAllDay.df <- data %>%
     dplyr::filter( transect == "control") %>%
     group_by( week ) %>%
     summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+
+
+  controlAllDayCluster1.df <- data %>%
+    filter(transect == "control") %>%
+    filter( position >= 1 & position <= 3) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) )  
+  controlAllDayCluster2.df <- data %>%
+    filter(transect == "control") %>%
+    filter( position >= 4 & position <= 7) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+  controlAllDayCluster3.df <- data %>%
+    filter(transect == "control") %>%
+    filter( position >= 8 & position <= 10) %>%
+    group_by( week ) %>%
+    summarise( bugs = sum( !!species , na.rm = TRUE ) ) 
+  
+  controlAllDayCluster.list <- list()
+  controlAllDayCluster.list[[1]] <- controlAllDayCluster1.df
+  controlAllDayCluster.list[[2]] <- controlAllDayCluster2.df
+  controlAllDayCluster.list[[3]] <- controlAllDayCluster3.df
+
   
   
   # compare two dataframes on one graph
@@ -434,37 +580,84 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
   
   if (period=="pm") {
     
-    gg <- ggTrendOrCumulative(df1=oakPM.df, df2=controlPM.df, 
+    g1 <- ggTrendOrCumulative(df1=oakPM.df, df2=controlPM.df, 
                               lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                               lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
                               t1="oakMargin", t2="control",
                               tr=trend,  st="Crab Spider", 
                               spct=sp_percentOak, 
-                              subtitle="day collection", caption="oCaption")
+                              subtitle="daytime collection", caption="oCaption")
+    
+    print(g1)
+    
+    # don't run this twice
+    if (trend==FALSE) {
+    clusterGraph.list <- ggTrendClusters(df1=oakPMcluster.list, df2=controlPMcluster.list, 
+                              lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
+                              lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
+                              st="Crab Spider", 
+                              spct=sp_percentOak, 
+                              subtitle="daytime collection", caption="oCaption")
+    
+    print(clusterGraph.list[[1]])
+    print(clusterGraph.list[[2]])
+    }
     
   } else if (period=="am") {
   
-    gg <- ggTrendOrCumulative(df1=oakAM.df, df2=controlAM.df, 
+    g2 <- ggTrendOrCumulative(df1=oakAM.df, df2=controlAM.df, 
                             lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                             lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
                             t1="oakMargin", t2="control",
                             tr=trend,  st="Crab Spider", 
                             spct=sp_percentOak, 
-                            subtitle="night collection", caption="oCaption")
+                            subtitle="overnight collection", caption="oCaption")
+    
+    print(g2)
+
+    # don't run this twice
+    if (trend==FALSE) {
+    clusterGraph.list <- ggTrendClusters(df1=oakAMcluster.list, df2=controlAMcluster.list, 
+                              lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
+                              lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
+                              st="Crab Spider", 
+                              spct=sp_percentOak, 
+                              subtitle="overnight collection", caption="oCaption")
+    
+    print(clusterGraph.list[[1]])
+    print(clusterGraph.list[[2]])
+    }
+
+    
   } else {
  
-    gg <- ggTrendOrCumulative(df1=oakAllDay.df, df2=controlAllDay.df, 
+    g3 <- ggTrendOrCumulative(df1=oakAllDay.df, df2=controlAllDay.df, 
                               lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                               lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
                               t1="oakMargin", t2="control",
                               tr=trend,  st="Crab Spider", 
                               spct=sp_percentOak, 
-                              subtitle="24 hour collection", caption="oCaption")   
+                              subtitle="24 hour collection", caption="oCaption") 
+    
+    print(g3)
+
+    # don't run this twice
+    if (trend==FALSE) {
+    clusterGraph.list <- ggTrendClusters(df1=oakAllDayCluster.list, df2=controlAllDayCluster.list, 
+                              lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
+                              lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
+                              st="Crab Spider", 
+                              spct=sp_percentOak, 
+                              subtitle="24 hour collection", caption="oCaption")
+    
+    print(clusterGraph.list[[1]])
+    print(clusterGraph.list[[2]])
+    }
+
+
     
   }
   
-  print(gg)
-
   
   return()
   
@@ -629,6 +822,114 @@ ggTrendOrCumulative <- function(df1, df2,
           legend.box.background = element_rect(colour = "black")) 
   
   return(gg)
+  
+}
+
+
+ggTrendClusters <- function(df1, df2,
+                            lowerWeekLimit1, upperWeekLimit1,
+                            lowerWeekLimit2, upperWeekLimit2,
+                            st, spct, subtitle, caption) {
+  
+  assign("df1", df1, envir=.GlobalEnv)
+  
+  color <- c( "c1" = "red", "c2" = "green", "c3" = "blue" )
+  shape <- c("s1" = 21, "s2" = 22, "s3" = 23) 
+  
+    
+    ggOak <- ggplot() +
+      
+      geom_point(data=df1[[1]], aes(x=week, y=bugs, shape="s1")) +
+      geom_line(data=df1[[1]], aes(x=week, y=bugs, color="c1")) +
+      geom_point(data=df1[[2]], aes(x=week, y=bugs, shape="s2")) +
+      geom_line(data=df1[[2]], aes(x=week, y=bugs, color="c2")) +
+      geom_point(data=df1[[3]], aes(x=week, y=bugs, shape="s3")) +
+      geom_line(data=df1[[3]], aes(x=week, y=bugs, color="c3")) +
+      
+      ylim(0,60) +
+      expand_limits(y=c(0,60)) +
+      
+      labs(title= paste("Weekly Population Counts by Cluster", sep=""), 
+           subtitle = paste("oakMargin transect, ", subtitle, sep=""),
+           x="week", y= "daily total",
+           caption=paste(caption, "\n(NO CAPTION)", sep="")) +
+      
+      expand_limits(x=c(23,34)) +
+      scale_x_continuous(breaks = seq(24, 34, 2)) +
+      
+      # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
+      # https://stackoverflow.com/questions/17713919/two-geom-points-add-a-legend
+      scale_shape_manual(name = "transect", 
+                         breaks = c("s1", "s2", "s3"),
+                         values = shape,
+                         labels = c("cluster 1", "cluster 2", "cluster 3")) + 
+      scale_color_manual(name = "transect", 
+                         breaks = c("c1", "c2", "c3"), 
+                         values = color,
+                         labels = c("cluster 1", "cluster 2", "cluster 3")) +
+      
+      theme_bw() + 
+      theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
+      
+      theme(legend.title = element_blank(),
+            legend.spacing.y = unit(0, "mm"), 
+            #legend.position=c(.9,.7),
+            legend.justification=c(1,0),
+            panel.border = element_rect(colour = "black", fill=NA),
+            aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+            legend.background = element_blank(),
+            legend.box.background = element_rect(colour = "black")) 
+    
+      
+    
+    ggControl <- ggplot() +
+      
+      geom_point(data=df2[[1]], aes(x=week, y=bugs, shape="s1")) +
+      geom_line(data=df2[[1]], aes(x=week, y=bugs, color="c1")) +
+      geom_point(data=df2[[2]], aes(x=week, y=bugs, shape="s2")) +
+      geom_line(data=df2[[2]], aes(x=week, y=bugs, color="c2")) +
+      geom_point(data=df2[[3]], aes(x=week, y=bugs, shape="s3")) +
+      geom_line(data=df2[[3]], aes(x=week, y=bugs, color="c3")) +
+     
+      ylim(0,60) +
+      expand_limits(y=c(0,60)) +
+      
+      labs(title= paste("Weekly Population Counts by Cluster", sep=""), 
+           subtitle = paste("control transect, ", subtitle, sep=""),
+           x="week", y= "daily total",
+           caption=paste(caption, "\n(NO CAPTION)", sep="")) +
+      
+      expand_limits(x=c(23,34)) +
+      scale_x_continuous(breaks = seq(24, 34, 2)) +
+    
+    # https://stackoverflow.com/questions/24496984/how-to-add-legend-to-ggplot-manually-r
+    # https://stackoverflow.com/questions/17713919/two-geom-points-add-a-legend
+    scale_shape_manual(name = "transect", 
+                       breaks = c("s1", "s2", "s3"),
+                       values = shape,
+                       labels = c("cluster 1", "cluster 2", "cluster 3")) + 
+    scale_color_manual(name = "transect", 
+                       breaks = c("c1", "c2", "c3"), 
+                       values = color,
+                       labels = c("cluster 1", "cluster 2", "cluster 3")) +
+    
+    theme_bw() + 
+    theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
+    
+    theme(legend.title = element_blank(),
+          legend.spacing.y = unit(0, "mm"), 
+          #legend.position=c(.9,.7),
+          legend.justification=c(1,0),
+          panel.border = element_rect(colour = "black", fill=NA),
+          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black")) 
+    
+    graphs.list <- list()
+    graphs.list[[1]] <- ggOak 
+    graphs.list[[2]] <- ggControl
+    
+  return(graphs.list)
   
 }
 
