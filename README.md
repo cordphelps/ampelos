@@ -177,7 +177,7 @@ one
 one
 </td>
 <td style="text-align:right;">
-0.668750
+0.668375
 </td>
 </tr>
 <tr>
@@ -188,7 +188,7 @@ one
 two
 </td>
 <td style="text-align:right;">
-0.314625
+0.306375
 </td>
 </tr>
 <tr>
@@ -199,7 +199,7 @@ one
 three
 </td>
 <td style="text-align:right;">
-0.451750
+0.449500
 </td>
 </tr>
 <tr>
@@ -210,7 +210,7 @@ two
 one
 </td>
 <td style="text-align:right;">
-0.532000
+0.528500
 </td>
 </tr>
 <tr>
@@ -221,7 +221,7 @@ two
 two
 </td>
 <td style="text-align:right;">
-0.359375
+0.346000
 </td>
 </tr>
 <tr>
@@ -232,7 +232,7 @@ two
 three
 </td>
 <td style="text-align:right;">
-0.543250
+0.528000
 </td>
 </tr>
 <tr>
@@ -243,7 +243,7 @@ three
 one
 </td>
 <td style="text-align:right;">
-0.283750
+0.285250
 </td>
 </tr>
 <tr>
@@ -254,7 +254,7 @@ three
 two
 </td>
 <td style="text-align:right;">
-0.393875
+0.397375
 </td>
 </tr>
 <tr>
@@ -265,7 +265,7 @@ three
 three
 </td>
 <td style="text-align:right;">
-0.708875
+0.701625
 </td>
 </tr>
 </tbody>
@@ -273,18 +273,19 @@ three
 ### how do the clusters compare to each other across multiple weeks?
 
 ``` r
+# strip out the other arthropods and misc stuff
 df <- clusterSetup()
 
- 
+# for each 'position', get spiders and assign to a cluster number
 cluster.df <- clusterAccumulateTotal(df, "control")
-clusterBoxplot(cluster.df, "control", "(am pm)")
+clusterBoxplot(cluster.df, "control", "(24 hours)")
 ```
 
 ![](ampelos_files/figure-markdown_github/clusterBoxPlots-1.png)
 
 ``` r
 cluster.df <- clusterAccumulateTotal(df, "oakMargin")
-clusterBoxplot(cluster.df, "oakMargin", "(am pm)")
+clusterBoxplot(cluster.df, "oakMargin", "(24 hours)")
 ```
 
 ![](ampelos_files/figure-markdown_github/clusterBoxPlots-2.png)
@@ -331,7 +332,7 @@ plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="
 plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/population-trends-2.png)
+![](ampelos_files/figure-markdown_github/population-trends-2.png)![](ampelos_files/figure-markdown_github/population-trends-3.png)![](ampelos_files/figure-markdown_github/population-trends-4.png)
 
     ## NULL
 
@@ -339,7 +340,7 @@ plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="
 plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/population-trends-3.png)
+![](ampelos_files/figure-markdown_github/population-trends-5.png)
 
     ## NULL
 
@@ -347,7 +348,7 @@ plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="
 plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/population-trends-4.png)
+![](ampelos_files/figure-markdown_github/population-trends-6.png)![](ampelos_files/figure-markdown_github/population-trends-7.png)![](ampelos_files/figure-markdown_github/population-trends-8.png)
 
     ## NULL
 
@@ -355,7 +356,7 @@ plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="
 plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/population-trends-5.png)
+![](ampelos_files/figure-markdown_github/population-trends-9.png)
 
     ## NULL
 
@@ -363,7 +364,7 @@ plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="
 plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/population-trends-6.png)
+![](ampelos_files/figure-markdown_github/population-trends-10.png)![](ampelos_files/figure-markdown_github/population-trends-11.png)![](ampelos_files/figure-markdown_github/population-trends-12.png)
 
     ## NULL
 
