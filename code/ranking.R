@@ -66,6 +66,7 @@ calculateDistance <- function(df, valuesName, attName, normalize) {
   #        50     pressure
   #
   # output: 
+  
   #
   # usage: calculateRank(df=intensity.df, valuesName="redSoup", attName="attribute", normalize=FALSE )
   #
@@ -118,4 +119,107 @@ calculateDistance <- function(df, valuesName, attName, normalize) {
       tibble::rownames_to_column(df = .) %>%
       tibble::as_data_frame(x = .)
     return(t_df)
+  }
+  
+  rankByWeek <- function(df) {
+    #
+    # for each transect:week, return an ordered list indicating the clusters
+    # ranked by 'distanceTenX'
+    #
+    # input df:  (transect and time are pre-selected, parameters are pre-calculated)
+    #
+    # > temp.df
+    #    transect time cluster week       mean        sd normalMean  normalSD distanceTenX
+    # 1   control   pm     cl1   34 0.03703704 0.1924501 0.02941176 0.1538812     1.566667
+    # 2   control   pm     cl1   32 0.03703704 0.1924501 0.02941176 0.1538812     1.566667
+    # 3   control   pm     cl1   31 0.00000000 0.0000000 0.00000000 0.0000000     0.000000
+    # 4   control   pm     cl1   30 0.03703704 0.1924501 0.02941176 0.1538812     1.566667
+    #
+    # output: (rank is high to low)
+    #
+    # > clusterOrder.df
+    #    week first second third
+    # 1    23   cl2    cl3   cl1
+    # 2    24   cl3    cl1   cl2
+    # 3    25   cl2    cl3   cl1
+    # 4    26   cl2    cl3   cl1
+    # 5    27   cl2    cl1   cl3
+    # 6    28   cl1    cl3   cl2
+    # 7    29   cl3    cl2   cl1
+    # 8    30   cl3    cl2   cl1
+    # 9    31   cl2    cl3   cl1
+    # 10   32   cl3    cl1   cl2
+    # 11   34   cl3    cl1   cl2
+    #
+    
+    weeks.vector <- getWeeks(df)
+    clusterOrder.df <- data.frame()
+    
+    for (i in 1:length(weeks.vector)) {
+      
+      clusterDist1 <- df %>% 
+        dplyr::filter(cluster=="cl1", week ==  weeks.vector[[i]]) %>%
+        dplyr::select(distanceTenX) %>%
+        max(.)
+    
+      clusterDist2 <- df %>% 
+        dplyr::filter(cluster=="cl2", week ==  weeks.vector[[i]]) %>%
+        dplyr::select(distanceTenX) %>%
+        max(.)
+    
+      clusterDist3 <- df %>% 
+        dplyr::filter(cluster=="cl3", week ==  weeks.vector[[i]]) %>%
+        dplyr::select(distanceTenX) %>%
+       max(.)
+      
+      clusterStack1.df <- data.frame(cluster="cl1", distanceTenX=clusterDist1)
+      clusterStack2.df <- data.frame(cluster="cl2", distanceTenX=clusterDist2)
+      clusterStack3.df <- data.frame(cluster="cl3", distanceTenX=clusterDist3)
+      clusterStack.df <- rbind(clusterStack1.df, clusterStack2.df, clusterStack3.df)
+      #
+      # > clusterStack.df
+      #   cluster distanceTenX
+      # 1     cl1     4.929271
+      # 2     cl2     7.236879
+      # 3     cl3     5.828317
+      
+      # sort
+      clusterStack.df <- clusterStack.df %>% dplyr::arrange(desc(distanceTenX))
+      #
+      # > clusterStack.df
+      #   cluster distanceTenX
+      # 1     cl2     7.236879
+      # 2     cl3     5.828317
+      # 3     cl1     4.929271
+      
+      temp.df <- data.frame(week=weeks.vector[[i]], 
+                            first=clusterStack.df[[1]][[1]], 
+                            second=clusterStack.df[[1]][[2]], 
+                            third=clusterStack.df[[1]][[3]])
+      #
+      # > temp.df
+      #   week first second third
+      # 1   23   cl2    cl3   cl1
+      
+      clusterOrder.df <- bind_rows(temp.df, clusterOrder.df)
+      
+    }
+    
+    # > clusterOrder.df
+    #    week first second third
+    # 1    23   cl2    cl3   cl1
+    # 2    24   cl3    cl1   cl2
+    # 3    25   cl2    cl3   cl1
+    # 4    26   cl2    cl3   cl1
+    # 5    27   cl2    cl1   cl3
+    # 6    28   cl1    cl3   cl2
+    # 7    29   cl3    cl2   cl1
+    # 8    30   cl3    cl2   cl1
+    # 9    31   cl2    cl3   cl1
+    # 10   32   cl3    cl1   cl2
+    # 11   34   cl3    cl1   cl2
+    
+    return(clusterOrder.df)
+    
+    
   }

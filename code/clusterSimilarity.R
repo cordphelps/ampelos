@@ -94,6 +94,18 @@ clusterBoxplot <- function(df, t, time) {
 
 clusterStats <- function(df, t, daytime) {
   
+  # calculate two key parameters (mean and SD) for the spider populations
+  # for a particular transect and time of day
+  
+  #
+  # TODO: set a flag to allow calculation of median and IQR
+  # 
+  # Note that this function computes the quartiles using the quantile 
+  # function rather than following Tukey's recommendations, 
+  # i.e., IQR(x)=quantile(x,3/4)−quantile(x,1/4).
+  # https://math.stackexchange.com/questions/304928/how-do-you-calculate-iqr-interquartile-range
+  
+  
   
   if (FALSE) {
     t <- "control"
