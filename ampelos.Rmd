@@ -208,7 +208,10 @@ input.df <- clusterSetup()
 
 cluster.df <- clusterAccumulate(df=input.df, t="control", daytime="pm")
 clusterBoxplot(cluster.df, "control", "pm")
-clusterStats(df=input.df, t="control", daytime="pm")
+temp.df <- clusterStats(df=input.df, t="control", daytime="pm")
+rankControlPM.df <- rankByWeek(temp.df)
+
+
 
 cluster.df <- clusterAccumulate(df=input.df, t="oakMargin", daytime="pm")
 clusterBoxplot(cluster.df, "oakMargin", "pm")

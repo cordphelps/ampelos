@@ -223,3 +223,38 @@ calculateDistance <- function(df, valuesName, attName, normalize) {
     
     
   }
+  
+  bubbleClusterRanks <- function(df=clusterOrder.df) {
+    
+    # > clusterOrder.df
+    #    week first second third
+    # 1    23   cl2    cl3   cl1
+    # 2    24   cl3    cl1   cl2
+    # 3    25   cl2    cl3   cl1
+    # 4    26   cl2    cl3   cl1
+    # 5    27   cl2    cl1   cl3
+    # 6    28   cl1    cl3   cl2
+    # 7    29   cl3    cl2   cl1
+    # 8    30   cl3    cl2   cl1
+    # 9    31   cl2    cl3   cl1
+    # 10   32   cl3    cl1   cl2
+    # 11   34   cl3    cl1   cl2
+    
+    #           first second third
+    # cl1       
+    # cl2
+    # cl3
+    
+    df %>%
+      cl1First = n(first=="cl1")
+      
+    
+    
+    ggplot(df) +
+      geom_point(aes(x=week, y=first, shape="21")) +
+      geom_jitter(aes(x=week, y=second, shape="22")) +
+      geom_jitter(aes(x=week, y=third, shape="23")) 
+      
+    
+    
+  }
