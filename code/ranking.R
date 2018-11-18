@@ -245,7 +245,8 @@ calculateDistance <- function(df, valuesName, attName, normalize) {
     # cl2
     # cl3
     
-    g.df <- clusterOrder.df %>% 
+    #g.df <- clusterOrder.df %>% 
+    g.df <- df %>% 
       dplyr::mutate(
         firstN = ifelse(first=="cl1", 1,
                   ifelse(first=="cl2", 2, 3)

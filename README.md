@@ -14,6 +14,7 @@ source("./code/diversity.R")
 source("./code/k-means.R")
 source("./code/clusterSimilarity.R")
 source('./code/bayes.R')
+source('./code/ranking.R')
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
@@ -177,7 +178,7 @@ one
 one
 </td>
 <td style="text-align:right;">
-0.668375
+0.658250
 </td>
 </tr>
 <tr>
@@ -188,7 +189,7 @@ one
 two
 </td>
 <td style="text-align:right;">
-0.306375
+0.328000
 </td>
 </tr>
 <tr>
@@ -199,7 +200,7 @@ one
 three
 </td>
 <td style="text-align:right;">
-0.449500
+0.438625
 </td>
 </tr>
 <tr>
@@ -210,7 +211,7 @@ two
 one
 </td>
 <td style="text-align:right;">
-0.528500
+0.526875
 </td>
 </tr>
 <tr>
@@ -221,7 +222,7 @@ two
 two
 </td>
 <td style="text-align:right;">
-0.346000
+0.356000
 </td>
 </tr>
 <tr>
@@ -232,7 +233,7 @@ two
 three
 </td>
 <td style="text-align:right;">
-0.528000
+0.535750
 </td>
 </tr>
 <tr>
@@ -243,7 +244,7 @@ three
 one
 </td>
 <td style="text-align:right;">
-0.285250
+0.296250
 </td>
 </tr>
 <tr>
@@ -254,7 +255,7 @@ three
 two
 </td>
 <td style="text-align:right;">
-0.397375
+0.384500
 </td>
 </tr>
 <tr>
@@ -265,7 +266,7 @@ three
 three
 </td>
 <td style="text-align:right;">
-0.701625
+0.709375
 </td>
 </tr>
 </tbody>
@@ -274,50 +275,809 @@ three
 
 ``` r
 # strip out the other arthropods and misc stuff
-df <- clusterSetup()
+input.df <- clusterSetup()
 
 # for each 'position', get spiders and assign to a cluster number
-cluster.df <- clusterAccumulateTotal(df, "control")
-clusterBoxplot(cluster.df, "control", "(24 hours)")
+
+#   !!!!!!!! function can't handle "both" !!!!!!!!!!!!!!
+#cluster.df <- clusterAccumulateTotal(df, "control", "both")
+#clusterBoxplot(cluster.df, "control", "(24 hours)")
+
+
+#cluster.df <- clusterAccumulateTotal(df, "oakMargin", "both")
+#clusterBoxplot(cluster.df, "oakMargin", "(24 hours)")
+
+
+cluster.df <- clusterAccumulate(df=input.df, t="control", daytime="pm")
+  #> cluster.df
+  # A tibble: 110 x 3
+  #    week spiders cluster
+  #   <int>   <int> <chr>  
+ #1    23       1 cl1    
+ #2    24       8 cl1    
+ #3    25       1 cl1    
+ #4    26       1 cl1    
+ #5    27       1 cl1
+clusterBoxplot(cluster.df, "control", "pm")
 ```
 
 ![](ampelos_files/figure-markdown_github/clusterBoxPlots-1.png)
 
 ``` r
-cluster.df <- clusterAccumulateTotal(df, "oakMargin")
-clusterBoxplot(cluster.df, "oakMargin", "(24 hours)")
+temp.df <- clusterStats(df=input.df, t="control", daytime="pm")
+#> temp.df
+#   transect time cluster week       mean        sd normalMean  normalSD distanceTenX
+#1   control   pm     cl1   34 0.03703704 0.1924501 0.02941176 0.1538812     1.566667
+#2   control   pm     cl1   32 0.03703704 0.1924501 0.02941176 0.1538812     1.566667
+#3   control   pm     cl1   31 0.00000000 0.0000000 0.00000000 0.0000000     0.000000
+#4   control   pm     cl1   30 0.03703704 0.1924501 0.02941176 0.1538812     1.566667
+#5   co
+
+write.table(temp.df, file="controlPM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
+
+rankControlPM.df <- rankByWeek(df=temp.df)
+# > rankControlPM.df
+#   week first second third
+#1    23   cl2    cl3   cl1
+#2    24   cl3    cl1   cl2
+#3    25   cl2    cl3   cl1
+#4    26   cl2    cl3   cl1
+#5    27   cl2    cl1   cl3
+bubbleClusterRanks(rankControlPM.df, "control", "pm")
 ```
 
 ![](ampelos_files/figure-markdown_github/clusterBoxPlots-2.png)
 
 ``` r
-cluster.df <- clusterAccumulate(df, "control", "pm")
-clusterBoxplot(cluster.df, "control", "pm")
+cluster.df <- clusterAccumulate(df=input.df, t="oakMargin", daytime="pm")
+clusterBoxplot(cluster.df, "oakMargin", "pm")
 ```
 
 ![](ampelos_files/figure-markdown_github/clusterBoxPlots-3.png)
 
 ``` r
-cluster.df <- clusterAccumulate(df, "oakMargin", "pm")
-clusterBoxplot(cluster.df, "oakMargin", "pm")
+temp.df <- clusterStats(df=input.df, t="oakMargin", daytime="pm")
+
+write.table(temp.df, file="oakPM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
+
+rankOakPM.df <- rankByWeek(df=temp.df)
+bubbleClusterRanks(rankOakPM.df, "oakMargin", "pm")
 ```
 
 ![](ampelos_files/figure-markdown_github/clusterBoxPlots-4.png)
 
 ``` r
-cluster.df <- clusterAccumulate(df, "control", "am")
+cluster.df <- clusterAccumulate(df=input.df, "control", "am")
 clusterBoxplot(cluster.df, "control", "am")
 ```
 
 ![](ampelos_files/figure-markdown_github/clusterBoxPlots-5.png)
 
 ``` r
-cluster.df <- clusterAccumulate(df, "oakMargin", "am")
-clusterBoxplot(cluster.df, "oakMargin", "am")
+temp.df <- clusterStats(df=input.df, t="control", daytime="am")
+
+write.table(temp.df, file="controlAM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
+
+rankControlAM.df <- rankByWeek(df=temp.df)
+bubbleClusterRanks(rankControlAM.df, "control", "am")
 ```
 
 ![](ampelos_files/figure-markdown_github/clusterBoxPlots-6.png)
 
+``` r
+cluster.df <- clusterAccumulate(df=input.df, "oakMargin", "am")
+clusterBoxplot(cluster.df, "oakMargin", "am")
+```
+
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-7.png)
+
+``` r
+temp.df <- clusterStats(df=input.df, t="oakMargin", daytime="am")
+
+write.table(temp.df, file="oakAM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
+
+rankOakAM.df <- rankByWeek(df=temp.df)
+bubbleClusterRanks(rankOakPM.df, "oakMargin", "am")
+```
+
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-8.png)
+
+<table>
+<thead>
+<tr>
+<th style="text-align:right;">
+week
+</th>
+<th style="text-align:left;">
+first
+</th>
+<th style="text-align:left;">
+second
+</th>
+<th style="text-align:left;">
+third
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+28
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+29
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+32
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align:right;">
+week
+</th>
+<th style="text-align:left;">
+first
+</th>
+<th style="text-align:left;">
+second
+</th>
+<th style="text-align:left;">
+third
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+28
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+29
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+32
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align:right;">
+week
+</th>
+<th style="text-align:left;">
+first
+</th>
+<th style="text-align:left;">
+second
+</th>
+<th style="text-align:left;">
+third
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+28
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+29
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+32
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align:right;">
+week
+</th>
+<th style="text-align:left;">
+first
+</th>
+<th style="text-align:left;">
+second
+</th>
+<th style="text-align:left;">
+third
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+28
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+29
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+32
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+cl3
+</td>
+<td style="text-align:left;">
+cl1
+</td>
+<td style="text-align:left;">
+cl2
+</td>
+</tr>
+</tbody>
+</table>
 ### does the crab spider population appear to change over time? Is there a difference between the two transects?
 
 ``` r

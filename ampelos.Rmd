@@ -17,6 +17,7 @@ source("./code/diversity.R")
 source("./code/k-means.R")
 source("./code/clusterSimilarity.R")
 source('./code/bayes.R')
+source('./code/ranking.R')
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
@@ -227,7 +228,7 @@ temp.df <- clusterStats(df=input.df, t="control", daytime="pm")
 #4   control   pm     cl1   30 0.03703704 0.1924501 0.02941176 0.1538812     1.566667
 #5   co
 
-#head(temp.df)
+write.table(temp.df, file="controlPM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
 
 rankControlPM.df <- rankByWeek(df=temp.df)
 # > rankControlPM.df
@@ -243,23 +244,41 @@ bubbleClusterRanks(rankControlPM.df, "control", "pm")
 cluster.df <- clusterAccumulate(df=input.df, t="oakMargin", daytime="pm")
 clusterBoxplot(cluster.df, "oakMargin", "pm")
 temp.df <- clusterStats(df=input.df, t="oakMargin", daytime="pm")
-#head(temp.df)
+
+write.table(temp.df, file="oakPM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
+
 rankOakPM.df <- rankByWeek(df=temp.df)
 bubbleClusterRanks(rankOakPM.df, "oakMargin", "pm")
 
 cluster.df <- clusterAccumulate(df=input.df, "control", "am")
 clusterBoxplot(cluster.df, "control", "am")
 temp.df <- clusterStats(df=input.df, t="control", daytime="am")
-#head(temp.df)
+
+write.table(temp.df, file="controlAM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
+
 rankControlAM.df <- rankByWeek(df=temp.df)
 bubbleClusterRanks(rankControlAM.df, "control", "am")
 
 cluster.df <- clusterAccumulate(df=input.df, "oakMargin", "am")
 clusterBoxplot(cluster.df, "oakMargin", "am")
 temp.df <- clusterStats(df=input.df, t="oakMargin", daytime="am")
-#head(temp.df)
+
+write.table(temp.df, file="oakAM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
+
 rankOakAM.df <- rankByWeek(df=temp.df)
 bubbleClusterRanks(rankOakPM.df, "oakMargin", "am")
+
+
+```
+
+
+```{r kableRanks, results='asis', echo=FALSE, message=F, warning=F}
+
+
+knitr::kable(rankOakPM.df)
+knitr::kable(rankControlPM.df)
+knitr::kable(rankOakAM.df)
+knitr::kable(rankControlAM.df)
 
 
 ```
