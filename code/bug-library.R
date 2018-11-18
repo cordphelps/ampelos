@@ -863,7 +863,7 @@ ggTrendClusters <- function(df1, df2,
                          breaks = c("s1", "s2", "s3"),
                          values = shape,
                          labels = c("cluster 1", "cluster 2", "cluster 3")) + 
-      scale_color_manual(name = "transect", 
+      scale_color_manual(name = "transect",   # <-- bug: should be scale_shape_manual() to match aes()
                          breaks = c("c1", "c2", "c3"), 
                          values = color,
                          labels = c("cluster 1", "cluster 2", "cluster 3")) +

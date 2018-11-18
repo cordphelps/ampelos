@@ -33,25 +33,29 @@ getBoxplotStats <- function(column) {
   return(stats)
 }
 
-clusterStats <- function(df, column) {
+#clusterStats <- function(df, column) {
   # just get the data used by the boxPlots
-  
   # inbound data is: week, cluster#, spiders
-  
-  temp.df <- df %>% filter(cluster="cl1")
-  
-  temp.df <- temp.df %>% 
-    dplyr::group_by(week) %>%
-    dplyr::summarise( 
-      spiders = median(Thomisidae..crab.spider., na.rm = TRUE),
-      week = week
-    )
-    
-    
-  
-}
+#  temp.df <- df %>% filter(cluster="cl1")
+#  temp.df <- temp.df %>% 
+#    dplyr::group_by(week) %>%
+#    dplyr::summarise( 
+#      spiders = median(Thomisidae..crab.spider., na.rm = TRUE),
+#      week = week
+#    )
+#}
 
 clusterBoxplot <- function(df, t, time) {
+  
+  #> cluster.df
+  # A tibble: 110 x 3
+  #    week spiders cluster
+  #   <int>   <int> <chr>  
+  #1    23       1 cl1    
+  #2    24       8 cl1    
+  #3    25       1 cl1    
+  #4    26       1 cl1    
+  #5    27       1 cl1
   
   library(ggplot2)
   library(scales) # to access break formatting functions
@@ -104,7 +108,6 @@ clusterStats <- function(df, t, daytime) {
   # function rather than following Tukey's recommendations, 
   # i.e., IQR(x)=quantile(x,3/4)−quantile(x,1/4).
   # https://math.stackexchange.com/questions/304928/how-do-you-calculate-iqr-interquartile-range
-  
   
   
   if (FALSE) {
@@ -266,7 +269,7 @@ clusterStats <- function(df, t, daytime) {
     dplyr::mutate(normalSD = (sd/maxSD))
   # calculate distance
   clusterStats.df <- clusterStats.df %>% 
-    dplyr::mutate(distanceTenX = sqrt( (normalMean*10)**2 + (normalSD*10)**2))
+    dplyr::mutate(distanceTenX = sqrt( (normalMean*1)**2 + (normalSD*.5)**2))
   
 # > clusterStats.df
 #     transect time cluster week       mean        sd normalMean  normalSD distanceTenX
@@ -274,6 +277,8 @@ clusterStats <- function(df, t, daytime) {
 #  2   control   pm     cl1   32 0.03703704 0.1924501 0.02941176 0.1538812     1.566667
 #  3   control   pm     cl1   31 0.00000000 0.0000000 0.00000000 0.0000000     0.000000
 #  4   control   pm     cl1   30 0.03703704 0.1924501 0.02941176 0.1538812     1.566667
+  
+  
       
   return(clusterStats.df)
   
