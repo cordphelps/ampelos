@@ -149,6 +149,8 @@ getClusters <- function(data) {
 kmPlot <- function(list, transectText) {
 
 	#list <- datalist
+  
+  colours = c("3" = "blue", "2" = "green", "1" = "red")
 
 	ggplot() + 
 
@@ -198,13 +200,28 @@ kmPlot <- function(list, transectText) {
       	# guide_legend(title="clusters") +
       	guides(fill=guide_legend(title="clusters")) +
 
-      	labs(title=paste("crab spider clusters\n", transectText, " transect", sep=""),
-        subtitle=paste("(data for weeks 33-34\nis too sparse)", sep=""),   
+      	labs(title=paste("crab spider clusters"),
+        subtitle=paste("transect: ", transectText, sep=""),   
           x="week number", 
           y="trap position", 
-          caption = paste("stats::kmeans()\nhttps://en.wikipedia.org/wiki/K-means_clustering", sep="") ) +
+          caption = paste("stats::kmeans()\n(data for weeks 33-34 is too sparse", sep="") ) +
+    
+    # https://en.wikipedia.org/wiki/K-means_clustering
 
-  		theme_bw()
+  		theme_bw() +
+    
+      scale_fill_manual(values = colours, 
+                      breaks = c("1", "2", "3"),
+                      labels = c("cluster 1", "cluster 2", "cluster 3")) +
+    
+      theme(legend.title = element_blank(),
+          legend.spacing.y = unit(0, "mm"), 
+          #legend.position=c(.9,.7),
+          legend.justification=c(1,0),
+          panel.border = element_rect(colour = "black", fill=NA),
+          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black")) 
 
 
 }

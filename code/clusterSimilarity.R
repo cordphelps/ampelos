@@ -269,7 +269,8 @@ clusterStats <- function(df, t, daytime) {
     dplyr::mutate(normalSD = (sd/maxSD))
   # calculate distance
   clusterStats.df <- clusterStats.df %>% 
-    dplyr::mutate(distanceTenX = sqrt( (normalMean*1)**2 + (normalSD*.5)**2))
+    #dplyr::mutate(distanceTenX = sqrt( (normalMean*1)**2 + (normalSD*.5)**2))
+    dplyr::mutate(distanceTenX = sqrt( (normalMean*1)**2 + (normalSD*0)**2))
   
 # > clusterStats.df
 #     transect time cluster week       mean        sd normalMean  normalSD distanceTenX

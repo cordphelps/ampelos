@@ -120,7 +120,7 @@ g30 <- plotBugDistribution(data=reducedData.df,
 
 ### are clusters appearing and do they persist across multiple weeks?
 
-```{r overheadClusters, echo=T, include=T, message=F, warning=T, fig.keep='none'}
+```{r overheadClusters, echo=T, include=T, message=F, warning=T}
 
 
 clusterNumber <- 3
@@ -135,20 +135,14 @@ dataList <- buildClustersByWeek(df, t="oakMargin", species="Thomisidae..crab.spi
 
 cl2.gg <- kmPlot(list=dataList, transectText="oakMargin")
 
+print(cl1.gg)
 
-
-```
-
-
-
-
-
-```{r clustersArrange, out.width = "100%", echo=TRUE, include=TRUE, message=F, warning=F}
-
-grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
-
+print(cl2.gg)
 
 ```
+
+
+
 
 #### (control cluster #2 is slightly wider than oakMargin cluster #2)
 

@@ -119,13 +119,17 @@ cl1.gg <- kmPlot(list=dataList, transectText="control")
 dataList <- buildClustersByWeek(df, t="oakMargin", species="Thomisidae..crab.spider.", cn=clusterNumber)
 
 cl2.gg <- kmPlot(list=dataList, transectText="oakMargin")
+
+print(cl1.gg)
 ```
+
+![](ampelos_files/figure-markdown_github/overheadClusters-1.png)
 
 ``` r
-grid.arrange(cl1.gg, cl2.gg, ncol=2, nrow=1)
+print(cl2.gg)
 ```
 
-<img src="ampelos_files/figure-markdown_github/clustersArrange-1.png" width="100%" />
+![](ampelos_files/figure-markdown_github/overheadClusters-2.png)
 
 #### (control cluster \#2 is slightly wider than oakMargin cluster \#2)
 
@@ -178,7 +182,7 @@ one
 one
 </td>
 <td style="text-align:right;">
-0.658250
+0.672250
 </td>
 </tr>
 <tr>
@@ -189,7 +193,7 @@ one
 two
 </td>
 <td style="text-align:right;">
-0.328000
+0.333625
 </td>
 </tr>
 <tr>
@@ -200,7 +204,7 @@ one
 three
 </td>
 <td style="text-align:right;">
-0.438625
+0.443625
 </td>
 </tr>
 <tr>
@@ -211,7 +215,7 @@ two
 one
 </td>
 <td style="text-align:right;">
-0.526875
+0.532875
 </td>
 </tr>
 <tr>
@@ -222,7 +226,7 @@ two
 two
 </td>
 <td style="text-align:right;">
-0.356000
+0.381250
 </td>
 </tr>
 <tr>
@@ -233,7 +237,7 @@ two
 three
 </td>
 <td style="text-align:right;">
-0.535750
+0.529750
 </td>
 </tr>
 <tr>
@@ -244,7 +248,7 @@ three
 one
 </td>
 <td style="text-align:right;">
-0.296250
+0.284375
 </td>
 </tr>
 <tr>
@@ -255,7 +259,7 @@ three
 two
 </td>
 <td style="text-align:right;">
-0.384500
+0.395500
 </td>
 </tr>
 <tr>
@@ -266,7 +270,7 @@ three
 three
 </td>
 <td style="text-align:right;">
-0.709375
+0.699875
 </td>
 </tr>
 </tbody>
@@ -450,10 +454,10 @@ cl3
 cl3
 </td>
 <td style="text-align:left;">
-cl2
+cl1
 </td>
 <td style="text-align:left;">
-cl1
+cl2
 </td>
 </tr>
 <tr>
@@ -1000,10 +1004,10 @@ cl1
 cl2
 </td>
 <td style="text-align:left;">
-cl3
+cl1
 </td>
 <td style="text-align:left;">
-cl1
+cl3
 </td>
 </tr>
 <tr>
