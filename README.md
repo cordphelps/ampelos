@@ -142,8 +142,12 @@ if (TRUE) {
   returnList <- evaluateDailySpiderCounts(bugs.df)
 
   lh.df <- returnList[[5]]
+  
+  assign("returnList5", returnList[[5]], envir=.GlobalEnv)
 
   returnList[[6]] <- plotLikelihood(df=lh.df)
+  
+  assign("returnList6", returnList[[6]], envir=.GlobalEnv)
 
   print(returnList[[1]])
   print(returnList[[6]])
@@ -182,7 +186,7 @@ one
 one
 </td>
 <td style="text-align:right;">
-0.672250
+0.959000
 </td>
 </tr>
 <tr>
@@ -193,7 +197,7 @@ one
 two
 </td>
 <td style="text-align:right;">
-0.333625
+0.809875
 </td>
 </tr>
 <tr>
@@ -204,7 +208,7 @@ one
 three
 </td>
 <td style="text-align:right;">
-0.443625
+0.455500
 </td>
 </tr>
 <tr>
@@ -215,7 +219,7 @@ two
 one
 </td>
 <td style="text-align:right;">
-0.532875
+0.553375
 </td>
 </tr>
 <tr>
@@ -226,7 +230,7 @@ two
 two
 </td>
 <td style="text-align:right;">
-0.381250
+0.517125
 </td>
 </tr>
 <tr>
@@ -237,7 +241,7 @@ two
 three
 </td>
 <td style="text-align:right;">
-0.529750
+0.602375
 </td>
 </tr>
 <tr>
@@ -248,7 +252,7 @@ three
 one
 </td>
 <td style="text-align:right;">
-0.284375
+0.347625
 </td>
 </tr>
 <tr>
@@ -259,7 +263,7 @@ three
 two
 </td>
 <td style="text-align:right;">
-0.395500
+0.640000
 </td>
 </tr>
 <tr>
@@ -270,7 +274,7 @@ three
 three
 </td>
 <td style="text-align:right;">
-0.699875
+0.389875
 </td>
 </tr>
 </tbody>
@@ -317,7 +321,7 @@ temp.df <- clusterStats(df=input.df, t="control", daytime="pm")
 #4   control   pm     cl1   30 0.03703704 0.1924501 0.02941176 0.1538812     1.566667
 #5   co
 
-write.table(temp.df, file="controlPM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
+write.table(temp.df, file="./code/output/clBoxPlotControlPM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
 
 rankControlPM.df <- rankByWeek(df=temp.df)
 # > rankControlPM.df
@@ -342,7 +346,7 @@ clusterBoxplot(cluster.df, "oakMargin", "pm")
 ``` r
 temp.df <- clusterStats(df=input.df, t="oakMargin", daytime="pm")
 
-write.table(temp.df, file="oakPM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
+write.table(temp.df, file="./code/output/clBoxPlotOakPM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
 
 rankOakPM.df <- rankByWeek(df=temp.df)
 bubbleClusterRanks(rankOakPM.df, "oakMargin", "pm")
@@ -360,7 +364,7 @@ clusterBoxplot(cluster.df, "control", "am")
 ``` r
 temp.df <- clusterStats(df=input.df, t="control", daytime="am")
 
-write.table(temp.df, file="controlAM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
+write.table(temp.df, file="./code/output/clBoxPlotControlAM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
 
 rankControlAM.df <- rankByWeek(df=temp.df)
 bubbleClusterRanks(rankControlAM.df, "control", "am")
@@ -378,7 +382,7 @@ clusterBoxplot(cluster.df, "oakMargin", "am")
 ``` r
 temp.df <- clusterStats(df=input.df, t="oakMargin", daytime="am")
 
-write.table(temp.df, file="oakAM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
+write.table(temp.df, file="./code/output/clBoxPlotOakAM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
 
 rankOakAM.df <- rankByWeek(df=temp.df)
 bubbleClusterRanks(rankOakPM.df, "oakMargin", "am")

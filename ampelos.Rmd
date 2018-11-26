@@ -157,8 +157,12 @@ if (TRUE) {
   returnList <- evaluateDailySpiderCounts(bugs.df)
 
   lh.df <- returnList[[5]]
+  
+  assign("returnList5", returnList[[5]], envir=.GlobalEnv)
 
   returnList[[6]] <- plotLikelihood(df=lh.df)
+  
+  assign("returnList6", returnList[[6]], envir=.GlobalEnv)
 
   print(returnList[[1]])
   print(returnList[[6]])
@@ -173,6 +177,8 @@ if (TRUE) {
 
 
 ```
+
+
 
 
 
@@ -222,7 +228,7 @@ temp.df <- clusterStats(df=input.df, t="control", daytime="pm")
 #4   control   pm     cl1   30 0.03703704 0.1924501 0.02941176 0.1538812     1.566667
 #5   co
 
-write.table(temp.df, file="controlPM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
+write.table(temp.df, file="./code/output/clBoxPlotControlPM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
 
 rankControlPM.df <- rankByWeek(df=temp.df)
 # > rankControlPM.df
@@ -239,7 +245,7 @@ cluster.df <- clusterAccumulate(df=input.df, t="oakMargin", daytime="pm")
 clusterBoxplot(cluster.df, "oakMargin", "pm")
 temp.df <- clusterStats(df=input.df, t="oakMargin", daytime="pm")
 
-write.table(temp.df, file="oakPM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
+write.table(temp.df, file="./code/output/clBoxPlotOakPM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
 
 rankOakPM.df <- rankByWeek(df=temp.df)
 bubbleClusterRanks(rankOakPM.df, "oakMargin", "pm")
@@ -248,7 +254,7 @@ cluster.df <- clusterAccumulate(df=input.df, "control", "am")
 clusterBoxplot(cluster.df, "control", "am")
 temp.df <- clusterStats(df=input.df, t="control", daytime="am")
 
-write.table(temp.df, file="controlAM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
+write.table(temp.df, file="./code/output/clBoxPlotControlAM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
 
 rankControlAM.df <- rankByWeek(df=temp.df)
 bubbleClusterRanks(rankControlAM.df, "control", "am")
@@ -257,7 +263,7 @@ cluster.df <- clusterAccumulate(df=input.df, "oakMargin", "am")
 clusterBoxplot(cluster.df, "oakMargin", "am")
 temp.df <- clusterStats(df=input.df, t="oakMargin", daytime="am")
 
-write.table(temp.df, file="oakAM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
+write.table(temp.df, file="./code/output/clBoxPlotOakAM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
 
 rankOakAM.df <- rankByWeek(df=temp.df)
 bubbleClusterRanks(rankOakPM.df, "oakMargin", "am")
