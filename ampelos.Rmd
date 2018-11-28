@@ -154,6 +154,12 @@ print(cl2.gg)
 if (TRUE) {
   #source('./code/bayes.R')
 
+  # organize data into
+  # ("week", "transect", "time", "cluster", "totalSpiders")
+  #
+  # plot the weekly raw data : plotWeekly()
+  # create txt files saving the status output of 9 brm() cycles
+  # build the likelihood data : generateLikelihoodV2() 
   returnList <- evaluateDailySpiderCounts(bugs.df)
 
   lh.df <- returnList[[5]]
@@ -181,10 +187,9 @@ if (TRUE) {
 
 
 
-
 ```{r kable1, results='asis', echo=FALSE, message=F, warning=F}
 
-knitr::kable(returnList[[5]])
+# knitr::kable(returnList[[5]])
 
 ```
 
@@ -274,11 +279,14 @@ bubbleClusterRanks(rankOakPM.df, "oakMargin", "am")
 
 ```{r kableRanks, results='asis', echo=FALSE, message=F, warning=F}
 
+# QA check of ranking dataframes
 
-knitr::kable(rankOakPM.df)
-knitr::kable(rankControlPM.df)
-knitr::kable(rankOakAM.df)
-knitr::kable(rankControlAM.df)
+if (FALSE) {
+  knitr::kable(rankOakPM.df)
+  knitr::kable(rankControlPM.df)
+  knitr::kable(rankOakAM.df)
+  knitr::kable(rankControlAM.df)
+}
 
 
 ```

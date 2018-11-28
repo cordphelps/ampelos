@@ -1,100 +1,208 @@
 
-SAMPLING FOR MODEL '4e0e644fa90aaad7bd2e0c2cc8e6f673' NOW (CHAIN 1).
-
-Gradient evaluation took 0.000393 seconds
-1000 transitions using 10 leapfrog steps per transition would take 3.93 seconds.
-Adjust your expectations accordingly!
+generateLikelihoodV2()               2018-11-27 20:29:14
 
 
-Iteration:    1 / 3000 [  0%]  (Warmup)
-
-SAMPLING FOR MODEL '4e0e644fa90aaad7bd2e0c2cc8e6f673' NOW (CHAIN 2).
-
-Gradient evaluation took 0.000383 seconds
-1000 transitions using 10 leapfrog steps per transition would take 3.83 seconds.
-Adjust your expectations accordingly!
+NULL
+i = 2
 
 
-Iteration:    1 / 3000 [  0%]  (Warmup)
+NULL
+ Family: poisson 
+  Links: mu = log 
+Formula: totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop 
+   Data: cl.st.list[[i]] (Number of observations: 66) 
+Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
+         total post-warmup samples = 8000
 
-SAMPLING FOR MODEL '4e0e644fa90aaad7bd2e0c2cc8e6f673' NOW (CHAIN 3).
+Population-Level Effects: 
+                     Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+Intercept                1.73      0.85     0.06     3.34       4000 1.00
+log_pop                 -0.30      0.27    -0.82     0.23       4076 1.00
+contact_high            -0.73      0.81    -2.30     0.89       3193 1.00
+log_pop:contact_high     0.24      0.26    -0.28     0.75       3171 1.00
 
-Gradient evaluation took 0.000424 seconds
-1000 transitions using 10 leapfrog steps per transition would take 4.24 seconds.
-Adjust your expectations accordingly!
+Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
+is a crude measure of effective sample size, and Rhat is the potential 
+scale reduction factor on split chains (at convergence, Rhat = 1).
 
-
-Iteration:    1 / 3000 [  0%]  (Warmup)
-
-SAMPLING FOR MODEL '4e0e644fa90aaad7bd2e0c2cc8e6f673' NOW (CHAIN 4).
-
-Gradient evaluation took 0.000385 seconds
-1000 transitions using 10 leapfrog steps per transition would take 3.85 seconds.
-Adjust your expectations accordingly!
-
-
-Iteration:    1 / 3000 [  0%]  (Warmup)
-Iteration:  300 / 3000 [ 10%]  (Warmup)
-Iteration:  300 / 3000 [ 10%]  (Warmup)
-Iteration:  300 / 3000 [ 10%]  (Warmup)
-Iteration:  300 / 3000 [ 10%]  (Warmup)
-Iteration:  600 / 3000 [ 20%]  (Warmup)
-Iteration:  600 / 3000 [ 20%]  (Warmup)
-Iteration:  600 / 3000 [ 20%]  (Warmup)
-Iteration:  600 / 3000 [ 20%]  (Warmup)
-Iteration:  900 / 3000 [ 30%]  (Warmup)
-Iteration: 1001 / 3000 [ 33%]  (Sampling)
-Iteration:  900 / 3000 [ 30%]  (Warmup)
-Iteration:  900 / 3000 [ 30%]  (Warmup)
-Iteration: 1001 / 3000 [ 33%]  (Sampling)
-Iteration:  900 / 3000 [ 30%]  (Warmup)
-Iteration: 1001 / 3000 [ 33%]  (Sampling)
-Iteration: 1001 / 3000 [ 33%]  (Sampling)
-Iteration: 1300 / 3000 [ 43%]  (Sampling)
-Iteration: 1300 / 3000 [ 43%]  (Sampling)
-Iteration: 1300 / 3000 [ 43%]  (Sampling)
-Iteration: 1300 / 3000 [ 43%]  (Sampling)
-Iteration: 1600 / 3000 [ 53%]  (Sampling)
-Iteration: 1600 / 3000 [ 53%]  (Sampling)
-Iteration: 1600 / 3000 [ 53%]  (Sampling)
-Iteration: 1600 / 3000 [ 53%]  (Sampling)
-Iteration: 1900 / 3000 [ 63%]  (Sampling)
-Iteration: 1900 / 3000 [ 63%]  (Sampling)
-Iteration: 1900 / 3000 [ 63%]  (Sampling)
-Iteration: 1900 / 3000 [ 63%]  (Sampling)
-Iteration: 2200 / 3000 [ 73%]  (Sampling)
-Iteration: 2200 / 3000 [ 73%]  (Sampling)
-Iteration: 2200 / 3000 [ 73%]  (Sampling)
-Iteration: 2200 / 3000 [ 73%]  (Sampling)
-Iteration: 2500 / 3000 [ 83%]  (Sampling)
-Iteration: 2500 / 3000 [ 83%]  (Sampling)
-Iteration: 2500 / 3000 [ 83%]  (Sampling)
-Iteration: 2500 / 3000 [ 83%]  (Sampling)
-Iteration: 2800 / 3000 [ 93%]  (Sampling)
-Iteration: 2800 / 3000 [ 93%]  (Sampling)
-Iteration: 2800 / 3000 [ 93%]  (Sampling)
-Iteration: 3000 / 3000 [100%]  (Sampling)
-Iteration: 3000 / 3000 [100%]  (Sampling)
-
- Elapsed Time: 4.83104 seconds (Warm-up)
-               9.93572 seconds (Sampling)
-               14.7668 seconds (Total)
+generateLikelihoodV2()               2018-11-27 20:29:59
 
 
- Elapsed Time: 4.9323 seconds (Warm-up)
-               9.35697 seconds (Sampling)
-               14.2893 seconds (Total)
+NULL
+i = 2
 
-Iteration: 3000 / 3000 [100%]  (Sampling)
 
- Elapsed Time: 4.77142 seconds (Warm-up)
-               9.43772 seconds (Sampling)
-               14.2091 seconds (Total)
+NULL
+ Family: poisson 
+  Links: mu = log 
+Formula: totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop 
+   Data: cl.st.list[[i]] (Number of observations: 66) 
+Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
+         total post-warmup samples = 8000
 
-Iteration: 2800 / 3000 [ 93%]  (Sampling)
-Iteration: 3000 / 3000 [100%]  (Sampling)
+Population-Level Effects: 
+                     Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+Intercept                1.73      0.85     0.06     3.34       4000 1.00
+log_pop                 -0.30      0.27    -0.82     0.23       4076 1.00
+contact_high            -0.73      0.81    -2.30     0.89       3193 1.00
+log_pop:contact_high     0.24      0.26    -0.28     0.75       3171 1.00
 
- Elapsed Time: 4.7583 seconds (Warm-up)
-               10.3892 seconds (Sampling)
-               15.1475 seconds (Total)
+Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
+is a crude measure of effective sample size, and Rhat is the potential 
+scale reduction factor on split chains (at convergence, Rhat = 1).
 
+generateLikelihoodV2()               2018-11-27 20:31:07
+
+
+NULL
+i = 2
+
+
+NULL
+ Family: poisson 
+  Links: mu = log 
+Formula: totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop 
+   Data: cl.st.list[[i]] (Number of observations: 66) 
+Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
+         total post-warmup samples = 8000
+
+Population-Level Effects: 
+                     Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+Intercept                1.73      0.85     0.06     3.34       4000 1.00
+log_pop                 -0.30      0.27    -0.82     0.23       4076 1.00
+contact_high            -0.73      0.81    -2.30     0.89       3193 1.00
+log_pop:contact_high     0.24      0.26    -0.28     0.75       3171 1.00
+
+Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
+is a crude measure of effective sample size, and Rhat is the potential 
+scale reduction factor on split chains (at convergence, Rhat = 1).
+
+generateLikelihoodV2()               2018-11-27 20:32:16
+
+
+NULL
+i = 2
+
+
+NULL
+ Family: poisson 
+  Links: mu = log 
+Formula: totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop 
+   Data: cl.st.list[[i]] (Number of observations: 66) 
+Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
+         total post-warmup samples = 8000
+
+Population-Level Effects: 
+                     Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+Intercept                1.73      0.85     0.06     3.34       4000 1.00
+log_pop                 -0.30      0.27    -0.82     0.23       4076 1.00
+contact_high            -0.73      0.81    -2.30     0.89       3193 1.00
+log_pop:contact_high     0.24      0.26    -0.28     0.75       3171 1.00
+
+Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
+is a crude measure of effective sample size, and Rhat is the potential 
+scale reduction factor on split chains (at convergence, Rhat = 1).
+
+generateLikelihoodV2()               2018-11-27 20:32:58
+
+
+NULL
+i = 2
+
+
+NULL
+ Family: poisson 
+  Links: mu = log 
+Formula: totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop 
+   Data: cl.st.list[[i]] (Number of observations: 66) 
+Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
+         total post-warmup samples = 8000
+
+Population-Level Effects: 
+                     Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+Intercept                1.73      0.85     0.06     3.34       4000 1.00
+log_pop                 -0.30      0.27    -0.82     0.23       4076 1.00
+contact_high            -0.73      0.81    -2.30     0.89       3193 1.00
+log_pop:contact_high     0.24      0.26    -0.28     0.75       3171 1.00
+
+Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
+is a crude measure of effective sample size, and Rhat is the potential 
+scale reduction factor on split chains (at convergence, Rhat = 1).
+
+generateLikelihoodV2()               2018-11-27 20:34:03
+
+
+NULL
+i = 2
+
+
+NULL
+ Family: poisson 
+  Links: mu = log 
+Formula: totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop 
+   Data: cl.st.list[[i]] (Number of observations: 66) 
+Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
+         total post-warmup samples = 8000
+
+Population-Level Effects: 
+                     Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+Intercept                1.73      0.85     0.06     3.34       4000 1.00
+log_pop                 -0.30      0.27    -0.82     0.23       4076 1.00
+contact_high            -0.73      0.81    -2.30     0.89       3193 1.00
+log_pop:contact_high     0.24      0.26    -0.28     0.75       3171 1.00
+
+Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
+is a crude measure of effective sample size, and Rhat is the potential 
+scale reduction factor on split chains (at convergence, Rhat = 1).
+
+generateLikelihoodV2()               2018-11-27 20:35:16
+
+
+NULL
+i = 2
+
+
+NULL
+ Family: poisson 
+  Links: mu = log 
+Formula: totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop 
+   Data: cl.st.list[[i]] (Number of observations: 66) 
+Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
+         total post-warmup samples = 8000
+
+Population-Level Effects: 
+                     Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+Intercept                1.73      0.85     0.06     3.34       4000 1.00
+log_pop                 -0.30      0.27    -0.82     0.23       4076 1.00
+contact_high            -0.73      0.81    -2.30     0.89       3193 1.00
+log_pop:contact_high     0.24      0.26    -0.28     0.75       3171 1.00
+
+Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
+is a crude measure of effective sample size, and Rhat is the potential 
+scale reduction factor on split chains (at convergence, Rhat = 1).
+
+generateLikelihoodV2()               2018-11-27 20:35:59
+
+
+NULL
+i = 2
+
+
+NULL
+ Family: poisson 
+  Links: mu = log 
+Formula: totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop 
+   Data: cl.st.list[[i]] (Number of observations: 66) 
+Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
+         total post-warmup samples = 8000
+
+Population-Level Effects: 
+                     Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+Intercept                1.73      0.85     0.06     3.34       4000 1.00
+log_pop                 -0.30      0.27    -0.82     0.23       4076 1.00
+contact_high            -0.73      0.81    -2.30     0.89       3193 1.00
+log_pop:contact_high     0.24      0.26    -0.28     0.75       3171 1.00
+
+Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
+is a crude measure of effective sample size, and Rhat is the potential 
+scale reduction factor on split chains (at convergence, Rhat = 1).

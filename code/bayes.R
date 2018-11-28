@@ -253,6 +253,13 @@ generateLikelihoodV2 <- function(df, list, showPlot) {
   # version 1 :                          ifelse( (df$week>25 & df$week<31), rnorm(nrow(df), mean=25, sd=8),
   # version 1 :                                  rnorm(nrow(df), mean=15, sd=2)) )
   
+  for (i in 1:9) {
+
+      fileName <- paste("./code/output/clBRMsummaryList", i, ".txt", sep="")
+
+      if (file.exists(fileName)) file.remove(fileName)
+
+    }
 
   
   cl.st.list <- list()  # for each cluster  
@@ -324,17 +331,17 @@ generateLikelihoodV2 <- function(df, list, showPlot) {
   
   # the number of trapped spiders increases with log(population)
   
-  # the number of trapped spiders increases with natural habital support
+  # the number of trapped spiders increases with natural habitat support
   
   # the impact of population on trapped spiders increases with natural habital support
   
-  # the number of trapped spiders increases with daylight
+  
   
   likelihood.df <- NULL
+  modelOutput <- list()
+  postOutput <- list()
   
   for (i in 1:length(cl.st.list)) {  # build model for each seasonal timeframe
-
-    sink(file=paste("./code/output/clBRMsummaryList", i, ".txt", sep=""), append = FALSE, type = c("output", "message"))
     
     
     if (TRUE) {
@@ -344,29 +351,17 @@ generateLikelihoodV2 <- function(df, list, showPlot) {
             totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop,
             prior = c(prior(normal(0, 100), class = Intercept),
                       prior(normal(0, 1), class = b)),
-            iter = 3000, warmup = 1000, chains = 4, cores = 4)
+           iter = 3000, warmup = 1000, chains = 4, cores = 4)
+           # iter = 3000, warmup = 1000, chains = 4, cores = 1)
       
       #print(b10.10)
       #assign("b10.10", b10.10, envir=.GlobalEnv)
       
 
-      summary(b10.10)  # output to .txt file per sink() and sinkAll()
+      # summary(b10.10)  # output to .txt file per sink() and sinkAll()
+
+      modelOutput[[i]] <- b10.10
       
-      
-      
-      if (FALSE) {
-      write(summary(b10.10), 
-                 paste("./code/output/clBRMsummaryList", i, ".txt", sep=""),
-                 sep = "\t")
-      
-      writeLines(unlist(lapply(summary(b10.10), paste, collapse=" ")), 
-                 paste("./code/output/clBRMsummaryList", i, ".txt", sep=""),
-                 sep = "\t")
-      
-      lapply(as.list(summary(b10.10)), function(x) write.table( data.frame(x), 
-                                  paste("./code/output/clBRMsummaryList", i, ".txt", sep="")  , 
-                                        append= T, sep='\n' ))
-      }
       
       post <-
         posterior_samples(b10.10)
@@ -381,38 +376,60 @@ generateLikelihoodV2 <- function(df, list, showPlot) {
         summarise(sum = sum(diff > 0)/length(diff))
       
     }
+
+    # model diagnostics
+    bayesAnalysis(list=modelOutput)
+
+
+      for (i in 1:length(modelOutput)) {
+
+        fileName <- paste("./code/output/clBRMsummaryList", i, ".txt", sep="")
+
+        # if (file.exists(fileName)) file.remove(fileName)   file removed at top of function
+
+        #### alternately, try this : https://www.r-bloggers.com/export-r-output-to-a-file/
+
+        sink(file=fileName, append = TRUE, type = "output")
+        print(writeLines(paste("\ngenerateLikelihoodV2()               ", Sys.time(), "\n\n", sep="")))
+        print(writeLines(paste("i = ", i, "\n\n", sep="")))
+      
+        print(summary(modelOutput[[i]]))
+
+        sink(NULL)
+      }
+      sinkAll()  # trying to deal with those darn ghost files....
+
+
     
-    sinkAll()
+      # figure out which cluster we are referring to
+      if (i < 4) {
+        cluster <- "one" 
+      } else if (i > 6) {
+        cluster <- "three"
+      } else {
+        cluster <- "two"
+      }
     
-    # figure out which cluster we are referring to
-    if (i < 4) {
-      cluster <- "one" 
-    } else if (i > 6) {
-      cluster <- "three"
-    } else {
-      cluster <- "two"
-    }
+      # figure out which seasonal timeframe we are referring to
+      if (i == 1 | i == 4 | i == 7) {
+        seasonalTimeframe <- "one" 
+      } else if (i == 2 | i == 5 | i == 8) {
+        seasonalTimeframe <- "two"
+      } else {
+        seasonalTimeframe <- "three"
+      }      
     
-    # figure out which seasonal timeframe we are referring to
-    if (i == 1 | i == 4 | i == 7) {
-      seasonalTimeframe <- "one" 
-    } else if (i == 2 | i == 5 | i == 8) {
-      seasonalTimeframe <- "two"
-    } else {
-      seasonalTimeframe <- "three"
-    }      
+      temp2.df <- data.frame(cluster, seasonalTimeframe, like.df$sum) 
+      # column names need to match for rbind() to work
+      names(temp2.df) <- c("cluster", "seasonalTimeframe", "plausibility")
     
-    temp2.df <- data.frame(cluster, seasonalTimeframe, like.df$sum) 
-    # column names need to match for rbind() to work
-    names(temp2.df) <- c("cluster", "seasonalTimeframe", "plausibility")
-    
-    # tack it on
-    if (!exists('likelihood.df')) {
-      likelihood.df <- temp2.df
-      # (so, on the first pass the column names are cool)
-    } else {
-      likelihood.df <- rbind(likelihood.df, temp2.df)
-    }
+      # tack it on
+      if (!exists('likelihood.df')) {
+        likelihood.df <- temp2.df
+        # (so, on the first pass the column names are cool)
+      } else {
+        likelihood.df <- rbind(likelihood.df, temp2.df)
+      }
     
   }
   
@@ -422,6 +439,41 @@ generateLikelihoodV2 <- function(df, list, showPlot) {
   
   return(list)
   
+}
+
+bayesAnalysis <- function(list) {
+
+library(GGally)
+
+if (FALSE) {     
+
+  for (i in 1:length(list)) {
+      # same problem as below
+      print(plot((list[[i]])))
+      
+    }
+  }
+
+if (FALSE) {     
+
+  for (i in 1:length(list)) {
+
+      post <- posterior_samples(list[[i]])
+      
+      ggally <- post %>% ggpairs() +
+      
+        labs(title=paste("brm model check", sep=""),
+         subtitle=paste("variable selection (i = ", i, ")", sep="")) +
+
+        theme_bw()
+      
+        # this list is unreasonably long, perhaps due to the multi-chain operation
+        # of brm(); set to TRUE and uncomment the print() statement to get the pairs() 
+        # pairwise scatterplots
+        #
+      # print(ggally)
+    }
+  }
 }
 
 generateLikelihood <- function(df, list, showPlot) {
