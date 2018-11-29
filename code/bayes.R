@@ -264,6 +264,15 @@ generateLikelihoodV2 <- function(df, list, showPlot) {
   
   cl.st.list <- list()  # for each cluster  
   # build list of dataframes represting the seasonal population 
+  # plus a variable log-population
+  #
+  log.pop.list <- list()
+  #
+  #        rnorm() mean      cluster spider population         log population
+  #   
+  #             75                    794                            2.9       
+  #             25                    264                            2.4
+  #             15                    159                            2.2
   #
   # this is a list of 9
   # 34 observations of 8 variables
@@ -274,54 +283,63 @@ generateLikelihoodV2 <- function(df, list, showPlot) {
   cl.st.list[[1]]$population <- as.integer(cl.st.list[[1]]$population)
   cl.st.list[[1]]$log_pop <- log(cl.st.list[[1]]$population)  # R code 10.40
   cl.st.list[[1]]$contact_high <- ifelse( cl.st.list[[1]]$transect=="oakMargin" , 1 , 0 )
+  log.pop.list[[1]] <- 2.9
   
   cl.st.list[[2]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'one')
   cl.st.list[[2]]$population <-rnorm(nrow(cl.st.list[[2]]), mean=25, sd=8)
   cl.st.list[[2]]$population <- as.integer(cl.st.list[[2]]$population)
   cl.st.list[[2]]$log_pop <- log(cl.st.list[[2]]$population)  # R code 10.40
   cl.st.list[[2]]$contact_high <- ifelse( cl.st.list[[2]]$transect=="oakMargin" , 1 , 0 )
+  log.pop.list[[2]] <- 2.4
   
   cl.st.list[[3]] <- df %>% dplyr::filter(week > 31 & cluster == 'one')
   cl.st.list[[3]]$population <-rnorm(nrow(cl.st.list[[3]]), mean=15, sd=2)
   cl.st.list[[3]]$population <- as.integer(cl.st.list[[3]]$population)
   cl.st.list[[3]]$log_pop <- log(cl.st.list[[3]]$population)  # R code 10.40
   cl.st.list[[3]]$contact_high <- ifelse( cl.st.list[[3]]$transect=="oakMargin" , 1 , 0 )
+  log.pop.list[[3]] <- 2.2
   
   cl.st.list[[4]] <- df %>% dplyr::filter(week < 26 & cluster == 'two')
   cl.st.list[[4]]$population <- rnorm(nrow(cl.st.list[[4]]), mean=75, sd=15)
   cl.st.list[[4]]$population <- as.integer(cl.st.list[[4]]$population)
   cl.st.list[[4]]$log_pop <- log(cl.st.list[[4]]$population)  # R code 10.40
   cl.st.list[[4]]$contact_high <- ifelse( cl.st.list[[4]]$transect=="oakMargin" , 1 , 0 )
+  log.pop.list[[4]] <- 2.9
   
   cl.st.list[[5]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'two')
   cl.st.list[[5]]$population <-rnorm(nrow(cl.st.list[[5]]), mean=25, sd=8)
   cl.st.list[[5]]$population <- as.integer(cl.st.list[[5]]$population)
   cl.st.list[[5]]$log_pop <- log(cl.st.list[[5]]$population)  # R code 10.40
   cl.st.list[[5]]$contact_high <- ifelse( cl.st.list[[5]]$transect=="oakMargin" , 1 , 0 )
+  log.pop.list[[5]] <- 2.4
   
   cl.st.list[[6]] <- df %>% dplyr::filter(week > 31 & cluster == 'two')
   cl.st.list[[6]]$population <-rnorm(nrow(cl.st.list[[6]]), mean=15, sd=2)
   cl.st.list[[6]]$population <- as.integer(cl.st.list[[6]]$population)
   cl.st.list[[6]]$log_pop <- log(cl.st.list[[6]]$population)  # R code 10.40
   cl.st.list[[6]]$contact_high <- ifelse( cl.st.list[[6]]$transect=="oakMargin" , 1 , 0 )
+  log.pop.list[[6]] <- 2.2
   
   cl.st.list[[7]] <- df %>% dplyr::filter(week < 26 & cluster == 'three')
   cl.st.list[[7]]$population <- rnorm(nrow(cl.st.list[[7]]), mean=75, sd=15)
   cl.st.list[[7]]$population <- as.integer(cl.st.list[[7]]$population)
   cl.st.list[[7]]$log_pop <- log(cl.st.list[[7]]$population)  # R code 10.40
   cl.st.list[[7]]$contact_high <- ifelse( cl.st.list[[7]]$transect=="oakMargin" , 1 , 0 )
+  log.pop.list[[7]] <- 2.9
   
   cl.st.list[[8]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'three')
   cl.st.list[[8]]$population <-rnorm(nrow(cl.st.list[[8]]), mean=25, sd=8)
   cl.st.list[[8]]$population <- as.integer(cl.st.list[[8]]$population)
   cl.st.list[[8]]$log_pop <- log(cl.st.list[[8]]$population)  # R code 10.40
   cl.st.list[[8]]$contact_high <- ifelse( cl.st.list[[8]]$transect=="oakMargin" , 1 , 0 )
+  log.pop.list[[8]] <- 2.4
   
   cl.st.list[[9]] <- df %>% dplyr::filter(week > 31 & cluster == 'three')
   cl.st.list[[9]]$population <-rnorm(nrow(cl.st.list[[9]]), mean=15, sd=2)
   cl.st.list[[9]]$population <- as.integer(cl.st.list[[9]]$population)
   cl.st.list[[9]]$log_pop <- log(cl.st.list[[9]]$population)  # R code 10.40
   cl.st.list[[9]]$contact_high <- ifelse( cl.st.list[[9]]$transect=="oakMargin" , 1 , 0 )
+  log.pop.list[[9]] <- 2.2
   
   # plotWeekly(total.df)
   
@@ -375,12 +393,12 @@ generateLikelihoodV2 <- function(df, list, showPlot) {
       # McElreath code 10.43
 
       post <-
-        posterior_samples(b10.10)
+        posterior_samples(modelOutput[[i]])
       
       post <-
         post %>%
-        mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop - `b_log_pop:contact_high`)*2.9),
-               lambda_low  = exp(b_Intercept - b_log_pop*2.9)) %>% 
+        mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop - `b_log_pop:contact_high`) * log.pop.list[[i]]),
+               lambda_low  = exp(b_Intercept - b_log_pop * log.pop.list[[i]])) %>% 
         mutate(diff        = lambda_high - lambda_low) 
       
       like.df <- post %>%
@@ -482,7 +500,7 @@ if (FALSE) {
         # of brm(); set to TRUE and uncomment the print() statement to get the pairs() 
         # pairwise scatterplots
         #
-      # print(ggally)
+      print(ggally)
     }
   }
 }
