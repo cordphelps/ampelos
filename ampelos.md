@@ -1,15 +1,12 @@
----
-title: "ampelos"
-output: github_document
----
+ampelos
+================
 
 ![landscape](./photos/landscapeOak.JPG)
 
-## how does a 'natural habitat' field margin influence the population of beneficial insects in an organic vineyard?
+how does a 'natural habitat' field margin influence the population of beneficial insects in an organic vineyard?
+----------------------------------------------------------------------------------------------------------------
 
-
-```{r setup, echo=T, message=F, warning=F}
-
+``` r
 source("./code/bug-library.R")
 source("./code/similarity.R")
 source("./code/jaccard-similarity.R")
@@ -21,108 +18,96 @@ source('./code/ranking.R')
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
-
-
 ```
 
 ### weekly composition of species and individuals?
 
 #### TO-DO: annotate charts with key dates ( spray events, cover crop collapse, veraision, )
 
-```{r diversity, echo=TRUE, include=FALSE, message=F, warning=F, fig.keep='none'}
-
-# (fig.keep='none' suppresses the plots temporarily)
-
-gg.Ind.joint <- divV2(bugs.df, species=FALSE, ignoreBees=FALSE)
-gg.Species.joint <- divV2(bugs.df, species=TRUE, ignoreBees=FALSE)
-
-```
-
-```{r diversityArrange, echo=TRUE, include=TRUE, message=F, warning=F}
-
+``` r
 #grid.arrange(ggO, ggC, ncol=1, nrow=2)
 #ggsave("./code/output/diversity2.png", plot=grid.arrange(ggO, ggC, ncol=1, nrow=2), width = 6, height = 4, units = "in")
 
 grid.arrange(gg.Species.joint, gg.Ind.joint, ncol=1, nrow=2)
-
 ```
 
-
+![](ampelos_files/figure-markdown_github/diversityArrange-1.png)
 
 ![transect layout](./images/transectLayout.jpg)
 
+### each of the two transects consists of 3 rows of 10 traps in each row. Is the total insect population relatively uniform among the 3 rows of a transect? Does this uniformity change over time? Compute the Jaccard Index for each week: the index *'is a statistic used for comparing the similarity and diversity of sample sets.'*
 
-### each of the two transects consists of 3 rows of 10 traps in each row. Is the total insect population relatively uniform among the 3 rows of a transect? Does this uniformity change over time? Compute the Jaccard Index for each week: the index *'is a statistic used for comparing the similarity and diversity of sample sets.'* 
+##### Note that *'... the SMC counts both mutual presences (when an attribute is present in both sets) and mutual absence (when an attribute is absent in both sets) as matches and compares it to the total number of attributes in the universe, whereas the Jaccard index only counts mutual presence as matches and compares it to the number of attributes that have been chosen by at least one of the two sets.'* (<https://en.wikipedia.org/wiki/Jaccard_index>)
 
-##### Note that *'... the SMC counts both mutual presences (when an attribute is present in both sets) and mutual absence (when an attribute is absent in both sets) as matches and compares it to the total number of attributes in the universe, whereas the Jaccard index only counts mutual presence as matches and compares it to the number of attributes that have been chosen by at least one of the two sets.'* (https://en.wikipedia.org/wiki/Jaccard_index)
-
-
-
-```{r similarity, echo=TRUE, include=TRUE, message=F, warning=F }
-
+``` r
 library(dplyr)
 
 gOak <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
                                   t="oakMargin",
                                   transectText="oakMargin")
+```
 
+![](ampelos_files/figure-markdown_github/similarity-1.png)
+
+``` r
 gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
                                   t="control",
                                   transectText="control")
-
-
 ```
 
+![](ampelos_files/figure-markdown_github/similarity-2.png)
 
-### the crab spider is a dominant species in the vineyard. How are they distributed along the length of the row? 
+### the crab spider is a dominant species in the vineyard. How are they distributed along the length of the row?
 
 #### TO-DO: develop and apply normalization method
 
-```{r ridges, echo=TRUE, include=TRUE, message=F, warning=F}
-
+``` r
 new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
 
 v2.1 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="pm", wk=1, caption=Sys.Date())
 
 print(v2.1)
+```
 
+![](ampelos_files/figure-markdown_github/ridges-1.png)
+
+``` r
 v2.2 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="am", wk=1, caption=Sys.Date())
 
 print(v2.2)
-
 ```
 
+![](ampelos_files/figure-markdown_github/ridges-2.png)
 
 ### is there a difference in the spider populations for the two transects?
 
-
-```{r overheadCompare, echo=TRUE, include=TRUE, message=F, warning=F}
-
-
+``` r
 reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(24), species=quo(Thomisidae..crab.spider.))
 
 g24 <- plotBugDistribution(data=reducedData.df, 
                           title=paste("crab spider occurrences", "\nweek 24", sep=""), 
                           caption="stuff")
+```
 
+![](ampelos_files/figure-markdown_github/overheadCompare-1.png)
 
+``` r
 reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(30), species=quo(Thomisidae..crab.spider.))
 
 g30 <- plotBugDistribution(data=reducedData.df, 
                           title=paste("crab spider occurrences", "\nweek 30", sep=""), 
                           caption="stuff")
+```
 
+![](ampelos_files/figure-markdown_github/overheadCompare-2.png)
 
-
+``` r
 # g <- arrangeGrob(g1, g2, nrow=1)
-
 ```
 
 ### are clusters appearing and do they persist across multiple weeks?
 
-```{r overheadClusters, echo=T, include=T, message=F, warning=T}
-
-
+``` r
 clusterNumber <- 3
 df <- bugs.df
 species <- "Thomisidae..crab.spider."
@@ -136,21 +121,21 @@ dataList <- buildClustersByWeek(df, t="oakMargin", species="Thomisidae..crab.spi
 cl2.gg <- kmPlot(list=dataList, transectText="oakMargin")
 
 print(cl1.gg)
-
-print(cl2.gg)
-
 ```
 
+![](ampelos_files/figure-markdown_github/overheadClusters-1.png)
 
+``` r
+print(cl2.gg)
+```
 
+![](ampelos_files/figure-markdown_github/overheadClusters-2.png)
 
-#### (control cluster #2 is slightly wider than oakMargin cluster #2)
-
+#### (control cluster \#2 is slightly wider than oakMargin cluster \#2)
 
 ### How plausible is it that an oakMargin transect row will have more spiders than a control transect row?
 
-```{r clusterBayes, echo=TRUE, include=TRUE, results="hide", message=F, warning=F}
-
+``` r
 if (TRUE) {
   #source('./code/bayes.R')
 
@@ -180,24 +165,13 @@ if (TRUE) {
 
   
 }
-
-
 ```
 
-
-
-
-```{r kable1, results='asis', echo=FALSE, message=F, warning=F}
-
-# knitr::kable(returnList[[5]])
-
-```
-
+![](ampelos_files/figure-markdown_github/clusterBayes-1.png)![](ampelos_files/figure-markdown_github/clusterBayes-2.png)
 
 ### how do the clusters compare to each other across multiple weeks?
 
-```{r clusterBoxPlots, echo=TRUE, include=TRUE, message=F, warning=F }
-
+``` r
 # strip out the other arthropods and misc stuff
 input.df <- clusterSetup()
 
@@ -223,7 +197,11 @@ cluster.df <- clusterAccumulate(df=input.df, t="control", daytime="pm")
  #4    26       1 cl1    
  #5    27       1 cl1
 clusterBoxplot(cluster.df, "control", "pm")
+```
 
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-1.png)
+
+``` r
 temp.df <- clusterStats(df=input.df, t="control", daytime="pm")
 #> temp.df
 #   transect time cluster week       mean        sd normalMean  normalSD distanceTenX
@@ -244,117 +222,353 @@ rankControlPM.df <- rankByWeek(df=temp.df)
 #4    26   cl2    cl3   cl1
 #5    27   cl2    cl1   cl3
 bubbleClusterRanks(rankControlPM.df, "control", "pm")
+```
 
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-2.png)
 
+``` r
 cluster.df <- clusterAccumulate(df=input.df, t="oakMargin", daytime="pm")
 clusterBoxplot(cluster.df, "oakMargin", "pm")
+```
+
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-3.png)
+
+``` r
 temp.df <- clusterStats(df=input.df, t="oakMargin", daytime="pm")
 
 write.table(temp.df, file="./code/output/clBoxPlotOakPM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
 
 rankOakPM.df <- rankByWeek(df=temp.df)
 bubbleClusterRanks(rankOakPM.df, "oakMargin", "pm")
+```
 
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-4.png)
+
+``` r
 cluster.df <- clusterAccumulate(df=input.df, "control", "am")
 clusterBoxplot(cluster.df, "control", "am")
+```
+
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-5.png)
+
+``` r
 temp.df <- clusterStats(df=input.df, t="control", daytime="am")
 
 write.table(temp.df, file="./code/output/clBoxPlotControlAM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
 
 rankControlAM.df <- rankByWeek(df=temp.df)
 bubbleClusterRanks(rankControlAM.df, "control", "am")
+```
 
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-6.png)
+
+``` r
 cluster.df <- clusterAccumulate(df=input.df, "oakMargin", "am")
 clusterBoxplot(cluster.df, "oakMargin", "am")
+```
+
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-7.png)
+
+``` r
 temp.df <- clusterStats(df=input.df, t="oakMargin", daytime="am")
 
 write.table(temp.df, file="./code/output/clBoxPlotOakAM.txt", append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
 
 rankOakAM.df <- rankByWeek(df=temp.df)
 bubbleClusterRanks(rankOakPM.df, "oakMargin", "am")
-
-
 ```
 
-
-```{r kableRanks, results='asis', echo=FALSE, message=F, warning=F}
-
-# QA check of ranking dataframes
-
-if (FALSE) {
-  knitr::kable(rankOakPM.df)
-  knitr::kable(rankControlPM.df)
-  knitr::kable(rankOakAM.df)
-  knitr::kable(rankControlAM.df)
-}
-
-
-```
-
+![](ampelos_files/figure-markdown_github/clusterBoxPlots-8.png)
 
 ### does the crab spider population appear to change over time? Is there a difference between the two transects?
 
-```{r population-trends, echo=TRUE, include=TRUE, message=F, warning=F}
-
+``` r
 plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
-
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
-
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
-
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
-
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
-
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
-
 ```
 
+![](ampelos_files/figure-markdown_github/population-trends-1.png)
 
+    ## NULL
 
+``` r
+plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+```
+
+![](ampelos_files/figure-markdown_github/population-trends-2.png)![](ampelos_files/figure-markdown_github/population-trends-3.png)![](ampelos_files/figure-markdown_github/population-trends-4.png)
+
+    ## NULL
+
+``` r
+plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+```
+
+![](ampelos_files/figure-markdown_github/population-trends-5.png)
+
+    ## NULL
+
+``` r
+plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+```
+
+![](ampelos_files/figure-markdown_github/population-trends-6.png)![](ampelos_files/figure-markdown_github/population-trends-7.png)![](ampelos_files/figure-markdown_github/population-trends-8.png)
+
+    ## NULL
+
+``` r
+plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+```
+
+![](ampelos_files/figure-markdown_github/population-trends-9.png)
+
+    ## NULL
+
+``` r
+plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+```
+
+![](ampelos_files/figure-markdown_github/population-trends-10.png)![](ampelos_files/figure-markdown_github/population-trends-11.png)![](ampelos_files/figure-markdown_github/population-trends-12.png)
+
+    ## NULL
 
 ### and the species counts?
 
-```{r kable2, results='asis', echo=FALSE, message=F, warning=F}
-
-bugList <- colnames(bugs.df[,5:22])
-trim.tbl <- bugs.df %>% select(5:22) %>% colSums() %>% t()
-# https://stackoverflow.com/questions/9623763/in-r-how-can-i-compute-percentage-statistics-on-a-column-in-a-dataframe-tabl
-#trim.tbl <- table(trim.df)
-trim.tbl <- t(trim.tbl)
-trim.tbl <- cbind(trim.tbl,round(prop.table(trim.tbl)*100,2))
-colnames(trim.tbl) <- c('count','percentage')
-
-knitr::kable(trim.tbl)
-
-
-```
-
-
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+count
+</th>
+<th style="text-align:right;">
+percentage
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Diptera..Agromyzidae..leafminer..
+</td>
+<td style="text-align:right;">
+893
+</td>
+<td style="text-align:right;">
+19.09
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Braconid.wasp
+</td>
+<td style="text-align:right;">
+73
+</td>
+<td style="text-align:right;">
+1.56
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Halictus.sp....3.part..native.bee.
+</td>
+<td style="text-align:right;">
+522
+</td>
+<td style="text-align:right;">
+11.16
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+pencilBug
+</td>
+<td style="text-align:right;">
+60
+</td>
+<td style="text-align:right;">
+1.28
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Agapostemon.sp....green..native.bee.
+</td>
+<td style="text-align:right;">
+81
+</td>
+<td style="text-align:right;">
+1.73
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Osmia.sp...native.bee.
+</td>
+<td style="text-align:right;">
+62
+</td>
+<td style="text-align:right;">
+1.33
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Honey.Bee
+</td>
+<td style="text-align:right;">
+476
+</td>
+<td style="text-align:right;">
+10.17
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Bombus.californicus..bumble.
+</td>
+<td style="text-align:right;">
+279
+</td>
+<td style="text-align:right;">
+5.96
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Thomisidae..crab.spider.
+</td>
+<td style="text-align:right;">
+680
+</td>
+<td style="text-align:right;">
+14.53
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+spider.other
+</td>
+<td style="text-align:right;">
+171
+</td>
+<td style="text-align:right;">
+3.65
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ladyBug
+</td>
+<td style="text-align:right;">
+46
+</td>
+<td style="text-align:right;">
+0.98
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lygus.hesperus..western.tarnished.plant.bug.
+</td>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:right;">
+0.79
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+pentamonidae...stinkBug.
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+other
+</td>
+<td style="text-align:right;">
+1213
+</td>
+<td style="text-align:right;">
+25.92
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+checkerspot.butterfly
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:right;">
+0.58
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pyralidae..Snout.Moth.
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+0.36
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Diabrotica.undecimpunctata..Cucumber.Beetle.
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:right;">
+0.38
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Orius..pirate.bug.
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+0.19
+</td>
+</tr>
+</tbody>
+</table>
 ### how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
 
-```{r speciesMatrixOak, out.width = "100%", echo=TRUE, include=TRUE, message=F, warning=F }
-
+``` r
 m1 <- simMatrixV3(data=bugs.df, transect=quo("oakMargin"),
                                 transectText="oakMargin")
-
-#g <- arrangeGrob(m1, m2, nrow=2)
-
 ```
 
+<img src="ampelos_files/figure-markdown_github/speciesMatrixOak-1.png" width="100%" />
 
+``` r
+#g <- arrangeGrob(m1, m2, nrow=2)
+```
 
-```{r speciesMatrixControl, out.width = "100%", echo=TRUE, include=TRUE, message=F, warning=F }
-
-
+``` r
 m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
                                 transectText="control")
-
-#g <- arrangeGrob(m1, m2, nrow=2)
-
 ```
 
+<img src="ampelos_files/figure-markdown_github/speciesMatrixControl-1.png" width="100%" />
 
+``` r
+#g <- arrangeGrob(m1, m2, nrow=2)
+```
 
 ### bottom of the Oak Transect; bird repellant streamers indicating the prevailing wind direction
 
@@ -364,7 +578,7 @@ m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
 
 ![landscape](./photos/topOfControl.JPG)
 
-### bottom of the Control Transect with bird repellant streamers 
+### bottom of the Control Transect with bird repellant streamers
 
 ![landscape](./photos/bottomOfControl.JPG)
 
@@ -375,7 +589,3 @@ m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
 ### example trap sequence
 
 ![landscape](./photos/trapSequence.JPG)
-
-
-
-

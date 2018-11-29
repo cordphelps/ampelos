@@ -125,7 +125,7 @@ evaluateDailySpiderCounts <- function(df) {
 }
 
 
-plotLikelihood <- function(df) {
+plotLikelihood <- function(df, sub) {
   
   # input df :
   # cluster{one, two, three}, seasonalTimeframe{one, two, three}, plausibility(decimal)
@@ -149,7 +149,7 @@ plotLikelihood <- function(df) {
     expand_limits(y=c(0,1)) + 
     #scale_x_continuous(breaks=seq(22,40,2)) +
     labs(title=paste("'plausibility' of an oakMargin effect\non the spider population", sep=""),
-         subtitle=paste("subtitle ", sep=""), 
+         subtitle=paste(sub, sep=""), 
          y="plausibility", 
          x="seasonal timeframe", 
          caption = paste("", sep="") ) +
@@ -333,7 +333,7 @@ generateLikelihoodV2 <- function(df, list, showPlot) {
   
   # the number of trapped spiders increases with natural habitat support
   
-  # the impact of population on trapped spiders increases with natural habital support
+  # the impact of population on trapped spiders decreases with natural habital support
   
   
   
@@ -361,15 +361,26 @@ generateLikelihoodV2 <- function(df, list, showPlot) {
       # summary(b10.10)  # output to .txt file per sink() and sinkAll()
 
       modelOutput[[i]] <- b10.10
-      
-      
+    
+
+      # consider 2 clusters, each with a spider population of log(2.9)=794, calculate lambda, the expected 
+      # trapped spiders, for each. 
+      #
+      # 794 spiders at 16 plants = 50 spiders per plant.
+      #
+      # draw samples from the posterior, plug them into the model, then invert the link function to
+      # get back to the scale of the outcome variable. 
+      #
+      # how likely does the oakMargin 
+      # McElreath code 10.43
+
       post <-
         posterior_samples(b10.10)
       
       post <-
         post %>%
-        mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`)*8),
-               lambda_low  = exp(b_Intercept + b_log_pop*8)) %>% 
+        mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop - `b_log_pop:contact_high`)*2.9),
+               lambda_low  = exp(b_Intercept - b_log_pop*2.9)) %>% 
         mutate(diff        = lambda_high - lambda_low) 
       
       like.df <- post %>%
