@@ -151,7 +151,7 @@ if (TRUE) {
   
   assign("returnList5", returnList[[5]], envir=.GlobalEnv)
 
-  returnList[[6]] <- plotLikelihood(df=lh.df)
+  returnList[[6]] <- plotLikelihood(df=lh.df, sub="model 794:264:159 spider population seasonal trend")
   
   assign("returnList6", returnList[[6]], envir=.GlobalEnv)
 

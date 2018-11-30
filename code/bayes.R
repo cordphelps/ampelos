@@ -366,7 +366,7 @@ generateLikelihoodV2 <- function(df, list, showPlot) {
       
       b10.10 <-
         brm(data = cl.st.list[[i]], family = poisson,
-            totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop,
+            totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop,  # yes, + contact_high:log_pop
             prior = c(prior(normal(0, 100), class = Intercept),
                       prior(normal(0, 1), class = b)),
            iter = 3000, warmup = 1000, chains = 4, cores = 4)
@@ -396,9 +396,9 @@ generateLikelihoodV2 <- function(df, list, showPlot) {
         posterior_samples(modelOutput[[i]])
       
       post <-
-        post %>%
-        mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop - `b_log_pop:contact_high`) * log.pop.list[[i]]),
-               lambda_low  = exp(b_Intercept - b_log_pop * log.pop.list[[i]])) %>% 
+        post %>%   
+        mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log.pop.list[[i]]),
+               lambda_low  = exp(b_Intercept + b_log_pop * log.pop.list[[i]])) %>% 
         mutate(diff        = lambda_high - lambda_low) 
       
       like.df <- post %>%

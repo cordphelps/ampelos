@@ -1,5 +1,5 @@
 
-generateLikelihoodV2()               2018-11-29 07:42:56
+generateLikelihoodV2()               2018-11-29 13:34:34
 
 
 NULL
@@ -16,16 +16,16 @@ Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
 
 Population-Level Effects: 
                      Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
-Intercept               -2.45      2.47    -7.34     2.34       6336 1.00
-log_pop                  0.61      0.91    -1.15     2.42       6366 1.00
-contact_high            -0.19      0.91    -1.95     1.59       3891 1.00
-log_pop:contact_high     0.09      0.38    -0.68     0.84       4193 1.00
+Intercept               -2.42      2.48    -7.31     2.35       6354 1.00
+log_pop                  0.60      0.91    -1.17     2.39       6312 1.00
+contact_high            -0.19      0.94    -2.04     1.64       3410 1.00
+log_pop:contact_high     0.09      0.40    -0.67     0.87       3350 1.00
 
 Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
 is a crude measure of effective sample size, and Rhat is the potential 
 scale reduction factor on split chains (at convergence, Rhat = 1).
 
-generateLikelihoodV2()               2018-11-29 07:43:58
+generateLikelihoodV2()               2018-11-29 13:35:37
 
 
 NULL
@@ -42,16 +42,16 @@ Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
 
 Population-Level Effects: 
                      Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
-Intercept               -2.45      2.47    -7.34     2.34       6336 1.00
-log_pop                  0.61      0.91    -1.15     2.42       6366 1.00
-contact_high            -0.19      0.91    -1.95     1.59       3891 1.00
-log_pop:contact_high     0.09      0.38    -0.68     0.84       4193 1.00
+Intercept               -2.42      2.48    -7.31     2.35       6354 1.00
+log_pop                  0.60      0.91    -1.17     2.39       6312 1.00
+contact_high            -0.19      0.94    -2.04     1.64       3410 1.00
+log_pop:contact_high     0.09      0.40    -0.67     0.87       3350 1.00
 
 Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
 is a crude measure of effective sample size, and Rhat is the potential 
 scale reduction factor on split chains (at convergence, Rhat = 1).
 
-generateLikelihoodV2()               2018-11-29 07:45:07
+generateLikelihoodV2()               2018-11-29 13:36:50
 
 
 NULL
@@ -68,16 +68,16 @@ Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
 
 Population-Level Effects: 
                      Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
-Intercept               -2.45      2.47    -7.34     2.34       6336 1.00
-log_pop                  0.61      0.91    -1.15     2.42       6366 1.00
-contact_high            -0.19      0.91    -1.95     1.59       3891 1.00
-log_pop:contact_high     0.09      0.38    -0.68     0.84       4193 1.00
+Intercept               -2.42      2.48    -7.31     2.35       6354 1.00
+log_pop                  0.60      0.91    -1.17     2.39       6312 1.00
+contact_high            -0.19      0.94    -2.04     1.64       3410 1.00
+log_pop:contact_high     0.09      0.40    -0.67     0.87       3350 1.00
 
 Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
 is a crude measure of effective sample size, and Rhat is the potential 
 scale reduction factor on split chains (at convergence, Rhat = 1).
 
-generateLikelihoodV2()               2018-11-29 07:45:54
+generateLikelihoodV2()               2018-11-29 13:37:34
 
 
 NULL
@@ -94,10 +94,10 @@ Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
 
 Population-Level Effects: 
                      Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
-Intercept               -2.45      2.47    -7.34     2.34       6336 1.00
-log_pop                  0.61      0.91    -1.15     2.42       6366 1.00
-contact_high            -0.19      0.91    -1.95     1.59       3891 1.00
-log_pop:contact_high     0.09      0.38    -0.68     0.84       4193 1.00
+Intercept               -2.42      2.48    -7.31     2.35       6354 1.00
+log_pop                  0.60      0.91    -1.17     2.39       6312 1.00
+contact_high            -0.19      0.94    -2.04     1.64       3410 1.00
+log_pop:contact_high     0.09      0.40    -0.67     0.87       3350 1.00
 
 Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
 is a crude measure of effective sample size, and Rhat is the potential 
