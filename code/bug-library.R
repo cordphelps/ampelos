@@ -1387,6 +1387,14 @@ plotRidgesV2 <- function(data, combined, bugs, speciesText, when, wk, caption) {
 
 scanBugPercentages <- function(df) {
 
+  # calculate count and percent by week (columns) for each bug (rows)
+
+  if (FALSE) {
+
+    df <- bugs.df
+
+  }
+
   weeks.vector <- getWeeks(df)
   bugList <- colnames(df[,5:22])
 
@@ -1398,82 +1406,65 @@ scanBugPercentages <- function(df) {
   pctColNames <- list()
 
   for (i in 1:length(weeks.vector)) {
-    
-    if (FALSE) {   # this was a false start at using insect names as row names
-      trim.tbl <- df %>% filter(week == weeks.vector[[i]]) %>% select(5:22) %>% colSums() %>% t()
-      # https://stackoverflow.com/questions/9623763/in-r-how-can-i-compute-percentage-statistics-on-a-column-in-a-dataframe-tabl
-      #trim.tbl <- table(trim.df)
-      trim.tbl <- t(trim.tbl)
 
-    } else {
+    trim.tbl <- as.data.frame(df %>% filter(week == weeks.vector[[i]]) %>% select(5:22) %>% colSums()) # append column representing totals 
+                                                                                                       # of each insect for week i
+    trim.tbl <- cbind(trim.tbl,round(prop.table(trim.tbl)*100,2))  # append column representing the percent of each insect for week i
 
-      trim.tbl <- as.data.frame(df %>% filter(week == weeks.vector[[i]]) %>% select(5:22) %>% colSums())
-      trim.tbl <- cbind(trim.tbl,round(prop.table(trim.tbl)*100,2))
-      colnames(trim.tbl) <- c(paste('week', weeks.vector[[i]], 'count', sep=""), paste('week', weeks.vector[[i]], 'pct', sep=""))
-      rownames(trim.tbl) <- NULL
+    colnames(trim.tbl) <- c(paste('week', weeks.vector[[i]], 'count', sep=""), paste('week', weeks.vector[[i]], 'pct', sep=""))
+    rownames(trim.tbl) <- NULL
 
-      pctColNames[[i]] <- paste('week', weeks.vector[[i]], 'pct', sep="")
-
-    }
+    pctColNames[[i]] <- paste('week', weeks.vector[[i]], 'pct', sep="")  # save the column names
 
     bugPct <- dplyr::bind_cols(bugPct, trim.tbl)
 
   }
 
   returnList <- list()
-  returnList[[1]] <- bugPct
-  returnList[[2]] <- pctColNames
-  returnList[[3]] <- weeks.vector
+  returnList[[1]] <- bugPct        # count and percent by week (columns) for each bug (rows)
+  returnList[[2]] <- pctColNames   # week23pct, week24pct, ....
+  returnList[[3]] <- weeks.vector  # 23, 24, .....
 
   return(returnList)
 
 }
 
-plotBugPercentages <- function(list) {
+createFamilyPercentages <- function(list) {
 
-  # given the dataframe and a list of columns returned by scanBugPercentages, select percentages 
-  # for a specific insect and return a plot 
+  # given the dataframe and a list of columns returned by scanBugPercentages, organize percentages 
+  # by individual families, return dataframes for each family of insects showing pct by week 
 
-  #        list[[1]]   # dataframe with all the data
+  #        list[[1]]   # dataframe with all the data : count and percent by week (columns) for each bug (rows)
   #        list[[2]]   # list of columns that contain the weekly percentages
   #        list[[3]]   # vector of week numbers
 
-  dfShort <- list[[1]] %>% dplyr::select(bugNames)  # one column of bugNames
+  dfBase <- list[[1]] %>% dplyr::select(bugNames)  # one column of bugNames
 
-  for (i in 1:length(list[[2]])) {
+  for (i in 1:length(list[[2]])) {    # get the percentage columns
 
     temp.df <- list[[1]] %>% dplyr::select(list[[2]][[i]])
 
-    dfShort <- dplyr::bind_cols(dfShort, temp.df)
+    dfBase <- dplyr::bind_cols(dfBase, temp.df)
 
   }
 
-  # dfShort is now columns of pct and rows of insects
-
-  dfBase <- dfShort
+  # dfBase is now columns of weekly insect pct and rows for each insect
+  # we are transforming the data into dataframes for 'families' of specific insects
+  # 
+  # each will be the sum of the percentages for each species in the family
+  #
+  # dfAraneae :      columns:   otherPct   spiderPct   avePct    week
+  #
 
   dfCrab <- dfBase %>% dplyr::filter(bugNames == 'Thomisidae..crab.spider.')  # remove all insects except spiders
   dfOther <- dfBase %>% dplyr::filter(bugNames == 'spider.other') 
-  dfShort <- dplyr::union(dfCrab, dfOther)  # one row for each spider; columns are percent for each week
-
-  dfShort <- squashFlip(df=dfShort, weekList=list[[3]], columnList=c('otherPct', 'spiderPct', 'week'))
-
-  if (FALSE) {  # this was the original, stand-alone logic now represented by squashFlip()
-
-    dfShort <- dfShort %>% dplyr::select(-bugNames)  # remove the bugNames column
-    dfShort <- dfShort %>% rbind(as.character(list[[3]])) # add a row of week numbers
-    colnames(dfShort) <- NULL
-    dfShort <- as.data.frame(t(dfShort)) # flip  = transpose https://stackoverflow.com/questions/6778908/transpose-a-data-frame
-    colnames(dfShort) <- c('otherPct', 'spiderPct', 'week')
-    #dfShort$week <- as.character(dfShort$week)
-    dfShort$week <- as.numeric(as.character(dfShort$week))
-    options(digits=4)  # https://stackoverflow.com/questions/26734913/r-converting-from-string-to-double
-    dfShort$spiderPct <- as.numeric(as.character((dfShort$spiderPct))) # https://stackoverflow.com/questions/3796266/change-the-class-from-factor-to-numeric-of-many-columns-in-a-data-frame
-    dfShort$otherPct <- as.numeric(as.character((dfShort$otherPct)))
-  }
+  dfAraneae <- dplyr::union(dfCrab, dfOther)  # one row for each spider; columns are percent for each week
+  dfAraneae <- squashFlip(df=dfAraneae, weekList=list[[3]], columnList=c('otherPct', 'spiderPct', 'week'))
+  dfAraneae$family <- 'Araneae'
 
   dfDiptera <- dfBase %>% dplyr::filter(bugNames == 'Diptera..Agromyzidae..leafminer..') 
   dfDiptera <- squashFlip(df=dfDiptera, weekList=list[[3]], columnList=c('dipteraPct', 'week'))
+  dfDiptera$family <- 'Diptera'
 
   dfH1 <- dfBase %>% dplyr::filter(bugNames == 'Braconid.wasp')
   dfH2 <- dfBase %>% dplyr::filter(bugNames == 'Halictus.sp....3.part..native.bee.')
@@ -1486,16 +1477,20 @@ plotBugPercentages <- function(list) {
   dfHymenoptera <- dplyr::union(dfHymenoptera, dfH4)
   dfHymenoptera <- dplyr::union(dfHymenoptera, dfH5)
   dfHymenoptera <- dplyr::union(dfHymenoptera, dfH6)
-
   dfHymenoptera <- squashFlip(df=dfHymenoptera, weekList=list[[3]], columnList=c('a', 'b', 'c', 'd', 'e', 'f', 'week'))
+  dfHymenoptera$family <- 'Hymenoptera'
 
   dfHe1 <- dfBase %>% dplyr::filter(bugNames == 'Lygus.hesperus..western.tarnished.plant.bug.')
   dfHe2 <- dfBase %>% dplyr::filter(bugNames == 'pentamonidae...stinkBug.')
   dfHemiptera <- dplyr::union(dfHe1, dfHe2)
+  dfHemiptera <- squashFlip(df=dfHemiptera, weekList=list[[3]], columnList=c('a', 'b', 'week'))
+  dfHemiptera$family <- 'Hemiptera'
 
   dfLep1 <- dfBase %>% dplyr::filter(bugNames == 'checkerspot.butterfly')
   dfLep2 <- dfBase %>% dplyr::filter(bugNames == 'Pyralidae..Snout.Moth.') 
   dfLepidoptera <- dplyr::union(dfLep1, dfLep2)
+  dfLepidoptera <- squashFlip(df=dfLepidoptera, weekList=list[[3]], columnList=c('a', 'b', 'week'))
+  dfLepidoptera$family <- 'Lepidoptera'
 
   dfOther1 <- dfBase %>% dplyr::filter(bugNames == 'Orius..pirate.bug.')
   dfOther2 <- dfBase %>% dplyr::filter(bugNames == 'Diabrotica.undecimpunctata..Cucumber.Beetle.')
@@ -1506,92 +1501,141 @@ plotBugPercentages <- function(list) {
   dfOther <- dplyr::union(dfOther, dfOther3)
   dfOther <- dplyr::union(dfOther, dfOther4)
   dfOther <- dplyr::union(dfOther, dfOther5)
-
-  dfTotal <- dplyr::union(dfShort, dfDiptera)
-  dfTotal <- dplyr::union(dfTotal, dfHymenoptera)
-  dfTotal <- dplyr::union(dfTotal, dfHemiptera)
-  dfTotal <- dplyr::union(dfTotal, dfLepidoptera)
-  dfTotal <- dplyr::union(dfTotal, dfOther)
+  dfOther <- squashFlip(df=dfOther, weekList=list[[3]], columnList=c('a', 'b', 'c', 'd', 'e', 'week'))
+  dfOther$family <- 'Other'
 
 
+  if (FALSE) {  # a manual verification that the percentages sum to 1
+
+    dfAraneae.temp <- dfAraneae %>% dplyr::select(sumPct)       # that's a dataframe every column except week
+    dfDiptera.temp <- dfDiptera %>% dplyr::select(sumPct)
+    dfHymenoptera.temp <- dfHymenoptera %>% dplyr::select(sumPct) 
+    dfHemiptera.temp <- dfHemiptera %>% dplyr::select(sumPct) 
+    dfLepidoptera.temp <- dfLepidoptera %>% dplyr::select(sumPct) 
+    dfOther.temp <- dfOther %>% dplyr::select(sumPct) 
+
+    dfTotal <- dplyr::bind_cols(dfDiptera.temp, dfHymenoptera.temp)
+    dfTotal <- dplyr::bind_cols(dfTotal, dfHemiptera.temp)
+    dfTotal <- dplyr::bind_cols(dfTotal, dfLepidoptera.temp)
+    dfTotal <- dplyr::bind_cols(dfTotal, dfOther.temp)
+    dfTotal <- dplyr::bind_cols(dfTotal, dfAraneae.temp)
 
 
-  
-  colours = c("oakMargin" = "#405E00", "control" = "#9BCC94")
-
-  ggShort <- ggplot(dfShort) + 
-    
-    geom_point(aes(x=week, y=spiderPct, fill = "spiderPct"), shape=21, size=5, show.legend=TRUE) +
-    geom_point(aes(x=week, y=otherPct, fill = 'otherPct'), shape=21, size=5, show.legend=TRUE) +
-
-    scale_fill_manual(name = "", values = c("spiderPct" = "purple", "otherPct" = "violet"), labels = c("spider (other)", "crab spider")) +
-
-    ylim(c(0, 30)) + 
-    expand_limits(y=c(0,30)) + 
-    #coord_fixed(ratio=1/4) +     # control the aspect ratio of the output; "ratio" refers to the 
-    # ratio of the axis limits themselves
-    
-    scale_y_continuous(breaks = seq(min(0), max(30), by = 5)) +
-    scale_x_continuous(breaks=seq(22,40,2)) + 
-    
-    
-    labs(title=paste("spider abundance", sep=""),
-         subtitle=paste("percent of total insects by week", sep=""), 
-         y="spider percentage", 
-         x="week", 
-         caption = paste(" ", sep="") ) +
-    
-    theme_bw() +
-    
-    theme(legend.title = element_blank(),
-          legend.spacing.y = unit(0, "mm"), 
-          #legend.position=c(.9,.7),
-          legend.justification=c(1,0),
-          panel.border = element_rect(colour = "black", fill=NA),
-          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
-          legend.background = element_blank(),
-          legend.box.background = element_rect(colour = "black")) 
-
-  ggTotal <- ggplot(dfTotal) + 
-    
-    geom_point(aes(x=week, y=spiderPct, fill = "spiderPct"), shape=21, size=5, show.legend=TRUE) +
-    geom_point(aes(x=week, y=otherPct, fill = 'otherPct'), shape=21, size=5, show.legend=TRUE) +
-
-    scale_fill_manual(name = "", values = c("spiderPct" = "purple", "otherPct" = "violet"), labels = c("spider (other)", "crab spider")) +
-
-    ylim(c(0, 30)) + 
-    expand_limits(y=c(0,30)) + 
-    #coord_fixed(ratio=1/4) +     # control the aspect ratio of the output; "ratio" refers to the 
-    # ratio of the axis limits themselves
-    
-    scale_y_continuous(breaks = seq(min(0), max(30), by = 5)) +
-    scale_x_continuous(breaks=seq(22,40,2)) + 
-    
-    
-    labs(title=paste("spider abundance", sep=""),
-         subtitle=paste("percent of total insects by week", sep=""), 
-         y="spider percentage", 
-         x="week", 
-         caption = paste(" ", sep="") ) +
-    
-    theme_bw() +
-    
-    theme(legend.title = element_blank(),
-          legend.spacing.y = unit(0, "mm"), 
-          #legend.position=c(.9,.7),
-          legend.justification=c(1,0),
-          panel.border = element_rect(colour = "black", fill=NA),
-          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
-          legend.background = element_blank(),
-          legend.box.background = element_rect(colour = "black")) 
+    dfTotal <- transform(dfTotal, sum = rowSums(dfTotal, na.rm = TRUE))
 
 
-    returnList <- list()
-    returnList[[1]] <- ggShort
-    returnList[[2]] <- ggTotal
-    
-  
+  }
+
+  returnList <- list()
+  returnList[[1]] <- dfAraneae
+  returnList[[2]] <- dfDiptera
+  returnList[[3]] <- dfHymenoptera
+  returnList[[4]] <- dfHemiptera
+  returnList[[5]] <- dfLepidoptera
+  returnList[[6]] <- dfOther
+
   return(returnList)
+
+}
+
+
+plotBugPercentages <- function(list, spidersOnly) {
+
+  dfAraneae <- list[[1]]
+  dfDiptera <- list[[2]]
+  dfHymenoptera <- list[[3]]
+  dfHemiptera <- list[[4]]
+  dfLepidoptera <- list[[5]]
+  dfOther <- list[[6]]
+
+  if (spidersOnly==TRUE) {
+
+    gg <- ggplot(dfAraneae) + 
+    
+      geom_point(aes(x=week, y=spiderPct, fill = "spiderPct"), shape=21, size=5, show.legend=TRUE) +
+      geom_point(aes(x=week, y=otherPct, fill = 'otherPct'), shape=21, size=5, show.legend=TRUE) +
+
+      scale_fill_manual(name = "", values = c("spiderPct" = "purple", "otherPct" = "violet"), labels = c("spider (other)", "crab spider")) +
+
+      ylim(c(0, 30)) + 
+      expand_limits(y=c(0,30)) + 
+      #coord_fixed(ratio=1/4) +     # control the aspect ratio of the output; "ratio" refers to the 
+      # ratio of the axis limits themselves
+    
+      scale_y_continuous(breaks = seq(min(0), max(30), by = 5)) +
+      scale_x_continuous(breaks=seq(22,40,2)) + 
+    
+    
+      labs(title=paste("spider abundance", sep=""),
+         subtitle=paste("percent of total insects by week", sep=""), 
+         y="spider percentage", 
+         x="week", 
+         caption = paste(" ", sep="") ) +
+    
+      theme_bw() +
+    
+      theme(legend.title = element_blank(),
+          legend.spacing.y = unit(0, "mm"), 
+          #legend.position=c(.9,.7),
+          legend.justification=c(1,0),
+          panel.border = element_rect(colour = "black", fill=NA),
+          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black")) 
+
+    } else {
+
+      colours = c("oakMargin" = "#405E00", "control" = "#9BCC94")
+
+      gg <- ggplot() + 
+    
+        geom_jitter(data=dfOther, aes(x=week, y=sumPct, fill = family), shape=21, size=3, show.legend=TRUE) +
+        geom_jitter(data=dfAraneae, aes(x=week, y=sumPct, fill = family), shape=21, size=3, show.legend=TRUE) +
+        geom_jitter(data=dfDiptera, aes(x=week, y=sumPct, fill = family), shape=21, size=3, show.legend=TRUE) +
+        geom_jitter(data=dfHymenoptera, aes(x=week, y=sumPct, fill = family), shape=21, size=3, show.legend=TRUE) +
+        geom_jitter(data=dfHemiptera, aes(x=week, y=sumPct, fill = family), shape=21, size=3, show.legend=TRUE) +
+        geom_jitter(data=dfLepidoptera, aes(x=week, y=sumPct, fill = family), shape=21, size=3, show.legend=TRUE) +
+
+        scale_fill_manual(name = 'insect family', 
+          values = c('black','green', 'blue', 'violet', 'purple', 'red'), 
+          breaks = c("Other", 'Araneae', 'Diptera', 'Hymenoptera', 'Hemiptera', 'Lepidoptera'),
+          labels = c("other", "Araneae", 'Diptera', 'Hymenoptera', 'Hemiptera', 'Lepidoptera')) +
+
+        #guides(shape = guide_legend("insect family"))  +
+
+        ylim(c(0, 100)) + 
+        expand_limits(y=c(0,100)) + 
+        #coord_fixed(ratio=1/4) +     # control the aspect ratio of the output; "ratio" refers to the 
+        # ratio of the axis limits themselves
+    
+        #scale_y_continuous(trans='log10', breaks = seq(min(0), max(100), by = 20)) +
+        scale_y_continuous(trans='log10') +
+        annotation_logticks(sides='l') +
+
+        scale_x_continuous(breaks=seq(22,40,2)) + 
+    
+    
+        labs(title=paste("insect abundance by family", sep=""),
+          subtitle=paste("percent of total population by week", sep=""), 
+          y="percent", 
+          x="week", 
+          caption = paste(" ", sep="") ) +
+    
+        theme_bw() +
+    
+        theme(legend.title = element_blank(),
+          legend.spacing.y = unit(0, "mm"), 
+          #legend.position=c(.9,.7),
+          legend.justification=c(1,0),
+          panel.border = element_rect(colour = "black", fill=NA),
+          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black")) 
+
+      }
+    
+  return(gg)
+
 }
 
 squashFlip <- function(df, weekList, columnList) {
@@ -1639,7 +1683,7 @@ squashFlip <- function(df, weekList, columnList) {
   temp.df <- df
   temp.df <- temp.df %>% dplyr::select(week)                # that's a dataframe containing only week
   df <- df %>% dplyr::select(-week)                         # that's a dataframe every column except week
-  df <- transform(df, avePct = rowMeans(df, na.rm = TRUE))  # finally, escaping the nightmare of dplyr https://stackoverflow.com/questions/12486264/average-across-columns-in-r-excluding-nas
+  df <- transform(df, sumPct = rowSums(df, na.rm = TRUE))  # finally, escaping the nightmare of dplyr https://stackoverflow.com/questions/12486264/average-across-columns-in-r-excluding-nas
   df <- dplyr::bind_cols(df, temp.df)
 
   # returning dataframe
@@ -1651,3 +1695,5 @@ squashFlip <- function(df, weekList, columnList) {
   return(df)
 
 }
+
+

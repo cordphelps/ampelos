@@ -27,6 +27,24 @@ bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 
 ### weekly composition of species and individuals?
 
+
+```{r insectPop, echo=TRUE, include=TRUE, message=F, warning=F }
+
+returnList <- scanBugPercentages(bugs.df)
+
+returnList <- createFamilyPercentages(returnList)
+
+gg <- plotBugPercentages(returnList, spidersOnly=FALSE)
+
+print(gg)
+
+gg <- plotBugPercentages(returnList, spidersOnly=TRUE)
+
+print(gg)
+
+```
+
+
 #### TO-DO: annotate charts with key dates ( spray events, cover crop collapse, veraision, )
 
 ```{r diversity, echo=TRUE, include=FALSE, message=F, warning=F, fig.keep='none'}
@@ -334,6 +352,7 @@ plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="
 
 
 ### and the species counts?
+
 
 ```{r kable2, results='asis', echo=FALSE, message=F, warning=F}
 

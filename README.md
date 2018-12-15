@@ -22,6 +22,26 @@ bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 
 ### weekly composition of species and individuals?
 
+``` r
+returnList <- scanBugPercentages(bugs.df)
+
+returnList <- createFamilyPercentages(returnList)
+
+gg <- plotBugPercentages(returnList, spidersOnly=FALSE)
+
+print(gg)
+```
+
+![](ampelos_files/figure-markdown_github/insectPop-1.png)
+
+``` r
+gg <- plotBugPercentages(returnList, spidersOnly=TRUE)
+
+print(gg)
+```
+
+![](ampelos_files/figure-markdown_github/insectPop-2.png)
+
 #### TO-DO: annotate charts with key dates ( spray events, cover crop collapse, veraision, )
 
 ``` r
@@ -133,7 +153,7 @@ print(cl2.gg)
 
 #### (control cluster \#2 is slightly wider than oakMargin cluster \#2)
 
-### How plausible is it that an oakMargin transect row will have more spiders than a control transect row?
+### 'big picture' data by cluster, time, and transect
 
 ``` r
 if (TRUE) {
@@ -146,17 +166,36 @@ if (TRUE) {
   # create txt files saving the status output of 9 brm() cycles
   # build the likelihood data : generateLikelihoodV2() 
   returnList <- evaluateDailySpiderCounts(bugs.df)
-
-  lh.df <- returnList[[5]]
   
-  assign("returnList5", returnList[[5]], envir=.GlobalEnv)
-
-  returnList[[6]] <- plotLikelihood(df=lh.df, sub="model 794:264:159 spider population seasonal trend")
+  print(returnList[[1]]) # scatter plot by cluster with seasonal timeframes
+  print(returnList[[2]]) # scatter plot by am/pm
+  print(returnList[[3]]) # scatter plot by transect
+  # returnList[[4]] is the data 'dataframe' used for the graphics
+ 
   
-  assign("returnList6", returnList[[6]], envir=.GlobalEnv)
+}
+```
 
-  print(returnList[[1]])
-  print(returnList[[6]])
+![](ampelos_files/figure-markdown_github/bigPicture-1.png)![](ampelos_files/figure-markdown_github/bigPicture-2.png)![](ampelos_files/figure-markdown_github/bigPicture-3.png)
+
+### How plausible is it that an oakMargin transect row will have more spiders than a control transect row?
+
+``` r
+if (TRUE) {
+  #source('./code/bayes.R')
+
+  # organize data into
+  # ("week", "transect", "time", "cluster", "totalSpiders")
+  #
+  # plot the weekly raw data : plotWeekly()
+  # create txt files saving the status output of 9 brm() cycles
+
+  returnList <- generateLikelihoodV2(df=returnList[[4]], list=returnList, showPlot=FALSE)
+
+  returnList[[6]] <- plotLikelihood(df=returnList[[5]], sub="model 794:264:159 spider population seasonal trend")
+  
+  #assign("returnList6", returnList[[6]], envir=.GlobalEnv)
+  print(returnList[[6]]) # liklihood by cluster with seasonal timeframes
 
   # kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
 
@@ -167,7 +206,7 @@ if (TRUE) {
 }
 ```
 
-![](ampelos_files/figure-markdown_github/clusterBayes-1.png)![](ampelos_files/figure-markdown_github/clusterBayes-2.png)
+![](ampelos_files/figure-markdown_github/clusterBayes-1.png)
 
 ### how do the clusters compare to each other across multiple weeks?
 
