@@ -1384,3 +1384,270 @@ plotRidgesV2 <- function(data, combined, bugs, speciesText, when, wk, caption) {
   
   return(gg2)
 }
+
+scanBugPercentages <- function(df) {
+
+  weeks.vector <- getWeeks(df)
+  bugList <- colnames(df[,5:22])
+
+  bugPct <- as.data.frame(df %>% select(5:22) %>% names())   # bug names as first column
+  # disapointing : https://stackoverflow.com/questions/42769650/how-to-dplyr-rename-a-column-by-column-index
+  # bugPct <- bugPct %>% rename_at( 1, ~"column1" ) %>% tibble::column_to_rownames('column1')
+  bugPct <- bugPct %>% rename_at( 1, ~"bugNames" )  # 
+
+  pctColNames <- list()
+
+  for (i in 1:length(weeks.vector)) {
+    
+    if (FALSE) {   # this was a false start at using insect names as row names
+      trim.tbl <- df %>% filter(week == weeks.vector[[i]]) %>% select(5:22) %>% colSums() %>% t()
+      # https://stackoverflow.com/questions/9623763/in-r-how-can-i-compute-percentage-statistics-on-a-column-in-a-dataframe-tabl
+      #trim.tbl <- table(trim.df)
+      trim.tbl <- t(trim.tbl)
+
+    } else {
+
+      trim.tbl <- as.data.frame(df %>% filter(week == weeks.vector[[i]]) %>% select(5:22) %>% colSums())
+      trim.tbl <- cbind(trim.tbl,round(prop.table(trim.tbl)*100,2))
+      colnames(trim.tbl) <- c(paste('week', weeks.vector[[i]], 'count', sep=""), paste('week', weeks.vector[[i]], 'pct', sep=""))
+      rownames(trim.tbl) <- NULL
+
+      pctColNames[[i]] <- paste('week', weeks.vector[[i]], 'pct', sep="")
+
+    }
+
+    bugPct <- dplyr::bind_cols(bugPct, trim.tbl)
+
+  }
+
+  returnList <- list()
+  returnList[[1]] <- bugPct
+  returnList[[2]] <- pctColNames
+  returnList[[3]] <- weeks.vector
+
+  return(returnList)
+
+}
+
+plotBugPercentages <- function(list) {
+
+  # given the dataframe and a list of columns returned by scanBugPercentages, select percentages 
+  # for a specific insect and return a plot 
+
+  #        list[[1]]   # dataframe with all the data
+  #        list[[2]]   # list of columns that contain the weekly percentages
+  #        list[[3]]   # vector of week numbers
+
+  dfShort <- list[[1]] %>% dplyr::select(bugNames)  # one column of bugNames
+
+  for (i in 1:length(list[[2]])) {
+
+    temp.df <- list[[1]] %>% dplyr::select(list[[2]][[i]])
+
+    dfShort <- dplyr::bind_cols(dfShort, temp.df)
+
+  }
+
+  # dfShort is now columns of pct and rows of insects
+
+  dfBase <- dfShort
+
+  dfCrab <- dfBase %>% dplyr::filter(bugNames == 'Thomisidae..crab.spider.')  # remove all insects except spiders
+  dfOther <- dfBase %>% dplyr::filter(bugNames == 'spider.other') 
+  dfShort <- dplyr::union(dfCrab, dfOther)  # one row for each spider; columns are percent for each week
+
+  dfShort <- squashFlip(df=dfShort, weekList=list[[3]], columnList=c('otherPct', 'spiderPct', 'week'))
+
+  if (FALSE) {  # this was the original, stand-alone logic now represented by squashFlip()
+
+    dfShort <- dfShort %>% dplyr::select(-bugNames)  # remove the bugNames column
+    dfShort <- dfShort %>% rbind(as.character(list[[3]])) # add a row of week numbers
+    colnames(dfShort) <- NULL
+    dfShort <- as.data.frame(t(dfShort)) # flip  = transpose https://stackoverflow.com/questions/6778908/transpose-a-data-frame
+    colnames(dfShort) <- c('otherPct', 'spiderPct', 'week')
+    #dfShort$week <- as.character(dfShort$week)
+    dfShort$week <- as.numeric(as.character(dfShort$week))
+    options(digits=4)  # https://stackoverflow.com/questions/26734913/r-converting-from-string-to-double
+    dfShort$spiderPct <- as.numeric(as.character((dfShort$spiderPct))) # https://stackoverflow.com/questions/3796266/change-the-class-from-factor-to-numeric-of-many-columns-in-a-data-frame
+    dfShort$otherPct <- as.numeric(as.character((dfShort$otherPct)))
+  }
+
+  dfDiptera <- dfBase %>% dplyr::filter(bugNames == 'Diptera..Agromyzidae..leafminer..') 
+  dfDiptera <- squashFlip(df=dfDiptera, weekList=list[[3]], columnList=c('dipteraPct', 'week'))
+
+  dfH1 <- dfBase %>% dplyr::filter(bugNames == 'Braconid.wasp')
+  dfH2 <- dfBase %>% dplyr::filter(bugNames == 'Halictus.sp....3.part..native.bee.')
+  dfH3 <- dfBase %>% dplyr::filter(bugNames == 'Agapostemon.sp....green..native.bee.')
+  dfH4 <- dfBase %>% dplyr::filter(bugNames == 'Osmia.sp...native.bee.')
+  dfH5 <- dfBase %>% dplyr::filter(bugNames == 'Honey.Bee')
+  dfH6 <- dfBase %>% dplyr::filter(bugNames == 'Bombus.californicus..bumble.')
+  dfHymenoptera <- dplyr::union(dfH1, dfH2)
+  dfHymenoptera <- dplyr::union(dfHymenoptera, dfH3)
+  dfHymenoptera <- dplyr::union(dfHymenoptera, dfH4)
+  dfHymenoptera <- dplyr::union(dfHymenoptera, dfH5)
+  dfHymenoptera <- dplyr::union(dfHymenoptera, dfH6)
+
+  dfHymenoptera <- squashFlip(df=dfHymenoptera, weekList=list[[3]], columnList=c('a', 'b', 'c', 'd', 'e', 'f', 'week'))
+
+  dfHe1 <- dfBase %>% dplyr::filter(bugNames == 'Lygus.hesperus..western.tarnished.plant.bug.')
+  dfHe2 <- dfBase %>% dplyr::filter(bugNames == 'pentamonidae...stinkBug.')
+  dfHemiptera <- dplyr::union(dfHe1, dfHe2)
+
+  dfLep1 <- dfBase %>% dplyr::filter(bugNames == 'checkerspot.butterfly')
+  dfLep2 <- dfBase %>% dplyr::filter(bugNames == 'Pyralidae..Snout.Moth.') 
+  dfLepidoptera <- dplyr::union(dfLep1, dfLep2)
+
+  dfOther1 <- dfBase %>% dplyr::filter(bugNames == 'Orius..pirate.bug.')
+  dfOther2 <- dfBase %>% dplyr::filter(bugNames == 'Diabrotica.undecimpunctata..Cucumber.Beetle.')
+  dfOther3 <- dfBase %>% dplyr::filter(bugNames == 'other')
+  dfOther4 <- dfBase %>% dplyr::filter(bugNames == 'ladyBug')
+  dfOther5 <- dfBase %>% dplyr::filter(bugNames == 'pencilBug')
+  dfOther <- dplyr::union(dfOther1, dfOther2)
+  dfOther <- dplyr::union(dfOther, dfOther3)
+  dfOther <- dplyr::union(dfOther, dfOther4)
+  dfOther <- dplyr::union(dfOther, dfOther5)
+
+  dfTotal <- dplyr::union(dfShort, dfDiptera)
+  dfTotal <- dplyr::union(dfTotal, dfHymenoptera)
+  dfTotal <- dplyr::union(dfTotal, dfHemiptera)
+  dfTotal <- dplyr::union(dfTotal, dfLepidoptera)
+  dfTotal <- dplyr::union(dfTotal, dfOther)
+
+
+
+
+  
+  colours = c("oakMargin" = "#405E00", "control" = "#9BCC94")
+
+  ggShort <- ggplot(dfShort) + 
+    
+    geom_point(aes(x=week, y=spiderPct, fill = "spiderPct"), shape=21, size=5, show.legend=TRUE) +
+    geom_point(aes(x=week, y=otherPct, fill = 'otherPct'), shape=21, size=5, show.legend=TRUE) +
+
+    scale_fill_manual(name = "", values = c("spiderPct" = "purple", "otherPct" = "violet"), labels = c("spider (other)", "crab spider")) +
+
+    ylim(c(0, 30)) + 
+    expand_limits(y=c(0,30)) + 
+    #coord_fixed(ratio=1/4) +     # control the aspect ratio of the output; "ratio" refers to the 
+    # ratio of the axis limits themselves
+    
+    scale_y_continuous(breaks = seq(min(0), max(30), by = 5)) +
+    scale_x_continuous(breaks=seq(22,40,2)) + 
+    
+    
+    labs(title=paste("spider abundance", sep=""),
+         subtitle=paste("percent of total insects by week", sep=""), 
+         y="spider percentage", 
+         x="week", 
+         caption = paste(" ", sep="") ) +
+    
+    theme_bw() +
+    
+    theme(legend.title = element_blank(),
+          legend.spacing.y = unit(0, "mm"), 
+          #legend.position=c(.9,.7),
+          legend.justification=c(1,0),
+          panel.border = element_rect(colour = "black", fill=NA),
+          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black")) 
+
+  ggTotal <- ggplot(dfTotal) + 
+    
+    geom_point(aes(x=week, y=spiderPct, fill = "spiderPct"), shape=21, size=5, show.legend=TRUE) +
+    geom_point(aes(x=week, y=otherPct, fill = 'otherPct'), shape=21, size=5, show.legend=TRUE) +
+
+    scale_fill_manual(name = "", values = c("spiderPct" = "purple", "otherPct" = "violet"), labels = c("spider (other)", "crab spider")) +
+
+    ylim(c(0, 30)) + 
+    expand_limits(y=c(0,30)) + 
+    #coord_fixed(ratio=1/4) +     # control the aspect ratio of the output; "ratio" refers to the 
+    # ratio of the axis limits themselves
+    
+    scale_y_continuous(breaks = seq(min(0), max(30), by = 5)) +
+    scale_x_continuous(breaks=seq(22,40,2)) + 
+    
+    
+    labs(title=paste("spider abundance", sep=""),
+         subtitle=paste("percent of total insects by week", sep=""), 
+         y="spider percentage", 
+         x="week", 
+         caption = paste(" ", sep="") ) +
+    
+    theme_bw() +
+    
+    theme(legend.title = element_blank(),
+          legend.spacing.y = unit(0, "mm"), 
+          #legend.position=c(.9,.7),
+          legend.justification=c(1,0),
+          panel.border = element_rect(colour = "black", fill=NA),
+          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black")) 
+
+
+    returnList <- list()
+    returnList[[1]] <- ggShort
+    returnList[[2]] <- ggTotal
+    
+  
+  return(returnList)
+}
+
+squashFlip <- function(df, weekList, columnList) {
+
+  # convert row wise percent occurrance of bugs across weeks to 
+  # an average of these associated insects by week
+
+  # 
+  # inbound dataframe
+  #
+  #        bugNames   week1Pct   week2Pct  week3Pct  ...... 
+  # bugA
+  # bugB   
+  #
+  # weeklist   : a vector of week numbers occurring in the df
+  # columnList : a vector of row names ultimately to be applied as column names
+
+
+  if (FALSE) {
+    df <- dfShort
+    weekList <- list[[3]]
+    columnList <- c('otherPct', 'spiderPct', 'week')
+  }
+
+  df <- df %>% dplyr::select(-bugNames)  # remove the bugNames column
+  df <- df %>% rbind(as.character(weekList)) # add a row of week numbers
+  colnames(df) <- NULL
+  df <- as.data.frame(t(df)) # flip  = transpose https://stackoverflow.com/questions/6778908/transpose-a-data-frame
+  colnames(df) <- columnList
+  options(digits=4)  # https://stackoverflow.com/questions/26734913/r-converting-from-string-to-double
+  for (i in 1:length(columnList)) {
+    df[,columnList[[i]]] <- as.numeric(as.character((df[,columnList[[i]]]))) # https://stackoverflow.com/questions/3796266/change-the-class-from-factor-to-numeric-of-many-columns-in-a-data-frame
+  }
+
+  # now, just create an average of insects for this particular family dataframe. columnList represents the
+  # column names including 'week'. We could truncate the list to remove 'week', 
+  #          like so : columnList <- columnList [ - length(columnList) ] # ignore the week column (the last column in the list)
+  # and then use the modified columnList to define the columns that need to be used for the average
+  #           somewhat like : df <- df %>% rowwise() %>% dplyr::mutate(meanPct=mean(columnList))
+  # but mutate() is choking on that list, I think it is due to the old bogey of dyplr not accepting clean variables.
+  #            the solution may be here : https://datascience.blog.wzb.eu/2016/09/27/dynamic-columnvariable-names-with-dplyr-using-standard-evaluation-functions/
+  # the other approach is to remove the 'week' column, creat the average, then re-add the week column.
+  #
+  
+  temp.df <- df
+  temp.df <- temp.df %>% dplyr::select(week)                # that's a dataframe containing only week
+  df <- df %>% dplyr::select(-week)                         # that's a dataframe every column except week
+  df <- transform(df, avePct = rowMeans(df, na.rm = TRUE))  # finally, escaping the nightmare of dplyr https://stackoverflow.com/questions/12486264/average-across-columns-in-r-excluding-nas
+  df <- dplyr::bind_cols(df, temp.df)
+
+  # returning dataframe
+  #                                     /----------- use this average for graphing purposes
+  # species1.Pct .... speciesX.Pct   avePct   week
+  #
+  #
+
+  return(df)
+
+}

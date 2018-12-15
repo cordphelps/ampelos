@@ -108,16 +108,21 @@ evaluateDailySpiderCounts <- function(df) {
   returnList <- list()
   
   returnList[[1]] <- plotWeekly(total.df)
+
+  # total spiders by week/cluster differentiated by time of day
+  returnList[[2]] <- plotRawWeekly(total.df)
+
+  returnList[[3]] <- plotTransectWeekly(total.df)
   
   ## total.df
   ##
   ## multiple records per week with columns
   ## week, transect, time, cluster, totalSpiders
   ##
+
+  returnList[[4]] <- total.df
   
-  returnList <- generateLikelihoodV2(df=total.df, 
-                                   list=returnList,
-                                   showPlot=FALSE)
+  # returnList <- generateLikelihoodV2(df=total.df, list=returnList, showPlot=FALSE)
 
   
   return(returnList)
@@ -685,7 +690,7 @@ plotWeekly <- function(df) {
     
     
     labs(title=paste("total spiders trapped per week", sep=""),
-         subtitle=paste("oakMargin and control transects", sep=""), 
+         subtitle=paste("oakMargin and control transects, counts by cluster", sep=""), 
          y="spiders per week", 
          x="week", 
          caption = paste("arbitrary seasonal timeframes", sep="") ) +
@@ -711,6 +716,123 @@ plotWeekly <- function(df) {
   
 }
 
+
+plotRawWeekly <- function(df) {
+
+  # derived from plotWeekly()
+
+  # plot cluster spider counts, by week, differentiate by time
+  
+  # input df :
+  #  week, transect, time{am, pm}, cluster{one, two, three}, totalSpiders
+  #
+  
+  #assign("plotWeekly.df", df, envir=.GlobalEnv)
+  #assign("dfX", df, envir=.GlobalEnv)
+  
+  colours = c("pm" = "violet", "am" = "purple")
+  
+  gg <- ggplot(df, aes(x=week, y=totalSpiders)) + 
+    
+    geom_jitter(aes(fill = time), shape=21, size=5, alpha=.7, show.legend=TRUE) +
+    
+    # geom_vline(xintercept=25.5) + # seasonal timeframe seperators
+    # geom_vline(xintercept=31.5) + #
+    
+    ylim(c(0, 31)) + 
+    expand_limits(y=c(0,31)) + 
+    coord_fixed(ratio=1/4) +     # control the aspect ratio of the output; "ratio" refers to the 
+  # ratio of the axis limits themselves
+    
+    scale_y_continuous(breaks = seq(min(0), max(31), by = 5)) +
+    scale_x_continuous(breaks=seq(22,40,2)) + 
+    
+    
+    labs(title=paste("total spiders trapped by week", sep=""),
+         subtitle=paste("oakMargin and control transects, counts by cluster", sep=""), 
+         y="spider counts", 
+         x="week", 
+         caption = paste(" ", sep="") ) +
+    
+    theme_bw() +
+
+    scale_fill_manual(values = colours, 
+                      breaks = c("am", "pm"),
+                      labels = c("overnight", "daytime")) +
+    
+    theme(legend.title = element_blank(),
+          legend.spacing.y = unit(0, "mm"), 
+          #legend.position=c(.9,.7),
+          legend.justification=c(1,0),
+          panel.border = element_rect(colour = "black", fill=NA),
+          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black")) 
+    
+  
+  
+  return(gg)
+  
+}
+
+
+plotTransectWeekly <- function(df) {
+
+  # derived from plotWeekly()
+
+  # plot cluster spider counts, by week, differentiate by time
+  
+  # input df :
+  #  week, transect, time{am, pm}, cluster{one, two, three}, totalSpiders
+  #
+  
+  #assign("plotWeekly.df", df, envir=.GlobalEnv)
+  #assign("dfX", df, envir=.GlobalEnv)
+  
+  colours = c("oakMargin" = "#405E00", "control" = "#9BCC94")
+  
+  gg <- ggplot(df, aes(x=week, y=totalSpiders)) + 
+    
+    geom_jitter(aes(fill = transect), shape=21, size=5, alpha=.7, show.legend=TRUE) +
+    
+    # geom_vline(xintercept=25.5) + # seasonal timeframe seperators
+    # geom_vline(xintercept=31.5) + #
+    
+    ylim(c(0, 31)) + 
+    expand_limits(y=c(0,31)) + 
+    coord_fixed(ratio=1/4) +     # control the aspect ratio of the output; "ratio" refers to the 
+  # ratio of the axis limits themselves
+    
+    scale_y_continuous(breaks = seq(min(0), max(31), by = 5)) +
+    scale_x_continuous(breaks=seq(22,40,2)) + 
+    
+    
+    labs(title=paste("total spiders trapped by week", sep=""),
+         subtitle=paste("oakMargin and control transects, counts by cluster", sep=""), 
+         y="spider counts", 
+         x="week", 
+         caption = paste(" ", sep="") ) +
+    
+    theme_bw() +
+
+    scale_fill_manual(values = colours, 
+                      breaks = c("oakMargin", "control"),
+                      labels = c("semi-natural habitat", "null field margin")) +
+    
+    theme(legend.title = element_blank(),
+          legend.spacing.y = unit(0, "mm"), 
+          #legend.position=c(.9,.7),
+          legend.justification=c(1,0),
+          panel.border = element_rect(colour = "black", fill=NA),
+          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black")) 
+    
+  
+  
+  return(gg)
+  
+}
 
 dailySumByClusterTimeWeek <- function(df, ft, fc) {
   

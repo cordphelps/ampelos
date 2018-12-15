@@ -147,6 +147,33 @@ print(cl2.gg)
 #### (control cluster #2 is slightly wider than oakMargin cluster #2)
 
 
+### 'big picture' data by cluster, time, and transect
+
+```{r bigPicture, echo=TRUE, include=TRUE, results="hide", message=F, warning=F}
+
+if (TRUE) {
+  #source('./code/bayes.R')
+
+  # organize data into
+  # ("week", "transect", "time", "cluster", "totalSpiders")
+  #
+  # plot the weekly raw data : plotWeekly()
+  # create txt files saving the status output of 9 brm() cycles
+  # build the likelihood data : generateLikelihoodV2() 
+  returnList <- evaluateDailySpiderCounts(bugs.df)
+  
+  print(returnList[[1]]) # scatter plot by cluster with seasonal timeframes
+  print(returnList[[2]]) # scatter plot by am/pm
+  print(returnList[[3]]) # scatter plot by transect
+  # returnList[[4]] is the data 'dataframe' used for the graphics
+ 
+  
+}
+
+
+```
+
+
 ### How plausible is it that an oakMargin transect row will have more spiders than a control transect row?
 
 ```{r clusterBayes, echo=TRUE, include=TRUE, results="hide", message=F, warning=F}
@@ -159,19 +186,13 @@ if (TRUE) {
   #
   # plot the weekly raw data : plotWeekly()
   # create txt files saving the status output of 9 brm() cycles
-  # build the likelihood data : generateLikelihoodV2() 
-  returnList <- evaluateDailySpiderCounts(bugs.df)
 
-  lh.df <- returnList[[5]]
+  returnList <- generateLikelihoodV2(df=returnList[[4]], list=returnList, showPlot=FALSE)
+
+  returnList[[6]] <- plotLikelihood(df=returnList[[5]], sub="model 794:264:159 spider population seasonal trend")
   
-  assign("returnList5", returnList[[5]], envir=.GlobalEnv)
-
-  returnList[[6]] <- plotLikelihood(df=lh.df, sub="model 794:264:159 spider population seasonal trend")
-  
-  assign("returnList6", returnList[[6]], envir=.GlobalEnv)
-
-  print(returnList[[1]])
-  print(returnList[[6]])
+  #assign("returnList6", returnList[[6]], envir=.GlobalEnv)
+  print(returnList[[6]]) # liklihood by cluster with seasonal timeframes
 
   # kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
 
@@ -183,7 +204,6 @@ if (TRUE) {
 
 
 ```
-
 
 
 
