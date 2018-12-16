@@ -232,15 +232,15 @@ div <- function(data, species, ignoreBees, t) {
   if (species == FALSE) {
 
     gg <- plotDivIndividualsV2(dfOak=inputOak.df, dfControl=inputControl.df,
-                titleText=paste(" transect abundance",  sep=""), 
-                subText=paste("ignoreBees : ", ignoreBees, sep=""),
-                captionText="caption")
+                titleText=paste(" transect species abundance",  sep=""), 
+                subText=' ',
+                captionText=paste("ignoreBees : ", ignoreBees, sep=""))
   } else {
 
     gg <- plotDivSpeciesV2(dfOak=inputOak.df, dfControl=inputControl.df,
                 titleText=paste(" transect species diversity",  sep=""), 
-                subText=paste("ignoreBees : ", ignoreBees, sep=""),
-                captionText="caption")
+                subText=' ',
+                captionText=paste("ignoreBees : ", ignoreBees, sep=""))
 
   }
 
@@ -275,7 +275,7 @@ plotDivSpeciesV2 <- function(dfOak, dfControl, titleText, subText, captionText) 
       expand_limits(x=c(22,34)) +
       scale_x_continuous(breaks = seq(min(22), max(34), by = 2)) +
     
-      coord_fixed(ratio=.1) +  # control the aspect ratio of the output 
+      # coord_fixed(ratio=.1) +  # control the aspect ratio of the output 
     
     #geom_smooth(aes(x=rowCounts, y=rowSum), method = "loess", size = 1.5) +
     #geom_smooth(aes(x=rowCounts, y=rowSum), method="lm", level=0.95) +
@@ -323,7 +323,7 @@ plotDivSpeciesV2 <- function(dfOak, dfControl, titleText, subText, captionText) 
       expand_limits(x=c(22,34)) +
       scale_x_continuous(breaks = seq(min(22), max(34), by = 2)) +
     
-      coord_fixed(ratio=.006) +  # control the aspect ratio of the output 
+      #coord_fixed(ratio=.006) +  # control the aspect ratio of the output 
     
     #geom_smooth(aes(x=rowCounts, y=rowSum), method = "loess", size = 1.5) +
     #geom_smooth(aes(x=rowCounts, y=rowSum), method="lm", level=0.95) +

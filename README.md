@@ -45,13 +45,22 @@ print(gg)
 #### TO-DO: annotate charts with key dates ( spray events, cover crop collapse, veraision, )
 
 ``` r
-#grid.arrange(ggO, ggC, ncol=1, nrow=2)
-#ggsave("./code/output/diversity2.png", plot=grid.arrange(ggO, ggC, ncol=1, nrow=2), width = 6, height = 4, units = "in")
+# (fig.keep='none' suppresses the plots temporarily)
 
-grid.arrange(gg.Species.joint, gg.Ind.joint, ncol=1, nrow=2)
+gg.Ind.joint <- divV2(bugs.df, species=FALSE, ignoreBees=FALSE)
+
+print(gg.Ind.joint)
 ```
 
-![](ampelos_files/figure-markdown_github/diversityArrange-1.png)
+![](ampelos_files/figure-markdown_github/diversity-1.png)
+
+``` r
+gg.Species.joint <- divV2(bugs.df, species=TRUE, ignoreBees=FALSE)
+
+print(gg.Species.joint)
+```
+
+![](ampelos_files/figure-markdown_github/diversity-2.png)
 
 ![transect layout](./images/transectLayout.jpg)
 
