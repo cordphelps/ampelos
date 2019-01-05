@@ -584,9 +584,9 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
                               lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                               lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
                               t1="oakMargin", t2="control",
-                              tr=trend,  st="Crab Spider", 
+                              tr=trend,  st="crab spider", 
                               spct=sp_percentOak, 
-                              subtitle="daytime collection", caption="oCaption")
+                              subtitle="afternoon collection", caption=" ")
     
     print(g1)
     
@@ -595,9 +595,9 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
     clusterGraph.list <- ggTrendClusters(df1=oakPMcluster.list, df2=controlPMcluster.list, 
                               lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                               lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
-                              st="Crab Spider", 
+                              st="crab spider", 
                               spct=sp_percentOak, 
-                              subtitle="daytime collection", caption="oCaption")
+                              subtitle="afternoon collection", caption=" ")
     
     print(clusterGraph.list[[1]])
     print(clusterGraph.list[[2]])
@@ -609,9 +609,9 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
                             lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                             lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
                             t1="oakMargin", t2="control",
-                            tr=trend,  st="Crab Spider", 
+                            tr=trend,  st="crab spider", 
                             spct=sp_percentOak, 
-                            subtitle="overnight collection", caption="oCaption")
+                            subtitle="morning collection", caption=" ")
     
     print(g2)
 
@@ -620,9 +620,9 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
     clusterGraph.list <- ggTrendClusters(df1=oakAMcluster.list, df2=controlAMcluster.list, 
                               lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                               lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
-                              st="Crab Spider", 
+                              st="crab spider", 
                               spct=sp_percentOak, 
-                              subtitle="overnight collection", caption="oCaption")
+                              subtitle="morning collection", caption=" ")
     
     print(clusterGraph.list[[1]])
     print(clusterGraph.list[[2]])
@@ -635,9 +635,9 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
                               lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                               lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
                               t1="oakMargin", t2="control",
-                              tr=trend,  st="Crab Spider", 
+                              tr=trend,  st="crab spider", 
                               spct=sp_percentOak, 
-                              subtitle="24 hour collection", caption="oCaption") 
+                              subtitle="24 hour collection", caption=" ") 
     
     print(g3)
 
@@ -646,9 +646,9 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
     clusterGraph.list <- ggTrendClusters(df1=oakAllDayCluster.list, df2=controlAllDayCluster.list, 
                               lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                               lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
-                              st="Crab Spider", 
+                              st="crab spider", 
                               spct=sp_percentOak, 
-                              subtitle="24 hour collection", caption="oCaption")
+                              subtitle="24 hour collection", caption=" ")
     
     print(clusterGraph.list[[1]])
     print(clusterGraph.list[[2]])
@@ -772,10 +772,10 @@ ggTrendOrCumulative <- function(df1, df2,
       
       ylim(0,150) +
     
-      labs(title= paste("Weekly Population Counts", sep=""), 
+      labs(title= paste(st, " weekly population counts", sep=""), 
          subtitle = subtitle,
          x="week", y= "daily total",
-         caption=paste(caption, "\n(NO CAPTION)", sep="")) 
+         caption=paste(' ', sep="")) 
     
   } else {
     
@@ -787,10 +787,10 @@ ggTrendOrCumulative <- function(df1, df2,
       
       ylim(0,450) +
       
-      labs(title= paste("Cumulative Population Counts", sep=""), 
+      labs(title= paste(st, " cumulative population counts", sep=""), 
            subtitle = subtitle,
            x="week", y= "cumulative count",
-           caption=paste(caption, "\n(NO CAPTION)", sep="")) 
+           caption=paste(' ', sep="")) 
   }
     
   gg <- gg + 
@@ -849,10 +849,10 @@ ggTrendClusters <- function(df1, df2,
       ylim(0,60) +
       expand_limits(y=c(0,60)) +
       
-      labs(title= paste("Weekly Population Counts by Cluster", sep=""), 
+      labs(title= paste("weekly population counts by cluster", sep=""), 
            subtitle = paste("oakMargin transect, ", subtitle, sep=""),
            x="week", y= "daily total",
-           caption=paste(caption, "\n(NO CAPTION)", sep="")) +
+           caption=paste(' ', sep="")) +
       
       expand_limits(x=c(23,34)) +
       scale_x_continuous(breaks = seq(24, 34, 2)) +
@@ -894,10 +894,10 @@ ggTrendClusters <- function(df1, df2,
       ylim(0,60) +
       expand_limits(y=c(0,60)) +
       
-      labs(title= paste("Weekly Population Counts by Cluster", sep=""), 
+      labs(title= paste("weekly population counts by cluster", sep=""), 
            subtitle = paste("control transect, ", subtitle, sep=""),
            x="week", y= "daily total",
-           caption=paste(caption, "\n(NO CAPTION)", sep="")) +
+           caption=paste(' ', sep="")) +
       
       expand_limits(x=c(23,34)) +
       scale_x_continuous(breaks = seq(24, 34, 2)) +
@@ -1199,14 +1199,14 @@ plotBugDistribution <- function (data, title, caption) {
                                            breaks= seq(0, 350, 50),
                                            name= "distance (m)")    ) +
     expand_limits(y=c(30,100)) + 
-    scale_x_continuous(breaks=seq(-12,200,16), 
+    scale_x_continuous(position='top', breaks=seq(-12,200,16), 
                        sec.axis = sec_axis(~.*.3048,
                                            breaks= seq(0, 80, 10),
                                            name= "trap distance from field margin (m)"))  +
     ggtitle(title) +
     labs( x = "trap distance from field margin (ft)", 
           y = "row",
-          caption = paste(caption, sep="")) +
+          caption = paste(' ', sep="")) +
 
     annotate("rect", xmin=4, xmax=210, ymin=42.5,ymax=54.5, alpha=0.2, fill="blue") +
     annotate("rect", xmin=-12, xmax=5, ymin=42.5,ymax=54.5, alpha=0.2, fill="red") +
@@ -1214,11 +1214,6 @@ plotBugDistribution <- function (data, title, caption) {
     annotate("rect", xmin=4, xmax=210, ymin=78,ymax=90, alpha=0.2, fill="blue") +
     annotate("rect", xmin=-12, xmax=5, ymin=78,ymax=90, alpha=0.2, fill="red") +
 
-    #geom_point(aes(x=-20, y=83), size=10, shape=21, alpha=0.1, colour="blue", fill="yellowgreen") +  # (tree)
-    #geom_point(aes(x=10, y=75), size=10, shape=21, alpha=0.1, colour="blue", fill="yellowgreen") +  # (tree)
-    #geom_point(aes(x=5, y=95), size=10, shape=21, alpha=0.1, colour="blue", fill="yellowgreen") +  # (tree)
-    #annotate("segment", x = 12, xend = 36, y = 98, yend = 100, colour = "black") +    
-    #annotate("text", x = 47, y = 100, label = "oak tree", colour="black") +
     annotate("text", x = 95, y = 76, label = "oak transect", colour="black") +
     annotate("text", x = 95, y = 40, label = "control transect", colour="black") + # fill="white", 
     theme_bw() +
@@ -1235,7 +1230,8 @@ plotBugDistribution <- function (data, title, caption) {
 
 plotRidgesV2 <- function(data, combined, bugs, speciesText, when, wk, caption) {
 
-
+  # https://en.wikipedia.org/wiki/Kernel_density_estimation
+  #
   # https://stackoverflow.com/questions/7310186/function-in-r-passing-a-dataframe-and-a-column-name
 
   if (FALSE) {   # available for debug
@@ -1303,7 +1299,7 @@ plotRidgesV2 <- function(data, combined, bugs, speciesText, when, wk, caption) {
   newBugs.df$geomFactors <- NULL                        
   newBugs.df$geomFactors <- as.factor(factor.list)
   
-  assign("newBugs.df", newBugs.df, envir=.GlobalEnv)
+  # assign("newBugs.df", newBugs.df, envir=.GlobalEnv)
   
   #Density plots can be thought of as plots of smoothed histograms.
   #The smoothness is controlled by a bandwidth parameter that is analogous 
@@ -1327,22 +1323,21 @@ plotRidgesV2 <- function(data, combined, bugs, speciesText, when, wk, caption) {
     
     xlim(1,10) +
     # http://ggplot2.tidyverse.org/reference/sec_axis.html
-    scale_x_continuous(breaks=seq(4,200,16), 
-                       sec.axis = sec_axis(~.*.3048,
-                                           breaks= seq(0, 80, 10),
-                                           name= "trap distance from row start (m)"))  +
-    labs(title= paste(speciesText, " Probability Density\n", 
+    scale_x_continuous(position='top',
+      breaks=seq(4,200,16), 
+      sec.axis = sec_axis(~.*.3048,
+      breaks= seq(0, 70, 10),
+      name= "trap distance from row start (m)"))  +
+    labs(title= paste(speciesText, " probability density\n", 
                       "transect: ", where, sep=""), 
-         subtitle = paste("week: ", cumulative, ", collection time: ", when, 
+         subtitle = paste("collection time: ", when, 
                           "\ntotal ", speciesText,  " observations: ", spider_rows,
                           "\ntraps with ", speciesText, "s: ", percentOcurrence, " %", 
                           sep=""),
          x="trap distance from row start (ft)",
          y= paste(speciesText, "\ncounts per trap", sep=""),
          #caption="10 June 2018")
-         caption=paste(caption, 
-                       "\nhttps://en.wikipedia.org/wiki/Kernel_density_estimation", 
-                       sep="")) +
+         caption=paste(' ', sep="")) +
     theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
     theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
     theme_bw()
@@ -1361,18 +1356,18 @@ plotRidgesV2 <- function(data, combined, bugs, speciesText, when, wk, caption) {
 
     # http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels#change-tick-mark-labels
     #scale_y_discrete(labels=c("0" = "none", "1" = "one or more")) +
-    scale_x_continuous(breaks=seq(4,200,16), 
-                       sec.axis = sec_axis(~.*.3048,
-                                           breaks= seq(0, 80, 10),
-                                           name= "trap distance from row start (m)"))  +
-    labs(title= paste(speciesText, " Probability Density",  sep=""), 
-         subtitle = paste("week: ", cumulative, ", collection time: ", when, sep=""),
+    scale_x_continuous(
+      position='top',
+      breaks=seq(4,200,16), 
+      sec.axis = sec_axis(~.*.3048,
+      breaks= seq(0, 70, 10),
+      name= "trap distance from row start (m)"))  +
+    labs(title= paste(speciesText, " probability density",  sep=""), 
+         subtitle = paste("collection time: ", when, sep=""),
          x="trap distance from row start (ft)",
          y= paste("counts per trap > 0", sep=""),
          #caption="10 June 2018")
-         caption=paste(caption, 
-                       "\nhttps://en.wikipedia.org/wiki/Kernel_density_estimation", 
-                       sep="")) +
+         caption=paste(' ', sep="")) +
     theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
     theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
     theme_bw()
@@ -1615,7 +1610,7 @@ plotBugPercentages <- function(list, spidersOnly) {
         scale_x_continuous(breaks=seq(22,40,2)) + 
     
     
-        labs(title=paste("insect abundance by family", sep=""),
+        labs(title=paste("insect abundance by taxonometric Order", sep=""),
           subtitle=paste("percent of total population by week", sep=""), 
           y="percent", 
           x="week", 

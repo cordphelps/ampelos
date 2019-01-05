@@ -45,7 +45,9 @@ evaluateDailySpiderCounts <- function(df) {
   
   weeks.vector <- getWeeks(bugs.df)
   transectList <- c('oakMargin', 'control')
+
   timeList <- c('am', 'pm')
+
   clusterFormulaList <- c(formula.cluster1, formula.cluster2, formula.cluster3)
   
   total.df <- NULL
@@ -122,15 +124,95 @@ evaluateDailySpiderCounts <- function(df) {
 
   returnList[[4]] <- total.df
   
-  # returnList <- generateLikelihoodV2(df=total.df, list=returnList, showPlot=FALSE)
 
   
   return(returnList)
   
 }
 
+likelihoodPlusModelDiags <- function(rl=returnList) {
 
-plotLikelihood <- function(df, sub) {
+  graphList <- list()
+
+
+  if (TRUE) {
+    #source('./code/bayes.R')
+
+    # organize data into
+    #       "week", "transect", "time", "cluster", "totalSpiders"
+    # ( already done by evaluateDailySpiderCounts() )
+    #
+    # plot the weekly raw data : plotWeekly()
+    # create txt files saving the status output of 9 brm() cycles
+
+    rl <- generateLikelihoodV2(df=rl[[4]], list=rl, daytime='all-day')
+  
+    # reserved positions:
+    # returnList[[1]]) # scatter plot by cluster with seasonal timeframes
+    # returnList[[2]]) # scatter plot by am/pm
+    # returnList[[3]]) # scatter plot by transect
+    #
+    # returnList[[4]] is the dataframe used for the graphics (total.df)
+    # from bayes.R evaluateDailySpiderCounts()
+    # it is raw, not averaged, bugs.df data transformed to : 
+    #          ("week", "transect", "time", "cluster", "totalSpiders")
+    #
+    # returnList[[5]] <- likelihood.df
+    # returnList[[6]]                   # likelihood by cluster with seasonal timeframes
+    # returnList[[7]] <- modelInput     # that is a list of the 9 data sources
+    # returnList[[8]] <- modelOutput    # that is a list of the 9 models
+    # returnList[[9]] <- label.list     # 
+  
+    rl[[6]] <- plotLikelihood(df=rl[[5]], sub=paste("daytime: ", 'am and pm', sep=""), cap="model 794:264:159 spider population seasonal trend")
+    
+    graphList[[1]] <- rl[[6]] # likelihood by cluster with seasonal timeframes
+  
+    # 
+  
+    graphList[[2]] <- weightedModelGraph(df=rl[[7]][[1]], model=rl[[8]][[1]], label=rl[[9]][[1]])
+
+    # graphList[[3]] <- weightedModelGraph(df=rl[[7]][[4]], model=rl[[8]][[4]], label=rl[[9]][[4]])
+    # graphList[[4]] <- weightedModelGraph(df=rl[[7]][[7]], model=rl[[8]][[7]], label=rl[[9]][[7]])
+    # glitch at the smaller end of the range: Error in sample.int(x, size, replace, prob) : 
+    #                                         cannot take a sample larger than the population when 'replace = FALSE' 
+    #
+    # make a local copy for modification : > sample.int <- base:::sample.int
+
+  
+    if (FALSE) {
+  
+    temp.df <- rl[[4]]
+    rl[[4]] <- rl[[4]] %>% dplyr::filter(time == 'pm')
+    rl <- generateLikelihoodV2(df=rl[[4]], list=rl, daytime='pm')
+    rl[[6]] <- plotLikelihood(df=rl[[5]], sub=paste("daytime: ", 'pm', sep=""), cap="model 794:264:159 spider population seasonal trend")
+    print(rl[[6]]) # likelihood by cluster with seasonal timeframes
+  
+  
+    rl[[4]] <- temp.df %>% dplyr::filter(time == 'am')
+    rl <- generateLikelihoodV2(df=rl[[4]], list=rl, daytime='am')
+    rl[[6]] <- plotLikelihood(df=rl[[5]], sub=paste("daytime: ", 'am', sep=""), cap="model 794:264:159 spider population seasonal trend")
+    print(rl[[6]]) # likelihood by cluster with seasonal timeframes
+  
+    }
+    # kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
+
+    # pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
+     #                     p.adjust.method = "BH")
+
+  
+  }  # end if TRUE
+
+  detach("package:brms", unload=TRUE) 
+  detach("package:rstan", unload=TRUE) 
+
+
+  return(graphList)
+
+
+}
+
+
+plotLikelihood <- function(df, sub, cap) {
   
   # input df :
   # cluster{one, two, three}, seasonalTimeframe{one, two, three}, plausibility(decimal)
@@ -153,11 +235,11 @@ plotLikelihood <- function(df, sub) {
     ylim(c(0, 1)) + 
     expand_limits(y=c(0,1)) + 
     #scale_x_continuous(breaks=seq(22,40,2)) +
-    labs(title=paste("'plausibility' of an oakMargin effect\non the spider population", sep=""),
+    labs(title=paste("'plausibility' of an oakMargin effect\non the crab spider population", sep=""),
          subtitle=paste(sub, sep=""), 
          y="plausibility", 
          x="seasonal timeframe", 
-         caption = paste("", sep="") ) +
+         caption = paste(cap, sep="") ) +
     
     scale_x_discrete(labels=c("one" = "weeks\n23-25", "two" = "weeks\n26-31",
                               "three" = "weeks\n32-34")) +
@@ -218,206 +300,231 @@ plotLikelihood <- function(df, sub) {
 }
 
 
-generateLikelihoodV2 <- function(df, list, showPlot) {
-  
-  if("rethinking" %in% (.packages())){
-    detach("package:rethinking", unload=TRUE) 
-  }
-  
-  # https://bookdown.org/connect/#/apps/1850/access
-  library(brms)
-  library(rstan)
-  #For execution on a local, multicore CPU with excess RAM we recommend calling
-  options(mc.cores = parallel::detectCores())
-  #To avoid recompilation of unchanged Stan programs, we recommend calling
-  rstan_options(auto_write = TRUE)
-  
-  # build and return a df of likelihood (the probability that the
-  # spider population is influenced by the oakMargin) by cluster by week
-  
-  ## total.df ( = df)
-  ##
-  ## multiple records per week with columns
-  ## week, transect, time, cluster, totalSpiders
-  ##
-  
-  
-  # estimate different mean populations across 3 groups of weeks reflecting the 
-  # seasonal population decline
-  # 
-  # week 23, 24, 25           : mean 75, sd 15
-  # week 26, 27, 28, 29, 30   : mean 50, sd 8
-  # week 31, 32, 33, 34       : mean 15, sd 2
-  
-  # generate nrow(ave.df) random population numbers with a normal distribution
-  # t.df$population <- rnorm(nrow(t.df), mean=50, sd=5)
-  
-  set.seed(10.2) # make the results reproducible
-  
-  # version 1 : df$population <- ifelse( (df$week>22 & df$week<26), rnorm(nrow(df), mean=75, sd=15),
-  # version 1 :                          ifelse( (df$week>25 & df$week<31), rnorm(nrow(df), mean=25, sd=8),
-  # version 1 :                                  rnorm(nrow(df), mean=15, sd=2)) )
-  
-  for (i in 1:9) {
+generateLikelihoodV2 <- function(df, list, daytime) {
 
-      fileName <- paste("./code/output/clBRMsummaryList", i, ".txt", sep="")
-
-      if (file.exists(fileName)) file.remove(fileName)
-
+  
+    if("rethinking" %in% (.packages())){
+     detach("package:rethinking", unload=TRUE) 
     }
+  
+    # https://bookdown.org/connect/#/apps/1850/access
+    library(brms)
+    library(rstan)
+    #For execution on a local, multicore CPU with excess RAM we recommend calling
+    options(mc.cores = parallel::detectCores())
+    #To avoid recompilation of unchanged Stan programs, we recommend calling
+    rstan_options(auto_write = TRUE)
+    
+      ##
+    ##
+    ## build and return a df of likelihood (the probability that the
+    ## spider population is influenced by the oakMargin) by cluster by week
+    ## UPDATE ELEMENT 5 of the inbound list and RETURN the entire list
+    ##
+    ##
+
+  if (TRUE) {   # go through the tedious process of creating the brm models
+                 # otherwise, get it from disk 
 
   
-  cl.st.list <- list()  # for each cluster  
-  # build list of dataframes represting the seasonal population 
-  # plus a variable log-population
-  #
-  log.pop.list <- list()
-  #
-  #        rnorm() mean      cluster spider population         log population
-  #   
-  #             75                    794                            2.9       
-  #             25                    264                            2.4
-  #             15                    159                            2.2
-  #
-  # this is a list of 9
-  # 34 observations of 8 variables
-  # week, transect, time, cluster, totalSpiders, population, log_pop, contact_high
-  #
-  cl.st.list[[1]] <- df %>% dplyr::filter(week < 26 & cluster == 'one')
-  cl.st.list[[1]]$population <- rnorm(nrow(cl.st.list[[1]]), mean=75, sd=15)
-  cl.st.list[[1]]$population <- as.integer(cl.st.list[[1]]$population)
-  cl.st.list[[1]]$log_pop <- log(cl.st.list[[1]]$population)  # R code 10.40
-  cl.st.list[[1]]$contact_high <- ifelse( cl.st.list[[1]]$transect=="oakMargin" , 1 , 0 )
-  log.pop.list[[1]] <- 2.9
+    ## total.df ( = df) , generated by evaluateDailySpiderCounts()
+    ##                    'am' plus 'pm' data per 'timeList <- c('am', 'pm')'
+    ##
+    ## multiple records per week with columns
+    ## week, transect, time, cluster, totalSpiders
+    ##
   
-  cl.st.list[[2]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'one')
-  cl.st.list[[2]]$population <-rnorm(nrow(cl.st.list[[2]]), mean=25, sd=8)
-  cl.st.list[[2]]$population <- as.integer(cl.st.list[[2]]$population)
-  cl.st.list[[2]]$log_pop <- log(cl.st.list[[2]]$population)  # R code 10.40
-  cl.st.list[[2]]$contact_high <- ifelse( cl.st.list[[2]]$transect=="oakMargin" , 1 , 0 )
-  log.pop.list[[2]] <- 2.4
   
-  cl.st.list[[3]] <- df %>% dplyr::filter(week > 31 & cluster == 'one')
-  cl.st.list[[3]]$population <-rnorm(nrow(cl.st.list[[3]]), mean=15, sd=2)
-  cl.st.list[[3]]$population <- as.integer(cl.st.list[[3]]$population)
-  cl.st.list[[3]]$log_pop <- log(cl.st.list[[3]]$population)  # R code 10.40
-  cl.st.list[[3]]$contact_high <- ifelse( cl.st.list[[3]]$transect=="oakMargin" , 1 , 0 )
-  log.pop.list[[3]] <- 2.2
+    # estimate different mean populations across 3 groups of weeks reflecting the 
+    # seasonal population decline
+    # 
+    # week 23, 24, 25           : mean 75, sd 15
+    # week 26, 27, 28, 29, 30   : mean 50, sd 8
+    # week 31, 32, 33, 34       : mean 15, sd 2
+    
+    # generate nrow(ave.df) random population numbers with a normal distribution
+    # t.df$population <- rnorm(nrow(t.df), mean=50, sd=5)
+    
+    set.seed(10.2) # make the results reproducible
+    
+    # version 1 : df$population <- ifelse( (df$week>22 & df$week<26), rnorm(nrow(df), mean=75, sd=15),
+    # version 1 :                          ifelse( (df$week>25 & df$week<31), rnorm(nrow(df), mean=25, sd=8),
+    # version 1 :                                  rnorm(nrow(df), mean=15, sd=2)) )
+    
+    for (i in 1:9) {
+
+        fileName <- paste("./code/output/clBRMsummary-", daytime, "-", i, ".txt", sep="")
+
+        if (file.exists(fileName)) file.remove(fileName)
+
+      }
+
   
-  cl.st.list[[4]] <- df %>% dplyr::filter(week < 26 & cluster == 'two')
-  cl.st.list[[4]]$population <- rnorm(nrow(cl.st.list[[4]]), mean=75, sd=15)
-  cl.st.list[[4]]$population <- as.integer(cl.st.list[[4]]$population)
-  cl.st.list[[4]]$log_pop <- log(cl.st.list[[4]]$population)  # R code 10.40
-  cl.st.list[[4]]$contact_high <- ifelse( cl.st.list[[4]]$transect=="oakMargin" , 1 , 0 )
-  log.pop.list[[4]] <- 2.9
+    cl.st.list <- list()  # for each cluster  
+    # build list of dataframes represting the seasonal population 
+    # plus a variable log-population
+    #
+    label.list <- list()  # remember which cluster and seasonal timeframe
+    #
+    log.pop.list <- list()
+    #
+    #        rnorm() mean      cluster spider population         log population
+    #   
+    #             75                    794                            2.9       
+    #             25                    264                            2.4
+    #             15                    159                            2.2
+    #
+    # this is a list of 9
+    # 34 observations of 8 variables
+    # week, transect, time, cluster, totalSpiders, population, log_pop, contact_high
+    #
+    cl.st.list[[1]] <- df %>% dplyr::filter(week < 26 & cluster == 'one')
+    cl.st.list[[1]]$population <- rnorm(nrow(cl.st.list[[1]]), mean=75, sd=15)
+    cl.st.list[[1]]$population <- as.integer(cl.st.list[[1]]$population)
+    cl.st.list[[1]]$log_pop <- log(cl.st.list[[1]]$population)  # R code 10.40
+    cl.st.list[[1]]$contact_high <- ifelse( cl.st.list[[1]]$transect=="oakMargin" , 1 , 0 )
+    log.pop.list[[1]] <- 2.9
+    label.list[[1]] <- "cluster: one, seasonal timeframe: one"
   
-  cl.st.list[[5]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'two')
-  cl.st.list[[5]]$population <-rnorm(nrow(cl.st.list[[5]]), mean=25, sd=8)
-  cl.st.list[[5]]$population <- as.integer(cl.st.list[[5]]$population)
-  cl.st.list[[5]]$log_pop <- log(cl.st.list[[5]]$population)  # R code 10.40
-  cl.st.list[[5]]$contact_high <- ifelse( cl.st.list[[5]]$transect=="oakMargin" , 1 , 0 )
-  log.pop.list[[5]] <- 2.4
+    cl.st.list[[2]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'one')
+    cl.st.list[[2]]$population <-rnorm(nrow(cl.st.list[[2]]), mean=25, sd=8)
+    cl.st.list[[2]]$population <- as.integer(cl.st.list[[2]]$population)
+    cl.st.list[[2]]$log_pop <- log(cl.st.list[[2]]$population)  # R code 10.40
+    cl.st.list[[2]]$contact_high <- ifelse( cl.st.list[[2]]$transect=="oakMargin" , 1 , 0 )
+    log.pop.list[[2]] <- 2.4
+    label.list[[2]] <- "cluster: one, seasonal timeframe: two"
+    
+    cl.st.list[[3]] <- df %>% dplyr::filter(week > 31 & cluster == 'one')
+    cl.st.list[[3]]$population <-rnorm(nrow(cl.st.list[[3]]), mean=15, sd=2)
+    cl.st.list[[3]]$population <- as.integer(cl.st.list[[3]]$population)
+    cl.st.list[[3]]$log_pop <- log(cl.st.list[[3]]$population)  # R code 10.40
+    cl.st.list[[3]]$contact_high <- ifelse( cl.st.list[[3]]$transect=="oakMargin" , 1 , 0 )
+    log.pop.list[[3]] <- 2.2
+    label.list[[3]] <- "cluster: one, seasonal timeframe: three"
+    
+    cl.st.list[[4]] <- df %>% dplyr::filter(week < 26 & cluster == 'two')
+    cl.st.list[[4]]$population <- rnorm(nrow(cl.st.list[[4]]), mean=75, sd=15)
+    cl.st.list[[4]]$population <- as.integer(cl.st.list[[4]]$population)
+    cl.st.list[[4]]$log_pop <- log(cl.st.list[[4]]$population)  # R code 10.40
+    cl.st.list[[4]]$contact_high <- ifelse( cl.st.list[[4]]$transect=="oakMargin" , 1 , 0 )
+    log.pop.list[[4]] <- 2.9
+    label.list[[4]] <- "cluster: two, seasonal timeframe: one"
+    
+    cl.st.list[[5]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'two')
+    cl.st.list[[5]]$population <-rnorm(nrow(cl.st.list[[5]]), mean=25, sd=8)
+    cl.st.list[[5]]$population <- as.integer(cl.st.list[[5]]$population)
+    cl.st.list[[5]]$log_pop <- log(cl.st.list[[5]]$population)  # R code 10.40
+    cl.st.list[[5]]$contact_high <- ifelse( cl.st.list[[5]]$transect=="oakMargin" , 1 , 0 )
+    log.pop.list[[5]] <- 2.4
+    label.list[[5]] <- "cluster: two, seasonal timeframe: two"
   
-  cl.st.list[[6]] <- df %>% dplyr::filter(week > 31 & cluster == 'two')
-  cl.st.list[[6]]$population <-rnorm(nrow(cl.st.list[[6]]), mean=15, sd=2)
-  cl.st.list[[6]]$population <- as.integer(cl.st.list[[6]]$population)
-  cl.st.list[[6]]$log_pop <- log(cl.st.list[[6]]$population)  # R code 10.40
-  cl.st.list[[6]]$contact_high <- ifelse( cl.st.list[[6]]$transect=="oakMargin" , 1 , 0 )
-  log.pop.list[[6]] <- 2.2
-  
-  cl.st.list[[7]] <- df %>% dplyr::filter(week < 26 & cluster == 'three')
-  cl.st.list[[7]]$population <- rnorm(nrow(cl.st.list[[7]]), mean=75, sd=15)
-  cl.st.list[[7]]$population <- as.integer(cl.st.list[[7]]$population)
-  cl.st.list[[7]]$log_pop <- log(cl.st.list[[7]]$population)  # R code 10.40
-  cl.st.list[[7]]$contact_high <- ifelse( cl.st.list[[7]]$transect=="oakMargin" , 1 , 0 )
-  log.pop.list[[7]] <- 2.9
-  
-  cl.st.list[[8]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'three')
-  cl.st.list[[8]]$population <-rnorm(nrow(cl.st.list[[8]]), mean=25, sd=8)
-  cl.st.list[[8]]$population <- as.integer(cl.st.list[[8]]$population)
-  cl.st.list[[8]]$log_pop <- log(cl.st.list[[8]]$population)  # R code 10.40
-  cl.st.list[[8]]$contact_high <- ifelse( cl.st.list[[8]]$transect=="oakMargin" , 1 , 0 )
-  log.pop.list[[8]] <- 2.4
-  
-  cl.st.list[[9]] <- df %>% dplyr::filter(week > 31 & cluster == 'three')
-  cl.st.list[[9]]$population <-rnorm(nrow(cl.st.list[[9]]), mean=15, sd=2)
-  cl.st.list[[9]]$population <- as.integer(cl.st.list[[9]]$population)
-  cl.st.list[[9]]$log_pop <- log(cl.st.list[[9]]$population)  # R code 10.40
-  cl.st.list[[9]]$contact_high <- ifelse( cl.st.list[[9]]$transect=="oakMargin" , 1 , 0 )
-  log.pop.list[[9]] <- 2.2
+    cl.st.list[[6]] <- df %>% dplyr::filter(week > 31 & cluster == 'two')
+    cl.st.list[[6]]$population <-rnorm(nrow(cl.st.list[[6]]), mean=15, sd=2)
+    cl.st.list[[6]]$population <- as.integer(cl.st.list[[6]]$population)
+    cl.st.list[[6]]$log_pop <- log(cl.st.list[[6]]$population)  # R code 10.40
+    cl.st.list[[6]]$contact_high <- ifelse( cl.st.list[[6]]$transect=="oakMargin" , 1 , 0 )
+    log.pop.list[[6]] <- 2.2
+    label.list[[6]] <- "cluster: two, seasonal timeframe: three"
+    
+    cl.st.list[[7]] <- df %>% dplyr::filter(week < 26 & cluster == 'three')
+    cl.st.list[[7]]$population <- rnorm(nrow(cl.st.list[[7]]), mean=75, sd=15)
+    cl.st.list[[7]]$population <- as.integer(cl.st.list[[7]]$population)
+    cl.st.list[[7]]$log_pop <- log(cl.st.list[[7]]$population)  # R code 10.40
+    cl.st.list[[7]]$contact_high <- ifelse( cl.st.list[[7]]$transect=="oakMargin" , 1 , 0 )
+    log.pop.list[[7]] <- 2.9
+    label.list[[7]] <- "cluster: three, seasonal timeframe: one"
+    
+    cl.st.list[[8]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'three')
+    cl.st.list[[8]]$population <-rnorm(nrow(cl.st.list[[8]]), mean=25, sd=8)
+    cl.st.list[[8]]$population <- as.integer(cl.st.list[[8]]$population)
+    cl.st.list[[8]]$log_pop <- log(cl.st.list[[8]]$population)  # R code 10.40
+    cl.st.list[[8]]$contact_high <- ifelse( cl.st.list[[8]]$transect=="oakMargin" , 1 , 0 )
+    log.pop.list[[8]] <- 2.4
+    label.list[[8]] <- "cluster: three, seasonal timeframe: two"
+    
+    cl.st.list[[9]] <- df %>% dplyr::filter(week > 31 & cluster == 'three')
+    cl.st.list[[9]]$population <-rnorm(nrow(cl.st.list[[9]]), mean=15, sd=2)
+    cl.st.list[[9]]$population <- as.integer(cl.st.list[[9]]$population)
+    cl.st.list[[9]]$log_pop <- log(cl.st.list[[9]]$population)  # R code 10.40
+    cl.st.list[[9]]$contact_high <- ifelse( cl.st.list[[9]]$transect=="oakMargin" , 1 , 0 )
+    log.pop.list[[9]] <- 2.2
+    label.list[[9]] <- "cluster: three, seasonal timeframe: three"
   
   # plotWeekly(total.df)
   
-  #########
-  ## the model
-  #########
-  
-  # the number of trapped spiders increases with log(population)
-  
-  # the number of trapped spiders increases with natural habitat support
-  
-  # the impact of population on trapped spiders decreases with natural habital support
-  
-  
-  
-  likelihood.df <- NULL
-  modelOutput <- list()
-  postOutput <- list()
-  
-  for (i in 1:length(cl.st.list)) {  # build model for each seasonal timeframe
+    #########
+    ## the model
+    #########
+    
+    # the number of trapped spiders increases with log(population)
+    
+    # the number of trapped spiders increases with natural habitat support
+    
+    # the impact of population on trapped spiders increases with natural habital support
     
     
-    if (TRUE) {
-      
-      b10.10 <-
-        brm(data = cl.st.list[[i]], family = poisson,
-            totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop,  # yes, + contact_high:log_pop
-            prior = c(prior(normal(0, 100), class = Intercept),
-                      prior(normal(0, 1), class = b)),
-           iter = 3000, warmup = 1000, chains = 4, cores = 4)
-           # iter = 3000, warmup = 1000, chains = 4, cores = 1)
-      
-      #print(b10.10)
-      #assign("b10.10", b10.10, envir=.GlobalEnv)
-      
-
-      # summary(b10.10)  # output to .txt file per sink() and sinkAll()
-
-      modelOutput[[i]] <- b10.10
     
+    likelihood.df <- NULL
+    modelInput <-list()
+    modelOutput <- list()
+    postOutput <- list()
+    
+    for (i in 1:length(cl.st.list)) {  # build model for each seasonal timeframe
+    
+    
+      if (TRUE) {
+        
+        b10.10 <-
+          brm(data = cl.st.list[[i]], family = poisson,
+              totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop,  # yes, + contact_high:log_pop
+              prior = c(prior(normal(0, 100), class = Intercept),
+                        prior(normal(0, 1), class = b)),
+             iter = 3000, warmup = 2000, chains = 4, cores = 4)
+             # warmup increased to 2000 *assuming* "convergence issues" per setion 4.3 of
+              # https://bookdown.org/ajkurz/Statistical_Rethinking_recoded/linear-models.html
+        
+        #print(b10.10)
+        #assign("b10.10", b10.10, envir=.GlobalEnv)
+        
 
-      # consider 2 clusters, each with a spider population of log(2.9)=794, calculate lambda, the expected 
-      # trapped spiders, for each. 
-      #
-      # 794 spiders at 16 plants = 50 spiders per plant.
-      #
-      # draw samples from the posterior, plug them into the model, then invert the link function to
-      # get back to the scale of the outcome variable. 
-      #
-      # how likely does the oakMargin 
-      # McElreath code 10.43
+        # summary(b10.10)  # output to .txt file per sink() and sinkAll()
 
-      post <-
-        posterior_samples(modelOutput[[i]])
+        modelInput[[i]] <- cl.st.list[[i]]
+        modelOutput[[i]] <- b10.10
       
-      post <-
-        post %>%   
-        mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log.pop.list[[i]]),
-               lambda_low  = exp(b_Intercept + b_log_pop * log.pop.list[[i]])) %>% 
-        mutate(diff        = lambda_high - lambda_low) 
-      
-      like.df <- post %>%
-        summarise(sum = sum(diff > 0)/length(diff))
-      
-    }
 
-    # model diagnostics
-    bayesAnalysis(list=modelOutput)
+        # consider 2 clusters, each with a spider population of log(2.9)=794, calculate lambda, the expected 
+        # trapped spiders, for each. 
+        #
+        # 794 spiders at 16 plants = 50 spiders per plant.
+        #
+        # draw samples from the posterior, plug them into the model, then invert the link function to
+        # get back to the scale of the outcome variable. 
+        #
+        # how likely does the oakMargin 
+        # McElreath code 10.43
+
+        post <-
+          posterior_samples(modelOutput[[i]], replace=T)  # not sure if replace is functional....
+        
+        post <-
+          post %>%   
+          mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log.pop.list[[i]]),
+                 lambda_low  = exp(b_Intercept + b_log_pop * log.pop.list[[i]])) %>% 
+          mutate(diff        = lambda_high - lambda_low) 
+        
+        like.df <- post %>%
+          summarise(sum = sum(diff > 0)/length(diff))
+        
+      }  # end of TRUE/FALSE
+
+      # model diagnostics
+      bayesAnalysis(list=modelOutput)
 
 
-      for (i in 1:length(modelOutput)) {
+      #for (i in 1:length(modelOutput)) {
 
-        fileName <- paste("./code/output/clBRMsummaryList", i, ".txt", sep="")
+        fileName <- paste("./code/output/clBRMsummary-", daytime, "-", i, ".txt", sep="")
 
         # if (file.exists(fileName)) file.remove(fileName)   file removed at top of function
 
@@ -426,12 +533,13 @@ generateLikelihoodV2 <- function(df, list, showPlot) {
         sink(file=fileName, append = TRUE, type = "output")
         print(writeLines(paste("\ngenerateLikelihoodV2()               ", Sys.time(), "\n\n", sep="")))
         print(writeLines(paste("i = ", i, "\n\n", sep="")))
-      
-        print(summary(modelOutput[[i]]))
+        
+        print(summary(modelOutput[[i]], prob=.89))
 
         sink(NULL)
-      }
-      sinkAll()  # trying to deal with those darn ghost files....
+
+      #}
+      
 
 
     
@@ -465,14 +573,99 @@ generateLikelihoodV2 <- function(df, list, showPlot) {
         likelihood.df <- rbind(likelihood.df, temp2.df)
       }
     
+    }  # end of for(){}
+    
+    list[[5]] <- likelihood.df
+
+    list[[7]] <- modelInput  # that is a list of the 9 data sources
+    list[[8]] <- modelOutput  # that is a list of the 9 models
+    list[[9]] <- label.list  # 
+
+    saveRDS(list, paste("./code/output/list-", daytime, ".rds", sep=""))
+
+  } else {   # read the structure from disk
+
+    list <- readRDS(paste("./code/output/list-", daytime, ".rds", sep=""))
+
   }
+
   
-  list[[5]] <- likelihood.df
+      # reserved positions:
+    # returnList[[1]]) # scatter plot by cluster with seasonal timeframes
+    # returnList[[2]]) # scatter plot by am/pm
+    # returnList[[3]]) # scatter plot by transect
+    #
+    # returnList[[4]] is the dataframe used for the graphics (total.df)
+    # from bayes.R evaluateDailySpiderCounts()
+    # it is raw, not averaged, bugs.df data transformed to : 
+    #          ("week", "transect", "time", "cluster", "totalSpiders")
+    #
+    # returnList[[5]] <- likelihood.df
+    # returnList[[6]]                   # likelihood by cluster with seasonal timeframes
+    # returnList[[7]] <- modelInput     # that is a list of the 9 data sources
+    # returnList[[8]] <- modelOutput    # that is a list of the 9 models
+    # returnList[[9]] <- label.list     # 
   
-  # list2env(list, envir = .GlobalEnv)
+  gg <- plotLikelihood(df=list[[5]], sub=paste("daytime: ", daytime, sep=""), cap="model 794:264:159 spider population seasonal trend")
+
+  # cleanup
+  rm(list)
+  detach("package:brms", unload=TRUE) 
+  detach("package:rstan", unload=TRUE) 
+  #
   
-  return(list)
+  return(gg)
   
+}
+
+weightedModelGraph <- function(df, model, label) {
+
+  # https://bookdown.org/connect/#/apps/1850/access  end of 10.2.1
+
+  # no interaction
+  b10.11 <- stats::update(model, formula = totalSpiders ~ 1 + log_pop + contact_high)
+
+  # no contact rate
+  b10.12 <- stats::update(model, formula = totalSpiders ~ 1 + log_pop)
+
+  # no log-population
+  b10.13 <- stats::update(model, formula = totalSpiders ~ 1 + contact_high)
+
+  # intercept only
+  b10.14 <- stats::update(model, formula = totalSpiders ~ 1)
+
+
+  nd <- tibble(log_pop  = seq(from = 2.0, to = 3.0, length.out = 50) %>% 
+           rep(., times = 2), contact_high = rep(0:1, each = 50))
+
+
+  ppa_10.9 <- brms::pp_average(model, b10.11, b10.12, weights = "loo", method  = "fitted", newdata = nd) %>%
+    as_tibble() %>%
+    bind_cols(nd)
+
+  ggWeighted <- ggplot(ppa_10.9, aes(x = log_pop, group = contact_high)) +
+
+    geom_ribbon(aes(ymin = Q2.5, ymax = Q97.5, fill = contact_high), alpha = 1/4) +
+
+    geom_line(aes(y = Estimate, color = contact_high)) +
+
+    geom_text(data = df,  # that's the original 'island' dataset (top of section)
+             aes(y = totalSpiders, label = totalSpiders, color = contact_high), size = 3.5) +
+
+    coord_cartesian(xlim = c(1.75, 3.25), ylim = c(0, 40)) +
+
+    labs(x = "log population",
+       y = "total crab spiders",
+       title = label,
+       subtitle = label,
+       caption = "Blue is the high contact rate; black is the low.") +
+
+    theme(legend.position = "none", panel.border = element_blank()) +
+
+    theme_bw()
+
+  return(ggWeighted)
+
 }
 
 bayesAnalysis <- function(list) {
@@ -509,6 +702,8 @@ if (FALSE) {
     }
   }
 }
+
+
 
 generateLikelihood <- function(df, list, showPlot) {
   
@@ -860,3 +1055,6 @@ sinkAll <- function() {
     i <- i - 1
   }
 }
+
+
+
