@@ -211,9 +211,10 @@ rl <- returnList
     # create txt files saving the status output of 9 brm() cycles
 
     #
-    #         existing models will be read from disc......
+    #         existing models will be read from disc
+    #         with FALSE logic in generateLikelihoodV2() ......
     #
-    gg.likelihood <- generateLikelihoodV2(df=rl[[4]], list=rl, daytime='all-day')
+    gg.likelihood <- generateLikelihoodV2(df=rl[[4]], list=rl, daytime='24h')
     print(gg.likelihood)
   
     if (TRUE) {
@@ -246,6 +247,15 @@ rl <- returnList
 ### model diagnostics?
 
 ```{r clusterDiags, echo=TRUE, include=TRUE, message=T, warning=T}
+
+
+gg.list <- modelDiags(daytime='24h') # read the 9 models from disc and run diags
+
+for (i in 1:length(gg.list)) {
+  print(gg.list[[i]])
+}
+
+
 
 if (FALSE) {
   

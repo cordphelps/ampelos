@@ -16,6 +16,9 @@ source("./code/clusterSimilarity.R")
 source('./code/bayes.R')
 source('./code/ranking.R')
 
+# library(ampelos)   <-- failed replacement for sample.int, 
+# see bayes.R likelihoodPlusModelDiags()
+
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 ```
@@ -93,7 +96,7 @@ gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
 ``` r
 new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
 
-v2.1 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="pm", wk=1, caption=Sys.Date())
+v2.1 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="crab spider", when="pm", wk=1, caption=Sys.Date())
 
 print(v2.1)
 ```
@@ -101,7 +104,7 @@ print(v2.1)
 ![](ampelos_files/figure-markdown_github/ridges-1.png)
 
 ``` r
-v2.2 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="Crab Spider", when="am", wk=1, caption=Sys.Date())
+v2.2 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="crab spider", when="am", wk=1, caption=Sys.Date())
 
 print(v2.2)
 ```
@@ -179,7 +182,8 @@ if (TRUE) {
   print(returnList[[1]]) # scatter plot by cluster with seasonal timeframes
   print(returnList[[2]]) # scatter plot by am/pm
   print(returnList[[3]]) # scatter plot by transect
-  # returnList[[4]] is the data 'dataframe' used for the graphics
+  # returnList[[4]] is the data 'dataframe' used for the graphics (total.df)
+  # from bayes.R evaluateDailySpiderCounts()
  
   
 }
@@ -190,32 +194,318 @@ if (TRUE) {
 ### How plausible is it that an oakMargin transect row will have more spiders than a control transect row?
 
 ``` r
-if (TRUE) {
-  #source('./code/bayes.R')
+# gg.list <- likelihoodPlusModelDiags(rl=returnList)  <-- avoid brm() internal error
 
-  # organize data into
-  # ("week", "transect", "time", "cluster", "totalSpiders")
-  #
-  # plot the weekly raw data : plotWeekly()
-  # create txt files saving the status output of 9 brm() cycles
+rl <- returnList
 
-  returnList <- generateLikelihoodV2(df=returnList[[4]], list=returnList, showPlot=FALSE)
+  if (TRUE) {
+    #source('./code/bayes.R')
 
-  returnList[[6]] <- plotLikelihood(df=returnList[[5]], sub="model 794:264:159 spider population seasonal trend")
+    # organize data into
+    #       "week", "transect", "time", "cluster", "totalSpiders"
+    # ( already done by evaluateDailySpiderCounts() )
+    #
+    # plot the weekly raw data : plotWeekly()
+    # create txt files saving the status output of 9 brm() cycles
+
+    #
+    #         existing models will be read from disc
+    #         with FALSE logic in generateLikelihoodV2() ......
+    #
+    gg.likelihood <- generateLikelihoodV2(df=rl[[4]], list=rl, daytime='24h')
+    print(gg.likelihood)
   
-  #assign("returnList6", returnList[[6]], envir=.GlobalEnv)
-  print(returnList[[6]]) # liklihood by cluster with seasonal timeframes
+    if (TRUE) {
+  
+    filtered.df <- rl[[4]] %>% dplyr::filter(time == 'pm')
+    gg.likelihood <- generateLikelihoodV2(df=filtered.df, list=rl, daytime='pm')
+    print(gg.likelihood) # likelihood by cluster with seasonal timeframes
+  
+  
+    filtered.df <- rl[[4]] %>% dplyr::filter(time == 'am')
+    gg.likelihood <- generateLikelihoodV2(df=filtered.df, list=rl, daytime='am')
+    print(gg.likelihood) # likelihood by cluster with seasonal timeframes
+  
+    }
+    # kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
 
-  # kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
-
-  # pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
+    # pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
      #                     p.adjust.method = "BH")
 
   
+  }  # end if TRUE
+```
+
+    ## Loading required package: Rcpp
+
+    ## Loading 'brms' package (version 2.6.0). Useful instructions
+    ## can be found by typing help('brms'). A more detailed introduction
+    ## to the package is available through vignette('brms_overview').
+    ## Run theme_set(theme_default()) to use the default bayesplot theme.
+
+    ## Loading required package: StanHeaders
+
+    ## rstan (Version 2.17.3, GitRev: 2e1f913d3ca3)
+
+    ## For execution on a local, multicore CPU with excess RAM we recommend calling
+    ## options(mc.cores = parallel::detectCores()).
+    ## To avoid recompilation of unchanged Stan programs, we recommend calling
+    ## rstan_options(auto_write = TRUE)
+
+    ## 
+    ## Attaching package: 'rstan'
+
+    ## The following object is masked from 'package:tidyr':
+    ## 
+    ##     extract
+
+    ## Compiling the C++ model
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Loading 'brms' package (version 2.6.0). Useful instructions
+    ## can be found by typing help('brms'). A more detailed introduction
+    ## to the package is available through vignette('brms_overview').
+    ## Run theme_set(theme_default()) to use the default bayesplot theme.
+
+    ## rstan (Version 2.17.3, GitRev: 2e1f913d3ca3)
+
+    ## For execution on a local, multicore CPU with excess RAM we recommend calling
+    ## options(mc.cores = parallel::detectCores()).
+    ## To avoid recompilation of unchanged Stan programs, we recommend calling
+    ## rstan_options(auto_write = TRUE)
+
+    ## 
+    ## Attaching package: 'rstan'
+
+    ## The following object is masked from 'package:tidyr':
+    ## 
+    ##     extract
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+![](ampelos_files/figure-markdown_github/clusterBayes-1.png)
+
+    ## Loading 'brms' package (version 2.6.0). Useful instructions
+    ## can be found by typing help('brms'). A more detailed introduction
+    ## to the package is available through vignette('brms_overview').
+    ## Run theme_set(theme_default()) to use the default bayesplot theme.
+
+    ## rstan (Version 2.17.3, GitRev: 2e1f913d3ca3)
+
+    ## For execution on a local, multicore CPU with excess RAM we recommend calling
+    ## options(mc.cores = parallel::detectCores()).
+    ## To avoid recompilation of unchanged Stan programs, we recommend calling
+    ## rstan_options(auto_write = TRUE)
+
+    ## 
+    ## Attaching package: 'rstan'
+
+    ## The following object is masked from 'package:tidyr':
+    ## 
+    ##     extract
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+![](ampelos_files/figure-markdown_github/clusterBayes-2.png)![](ampelos_files/figure-markdown_github/clusterBayes-3.png)
+
+### model diagnostics?
+
+``` r
+gg.list <- modelDiags(daytime='24h') # read the 9 models from disc and run diags
+```
+
+    ## NOTE: As of tidybayes version 1.0, several functions, arguments, and output column names
+    ##       have undergone significant name changes in order to adopt a unified naming scheme.
+    ##       See help('tidybayes-deprecated') for more information.
+
+    ## Scale for 'x' is already present. Adding another scale for 'x', which
+    ## will replace the existing scale.
+    ## Scale for 'x' is already present. Adding another scale for 'x', which
+    ## will replace the existing scale.
+    ## Scale for 'x' is already present. Adding another scale for 'x', which
+    ## will replace the existing scale.
+
+``` r
+for (i in 1:length(gg.list)) {
+  print(gg.list[[i]])
 }
 ```
 
-![](ampelos_files/figure-markdown_github/clusterBayes-1.png)
+![](ampelos_files/figure-markdown_github/clusterDiags-1.png)![](ampelos_files/figure-markdown_github/clusterDiags-2.png)![](ampelos_files/figure-markdown_github/clusterDiags-3.png)![](ampelos_files/figure-markdown_github/clusterDiags-4.png)![](ampelos_files/figure-markdown_github/clusterDiags-5.png)![](ampelos_files/figure-markdown_github/clusterDiags-6.png)![](ampelos_files/figure-markdown_github/clusterDiags-7.png)![](ampelos_files/figure-markdown_github/clusterDiags-8.png)![](ampelos_files/figure-markdown_github/clusterDiags-9.png)![](ampelos_files/figure-markdown_github/clusterDiags-10.png)![](ampelos_files/figure-markdown_github/clusterDiags-11.png)![](ampelos_files/figure-markdown_github/clusterDiags-12.png)
+
+``` r
+if (FALSE) {
+  
+  # weightedModelGraph() / likelihoodPlusModelDiags() is choking on       
+  # base::sample.int with replace=TRUE
+  # ref comments in likelihoodPlusModelDiags()
+  
+      graphList[[2]] <- weightedModelGraph(df=rl[[7]][[1]], model=rl[[8]][[1]], label=rl[[9]][[1]])
+
+    graphList[[3]] <- weightedModelGraph(df=rl[[7]][[4]], model=rl[[8]][[4]], label=rl[[9]][[4]])
+
+    graphList[[4]] <- weightedModelGraph(df=rl[[7]][[7]], model=rl[[8]][[7]], label=rl[[9]][[7]])
+
+
+  for (i in 2:length(gg.list)) {
+      print(gg.list[[i]])
+  }
+
+}
+```
 
 ### how do the clusters compare to each other across multiple weeks?
 
@@ -334,7 +624,7 @@ bubbleClusterRanks(rankOakPM.df, "oakMargin", "am")
 plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/population-trends-1.png)
+![](ampelos_files/figure-markdown_github/pop-trends-am-1.png)
 
     ## NULL
 
@@ -342,7 +632,7 @@ plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="
 plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/population-trends-2.png)![](ampelos_files/figure-markdown_github/population-trends-3.png)![](ampelos_files/figure-markdown_github/population-trends-4.png)
+![](ampelos_files/figure-markdown_github/pop-trends-am-2.png)![](ampelos_files/figure-markdown_github/pop-trends-am-3.png)![](ampelos_files/figure-markdown_github/pop-trends-am-4.png)
 
     ## NULL
 
@@ -350,7 +640,7 @@ plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="
 plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/population-trends-5.png)
+![](ampelos_files/figure-markdown_github/pop-trends-pm-1.png)
 
     ## NULL
 
@@ -358,7 +648,7 @@ plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="
 plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/population-trends-6.png)![](ampelos_files/figure-markdown_github/population-trends-7.png)![](ampelos_files/figure-markdown_github/population-trends-8.png)
+![](ampelos_files/figure-markdown_github/pop-trends-pm-2.png)![](ampelos_files/figure-markdown_github/pop-trends-pm-3.png)![](ampelos_files/figure-markdown_github/pop-trends-pm-4.png)
 
     ## NULL
 
@@ -366,7 +656,7 @@ plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="
 plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/population-trends-9.png)
+![](ampelos_files/figure-markdown_github/population-trends-both-1.png)
 
     ## NULL
 
@@ -374,7 +664,7 @@ plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="
 plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/population-trends-10.png)![](ampelos_files/figure-markdown_github/population-trends-11.png)![](ampelos_files/figure-markdown_github/population-trends-12.png)
+![](ampelos_files/figure-markdown_github/population-trends-both-2.png)![](ampelos_files/figure-markdown_github/population-trends-both-3.png)![](ampelos_files/figure-markdown_github/population-trends-both-4.png)
 
     ## NULL
 

@@ -1,11 +1,24 @@
 
+renameFunkyColumns <- function(df, oldName, newName) {
+
+  # because ggplot() chokes on brm() 'interaction' column names.....
+
+  # http://www.cookbook-r.com/Manipulating_data/Renaming_columns_in_a_data_frame/
+
+  # Rename column by name: change "beta" to "two"
+  names(df)[names(df)==oldName] <- newName
+
+  return(df)
+
+}
+
 evaluateDailySpiderCounts <- function(df) {
   
   if (FALSE) {
     print(returnList[[1]])  # ggplot() spiders per day per position by week
-    print(returnList[[2]])  # rethinking model precis() output
+    print(returnList[[2]])  # 
     print(returnList[[3]])  # plot() of the model (line graphs)
-    print(returnList[[4]])  # plot() of the model posterior (faceted)
+    print(returnList[[4]])  # 
     print(returnList[[5]])  # likelihood.df
     print(returnList[[6]])  # likelihood by clustered position by seasonal week group
   }
@@ -212,6 +225,278 @@ likelihoodPlusModelDiags <- function(rl=returnList) {
 }
 
 
+modelDiags <- function(daytime) {
+
+  # https://cran.rstudio.com/web/packages/tidybayes/vignettes/tidy-brms.html
+
+  library(broom)
+  library(tidybayes)
+
+  # get a list of 9 models
+
+  modelTime <- list()
+  modelPop <- list()
+
+  modelTime[[1]] <- "seasonal timeframe: weeks 23-25"      # model #1 
+  modelTime[[2]] <- "seasonal timeframe: weeks 26-31"      # model #2 
+  modelTime[[3]] <- "seasonal timeframe: weeks 32-34"    # model #3 
+
+  modelPop[[1]] <- "794"      # model #1 
+  modelPop[[2]] <- "264"      # model #2 
+  modelPop[[3]] <- "159"      # model #3 
+
+
+  daytime <- '24h'
+
+
+  list <- readRDS(paste("./code/output/list-", daytime, ".rds", sep=""))
+
+
+
+  tidybayes::get_variables(list[[8]][[2]])
+
+  list[[8]][[2]] %>%
+    tidybayes::spread_draws(b_log_pop, b_contact_high) %>%
+    head(10)
+
+  # Plotting point summaries and intervals
+
+    # fit an ordinal model (no interaction term)
+    #
+    # 
+
+    
+    # models were created assuming spider populations 
+    #        rnorm() mean      cluster spider population         log population
+    #   
+    #             75                    794                            2.9       
+    #             25                    264                            2.4
+    #             15                    159                            2.2
+    log.pop.list <- c(2.9, 2.4, 2.2, 2.9, 2.4, 2.2, 2.9, 2.4, 2.2) 
+
+    post.df <- list()
+    combo.df <- list()
+    gg.list <- list()
+    gg.tmp.list <- list()
+
+    # 1. build a df of posterior samples
+    #j <- 1  # point to one of the 9 available models 
+
+    for (j in 1:9) {
+
+      post.df[[j]] <- brms::posterior_samples(list[[8]][[j]])
+    # 2. add a column of predicted trappedSpiders for two clusters of population log.pop.list[[j]], 
+    # one with high oak influence, the other with low oak influence 
+
+      post.df[[j]] <- post.df[[j]] %>%   
+          mutate(trappedSpiders_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log.pop.list[[j]]),
+                 trappedSpiders_low  = exp(b_Intercept + b_log_pop * log.pop.list[[j]])) %>% 
+          mutate(diff        = trappedSpiders_high - trappedSpiders_low) %>% 
+          mutate(trappedSpiders_high_pct = trappedSpiders_high / (trappedSpiders_high + trappedSpiders_low)) %>% 
+          mutate(trappedSpiders_low_pct = trappedSpiders_low / (trappedSpiders_high + trappedSpiders_low)) 
+
+    # add a cluster indicator for the graphics
+      if ((j == 1) || (j == 4) || (j == 7)) {
+        post.df[[j]] <- post.df[[j]] %>% mutate(cluster = '1')
+      } else if ((j == 2) || (j == 5) || (j == 8)) {
+        post.df[[j]] <- post.df[[j]] %>% mutate(cluster = '2')
+      } else {
+        post.df[[j]] <- post.df[[j]] %>% mutate(cluster = '3')
+      }
+
+    # 3. separate into two df; likelihood diff on either side of .7, add a factor, merge to new df
+    postGT.7.df <- post.df[[j]] %>% filter(diff >= .7) %>% mutate(oakInfluence = 'active')
+    postLT.7.df <- post.df[[j]] %>% filter(diff <= .699999) %>% mutate(oakInfluence = 'inactive')
+    combo.df[[j]] <- dplyr::bind_rows(postGT.7.df, postLT.7.df)
+
+  }
+
+    # 4. 
+
+
+  gg.list[[1]] <- plotPosteriorDensity(df1= combo.df[[1]], df2= combo.df[[2]], df3=combo.df[[3]], mt = modelTime[[1]], cap = modelPop[[1]])
+  gg.list[[2]] <- plotPosteriorDensity(df1= combo.df[[4]], df2= combo.df[[5]], df3=combo.df[[6]], mt = modelTime[[2]], cap = modelPop[[2]])
+  gg.list[[3]] <- plotPosteriorDensity(df1= combo.df[[7]], df2= combo.df[[8]], df3=combo.df[[9]], mt = modelTime[[3]], cap = modelPop[[3]])
+
+  for (j in 1:9) {
+    combo.df[[j]] <- renameFunkyColumns(df=combo.df[[j]], oldName='b_contact_high', newName='bc')
+    combo.df[[j]] <- renameFunkyColumns(df=combo.df[[j]], oldName='b_log_pop:contact_high', newName='bpc')
+  }
+
+  gg.tmp.list <- plotPosteriorJitter(df1= combo.df[[1]], df2= combo.df[[2]], df3=combo.df[[3]], mt = modelTime[[1]], cap = modelPop[[1]])
+
+  gg.list[[4]] <- gg.tmp.list[[1]]
+  gg.list[[5]] <- gg.tmp.list[[2]]
+  gg.list[[6]] <- gg.tmp.list[[3]]
+
+  gg.tmp.list <- plotPosteriorJitter(df1= combo.df[[4]], df2= combo.df[[5]], df3=combo.df[[6]], mt = modelTime[[2]], cap = modelPop[[2]])
+
+  gg.list[[7]] <- gg.tmp.list[[1]]
+  gg.list[[8]] <- gg.tmp.list[[2]]
+  gg.list[[9]] <- gg.tmp.list[[3]]
+
+  gg.tmp.list <- plotPosteriorJitter(df1= combo.df[[7]], df2= combo.df[[8]], df3=combo.df[[9]], mt = modelTime[[3]], cap = modelPop[[3]])
+
+  gg.list[[10]] <- gg.tmp.list[[1]]
+  gg.list[[11]] <- gg.tmp.list[[2]]
+  gg.list[[12]] <- gg.tmp.list[[3]]
+
+
+
+  return(gg.list)
+  
+  }
+
+  plotPosteriorJitter <- function(df1, df2, df3, mt, cap) {
+
+
+    colours = c("1" = "red", "2" = "green", "3" = "blue")
+
+    gg.list <- list()
+
+    gg.list[[1]] <- ggplot() + 
+
+    geom_jitter(data=df1, aes(x=bc, y=bpc, fill = cluster), shape=21, size=1, alpha=.3, show.legend=TRUE) +
+    
+    scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
+    scale_x_continuous(breaks=seq(-15,5,5)) + 
+    
+    labs(title=paste("the joint posterior distribution of bc and bpc", sep=""),
+         subtitle=paste(mt, sep=""), 
+         y="bpc", 
+         x="bc", 
+         caption = paste("identical clusters with population ", cap, sep="") ) +
+    
+    theme_bw() +
+
+    scale_fill_manual(values = colours, 
+                      breaks = c("1", "2", "3"),
+                      labels = c("cluster 1", "cluster 2", "cluster 3")) +
+    scale_shape_manual(
+                      values = 21) +
+    
+    theme(legend.title = element_blank(),
+          legend.spacing.y = unit(0, "mm"), 
+          legend.justification=c(1,0),
+          panel.border = element_rect(colour = "black", fill=NA),
+          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black")) 
+
+    gg.list[[2]] <- ggplot() + 
+
+    geom_jitter(data=df2, aes(x=bc, y=bpc, fill = cluster), shape=21, size=1, alpha=.3, show.legend=TRUE) +
+    
+    scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
+    scale_x_continuous(breaks=seq(-15,5,5)) + 
+    
+    labs(title=paste("the joint posterior distribution of bc and bpc", sep=""),
+         subtitle=paste(mt, sep=""), 
+         y="bpc", 
+         x="bc", 
+         caption = paste("identical clusters with population ", cap, sep="") ) +
+    
+    theme_bw() +
+
+    scale_fill_manual(values = colours, 
+                      breaks = c("1", "2", "3"),
+                      labels = c("cluster 1", "cluster 2", "cluster 3")) +
+    scale_shape_manual(
+                      values = 21) +
+    
+    theme(legend.title = element_blank(),
+          legend.spacing.y = unit(0, "mm"), 
+          legend.justification=c(1,0),
+          panel.border = element_rect(colour = "black", fill=NA),
+          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black")) 
+
+  gg.list[[3]] <- ggplot() + 
+
+    geom_jitter(data=df3, aes(x=bc, y=bpc, fill = cluster), shape=21, size=1, alpha=.3, show.legend=TRUE) +
+    
+    scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
+    scale_x_continuous(breaks=seq(-15,5,5)) + 
+    
+    labs(title=paste("the joint posterior distribution of bc and bpc", sep=""),
+         subtitle=paste(mt, sep=""), 
+         y="bpc", 
+         x="bc", 
+         caption = paste("identical clusters with population ", cap, sep="") ) +
+    
+    theme_bw() +
+
+    scale_fill_manual(values = colours, 
+                      breaks = c("1", "2", "3"),
+                      labels = c("cluster 1", "cluster 2", "cluster 3")) +
+    scale_shape_manual(
+                      values = 21) +
+    
+    theme(legend.title = element_blank(),
+          legend.spacing.y = unit(0, "mm"), 
+          legend.justification=c(1,0),
+          panel.border = element_rect(colour = "black", fill=NA),
+          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black")) 
+
+
+
+    return(gg.list)
+
+
+  }
+
+  plotPosteriorDensity <- function(df1, df2, df3, mt, cap) {
+
+
+    colours = c("1" = "red", "2" = "green", "3" = "blue")
+
+    gg <- ggplot() + 
+    
+    geom_density(data=df1, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE) +
+    geom_density(data=df2, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE) +
+    geom_density(data=df3, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE) +
+    
+    geom_vline(xintercept=0) + #
+    
+    xlim(c(-15, 5)) + 
+    expand_limits(x=c(-15, 5)) + 
+    coord_fixed(ratio=20/1) +     # control the aspect ratio of the output; "ratio" refers to the 
+                                  # ratio of the axis limits themselves
+    
+    scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
+    scale_x_continuous(breaks=seq(-15,5,5)) + 
+    
+    
+    labs(title=paste("the distribution of the plausible difference\nin average trapped spiders", sep=""),
+         subtitle=paste(mt, sep=""), 
+         y="density", 
+         x="oak margin trapped spiders minus\ncontrol trapped spiders", 
+         caption = paste("identical clusters with population ", cap, sep="") ) +
+    
+    theme_bw() +
+
+    scale_fill_manual(values = colours, 
+                      breaks = c("1", "2", "3"),
+                      labels = c("cluster 1", "cluster 2", "cluster 3")) +
+    scale_shape_manual(
+                      values = 21) +
+    
+    theme(legend.title = element_blank(),
+          legend.spacing.y = unit(0, "mm"), 
+          legend.justification=c(1,0),
+          panel.border = element_rect(colour = "black", fill=NA),
+          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black")) 
+
+    return(gg)
+
+}
+
+
 plotLikelihood <- function(df, sub, cap) {
   
   # input df :
@@ -323,7 +608,7 @@ generateLikelihoodV2 <- function(df, list, daytime) {
     ##
     ##
 
-  if (TRUE) {   # go through the tedious process of creating the brm models
+  if (FALSE) {   # go through the tedious process of creating the brm models
                  # otherwise, get it from disk 
 
   
@@ -482,12 +767,7 @@ generateLikelihoodV2 <- function(df, list, daytime) {
              iter = 3000, warmup = 2000, chains = 4, cores = 4)
              # warmup increased to 2000 *assuming* "convergence issues" per setion 4.3 of
               # https://bookdown.org/ajkurz/Statistical_Rethinking_recoded/linear-models.html
-        
-        #print(b10.10)
-        #assign("b10.10", b10.10, envir=.GlobalEnv)
-        
 
-        # summary(b10.10)  # output to .txt file per sink() and sinkAll()
 
         modelInput[[i]] <- cl.st.list[[i]]
         modelOutput[[i]] <- b10.10
@@ -504,31 +784,21 @@ generateLikelihoodV2 <- function(df, list, daytime) {
         # how likely does the oakMargin 
         # McElreath code 10.43
 
-        post <-
-          posterior_samples(modelOutput[[i]], replace=T)  # not sure if replace is functional....
+        post.df <- brms::posterior_samples(modelOutput[[i]])  # 
         
-        post <-
-          post %>%   
+        post.df <- post.df %>%   
           mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log.pop.list[[i]]),
                  lambda_low  = exp(b_Intercept + b_log_pop * log.pop.list[[i]])) %>% 
           mutate(diff        = lambda_high - lambda_low) 
         
-        like.df <- post %>%
+        like.df <- post.df %>%
           summarise(sum = sum(diff > 0)/length(diff))
         
       }  # end of TRUE/FALSE
 
-      # model diagnostics
-      bayesAnalysis(list=modelOutput)
 
-
-      #for (i in 1:length(modelOutput)) {
 
         fileName <- paste("./code/output/clBRMsummary-", daytime, "-", i, ".txt", sep="")
-
-        # if (file.exists(fileName)) file.remove(fileName)   file removed at top of function
-
-        #### alternately, try this : https://www.r-bloggers.com/export-r-output-to-a-file/
 
         sink(file=fileName, append = TRUE, type = "output")
         print(writeLines(paste("\ngenerateLikelihoodV2()               ", Sys.time(), "\n\n", sep="")))
@@ -537,8 +807,6 @@ generateLikelihoodV2 <- function(df, list, daytime) {
         print(summary(modelOutput[[i]], prob=.89))
 
         sink(NULL)
-
-      #}
       
 
 
