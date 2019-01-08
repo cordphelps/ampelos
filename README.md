@@ -182,8 +182,13 @@ if (TRUE) {
   print(returnList[[1]]) # scatter plot by cluster with seasonal timeframes
   print(returnList[[2]]) # scatter plot by am/pm
   print(returnList[[3]]) # scatter plot by transect
+  #
   # returnList[[4]] is the data 'dataframe' used for the graphics (total.df)
   # from bayes.R evaluateDailySpiderCounts()
+  ##
+  ## multiple records per week with columns
+  ## week, transect, time, cluster, totalSpiders
+  ##
  
   
 }
@@ -212,6 +217,10 @@ rl <- returnList
     #         existing models will be read from disc
     #         with FALSE logic in generateLikelihoodV2() ......
     #
+    ##
+    ## rl[[4]] is multiple records per week with columns
+    ## week, transect, time, cluster, totalSpiders
+    ##
     gg.likelihood <- generateLikelihoodV2(df=rl[[4]], list=rl, daytime='24h')
     print(gg.likelihood)
   
@@ -259,58 +268,6 @@ rl <- returnList
     ## 
     ##     extract
 
-    ## Compiling the C++ model
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
     ## Loading 'brms' package (version 2.6.0). Useful instructions
     ## can be found by typing help('brms'). A more detailed introduction
     ## to the package is available through vignette('brms_overview').
@@ -329,60 +286,6 @@ rl <- returnList
     ## The following object is masked from 'package:tidyr':
     ## 
     ##     extract
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
 
 ![](ampelos_files/figure-markdown_github/clusterBayes-1.png)
 
@@ -404,60 +307,6 @@ rl <- returnList
     ## The following object is masked from 'package:tidyr':
     ## 
     ##     extract
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
 
 ![](ampelos_files/figure-markdown_github/clusterBayes-2.png)![](ampelos_files/figure-markdown_github/clusterBayes-3.png)
 
@@ -506,6 +355,25 @@ if (FALSE) {
 
 }
 ```
+
+``` r
+if (TRUE) {
+
+  gg.list <- plotPosteriorPredictiveCheck(df=rl[[4]]) 
+
+    for (i in 1:length(gg.list)) {
+      print(gg.list[[i]])
+    }
+
+}
+```
+
+    ## Loading 'brms' package (version 2.6.0). Useful instructions
+    ## can be found by typing help('brms'). A more detailed introduction
+    ## to the package is available through vignette('brms_overview').
+    ## Run theme_set(theme_default()) to use the default bayesplot theme.
+
+![](ampelos_files/figure-markdown_github/checkPost-1.png)![](ampelos_files/figure-markdown_github/checkPost-2.png)![](ampelos_files/figure-markdown_github/checkPost-3.png)
 
 ### how do the clusters compare to each other across multiple weeks?
 

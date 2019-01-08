@@ -248,22 +248,7 @@ modelDiags <- function(daytime) {
 
   daytime <- '24h'
 
-
   list <- readRDS(paste("./code/output/list-", daytime, ".rds", sep=""))
-
-
-
-  tidybayes::get_variables(list[[8]][[2]])
-
-  list[[8]][[2]] %>%
-    tidybayes::spread_draws(b_log_pop, b_contact_high) %>%
-    head(10)
-
-  # Plotting point summaries and intervals
-
-    # fit an ordinal model (no interaction term)
-    #
-    # 
 
     
     # models were created assuming spider populations 
@@ -280,7 +265,6 @@ modelDiags <- function(daytime) {
     gg.tmp.list <- list()
 
     # 1. build a df of posterior samples
-    #j <- 1  # point to one of the 9 available models 
 
     for (j in 1:9) {
 
@@ -310,8 +294,6 @@ modelDiags <- function(daytime) {
     combo.df[[j]] <- dplyr::bind_rows(postGT.7.df, postLT.7.df)
 
   }
-
-    # 4. 
 
 
   gg.list[[1]] <- plotPosteriorDensity(df1= combo.df[[1]], df2= combo.df[[2]], df3=combo.df[[3]], mt = modelTime[[1]], cap = modelPop[[1]])
@@ -346,6 +328,129 @@ modelDiags <- function(daytime) {
   return(gg.list)
   
   }
+
+  plotPosteriorPredictiveCheck <- function(df, modelList) {
+
+    # "Ordinal model with continuous predictor"
+    # https://cran.rstudio.com/web/packages/tidybayes/vignettes/tidy-brms.html
+
+    ## df is evaluateDailySpiderCounts() total.df
+    ##
+    ## multiple records per week with columns
+    ## week, transect, time, cluster, totalSpiders
+    ##
+
+    library(brms)
+    library(ggrepel)
+
+    gg.list <- list()
+    log.pop.list <- c(2.9, 2.4, 2.2, 2.9, 2.4, 2.2, 2.9, 2.4, 2.2)
+
+
+    bugs_clean = df %>%
+      mutate(totalSpiders = ordered(totalSpiders)) %>%
+      mutate(seasonalPeriod = ifelse( (df$week>22 & df$week<26), 'one',
+                           ifelse( (df$week>25 & df$week<31), 'two',
+                                   'three' ) ) ) %>%
+      mutate(log_pop = ifelse( (df$week>22 & df$week<26), log.pop.list[[1]],
+                           ifelse( (df$week>25 & df$week<31), log.pop.list[[2]],
+                                   log.pop.list[[3]] ) ) ) %>%
+      mutate(contact_high = ifelse(transect=='oakMargin', 1, 0))
+
+    # now partition data by seasonal timeframe
+    bugs_timeframe <- list()
+    descriptive <- list()
+
+    bugs_timeframe[[1]] <- bugs_clean %>% dplyr::filter(bugs_clean$week < 26 & cluster == 'one')
+    bugs_timeframe[[2]] <- bugs_clean %>% dplyr::filter(bugs_clean$week < 26 & cluster == 'two')
+    bugs_timeframe[[3]] <- bugs_clean %>% dplyr::filter(bugs_clean$week < 26 & cluster == 'three')
+    descriptive[[1]] <- 'seasonal timeframe: one'
+
+    bugs_timeframe[[4]] <- bugs_clean %>% dplyr::filter(bugs_clean$week > 25 & week < 31 & cluster == 'one')
+    bugs_timeframe[[5]] <- bugs_clean %>% dplyr::filter(bugs_clean$week > 25 & week < 31 & cluster == 'two')
+    bugs_timeframe[[6]] <- bugs_clean %>% dplyr::filter(bugs_clean$week > 25 & week < 31 & cluster == 'three')
+    descriptive[[2]] <- 'seasonal timeframe: two'
+
+    bugs_timeframe[[7]] <- bugs_clean %>% dplyr::filter(bugs_clean$week > 30 & cluster == 'one')
+    bugs_timeframe[[8]] <- bugs_clean %>% dplyr::filter(bugs_clean$week > 30 & cluster == 'two')
+    bugs_timeframe[[9]] <- bugs_clean %>% dplyr::filter(bugs_clean$week > 30 & cluster == 'three')
+    descriptive[[3]] <- 'seasonal timeframe: three'
+
+
+
+    # use the existing models
+
+    daytime <- '24h'
+    list <- readRDS(paste("./code/output/list-", daytime, ".rds", sep=""))
+    modelList <- list[[8]]
+
+    bugs.list <- list()
+    gg.list <- list()
+    colours = c("one" = "red", "two" = "green", "three" = "blue")
+
+
+    # logic from # Estimating Multivariate Models with brms 
+    # https://cran.r-project.org/web/packages/brms/vignettes/brms_multivariate.html
+
+    for (i in 1:9) {
+
+      bugs.list[[i]] <- bugs_timeframe[[i]] %>%
+        # we use `select` instead of `data_grid` here because we want to make posterior predictions
+        # for exactly the same set of observations we have in the original data
+        select(log_pop, seasonalPeriod, cluster, contact_high) %>%
+        add_predicted_draws(model=modelList[[i]], prediction = "totalSpiders", seed = 1234) 
+
+    }
+
+    predicted.bugs.timeframe <- list()
+    predicted.bugs.timeframe[[1]] <- dplyr::bind_rows(bugs.list[[1]], bugs.list[[2]], bugs.list[[3]])
+    predicted.bugs.timeframe[[2]] <- dplyr::bind_rows(bugs.list[[4]], bugs.list[[5]], bugs.list[[6]])
+    predicted.bugs.timeframe[[3]] <- dplyr::bind_rows(bugs.list[[7]], bugs.list[[8]], bugs.list[[9]])
+
+    for (i in 1:3) {
+
+        gg.list[[i]] <- ggplot(data = predicted.bugs.timeframe[[i]], aes(y = cluster, x = totalSpiders)) +
+
+          geom_count(color = "gray32", position=position_jitter(width=0, height=0.2)) +
+          scale_size(guide=FALSE) +       # turn off legend for size
+
+          geom_point(data = predicted.bugs.timeframe[[i]], aes(fill = cluster), shape = 21, size=2) +
+          #scale_fill_brewer(palette = "Dark2") +
+
+          #scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
+          #scale_x_discrete(breaks=seq(0,30,1)) + 
+    
+          labs(title=paste("model performance: observed data (colored)\noverlayed on posterior predictions (grey)", sep=""),
+            subtitle=paste(descriptive[[i]], sep=""), 
+            y="cluster", 
+            x="trapped spider counts", 
+            caption = paste("  ", sep="") ) +
+    
+          theme_bw() +
+
+          scale_fill_manual(values = colours, 
+                      breaks = c("one", "two", "three"),
+                      labels = c("cluster 1", "cluster 2", "cluster 3")) +
+          #scale_shape_manual(values = 21) +
+
+          theme(axis.text.y=element_blank(),
+            axis.ticks.y=element_blank())     +
+    
+          theme(legend.title = element_blank(),
+            legend.spacing.y = unit(0, "mm"), 
+            legend.justification=c(1,0),
+            panel.border = element_rect(colour = "black", fill=NA),
+            aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+            legend.background = element_blank(),
+            legend.box.background = element_rect(colour = "black"))
+
+    } 
+
+    return(gg.list)
+
+
+  }
+
 
   plotPosteriorJitter <- function(df1, df2, df3, mt, cap) {
 

@@ -182,8 +182,13 @@ if (TRUE) {
   print(returnList[[1]]) # scatter plot by cluster with seasonal timeframes
   print(returnList[[2]]) # scatter plot by am/pm
   print(returnList[[3]]) # scatter plot by transect
+  #
   # returnList[[4]] is the data 'dataframe' used for the graphics (total.df)
   # from bayes.R evaluateDailySpiderCounts()
+  ##
+  ## multiple records per week with columns
+  ## week, transect, time, cluster, totalSpiders
+  ##
  
   
 }
@@ -214,6 +219,10 @@ rl <- returnList
     #         existing models will be read from disc
     #         with FALSE logic in generateLikelihoodV2() ......
     #
+    ##
+    ## rl[[4]] is multiple records per week with columns
+    ## week, transect, time, cluster, totalSpiders
+    ##
     gg.likelihood <- generateLikelihoodV2(df=rl[[4]], list=rl, daytime='24h')
     print(gg.likelihood)
   
@@ -278,6 +287,20 @@ if (FALSE) {
 
 ```
 
+
+```{r checkPost, echo=TRUE, include=TRUE, message=T, warning=T}
+
+if (TRUE) {
+
+  gg.list <- plotPosteriorPredictiveCheck(df=rl[[4]]) 
+
+    for (i in 1:length(gg.list)) {
+      print(gg.list[[i]])
+    }
+
+}
+
+```
 
 
 ```{r kable1, results='asis', echo=FALSE, message=F, warning=F}
