@@ -111,7 +111,6 @@ ambient231 <- ggplot(data = df2.df, aes(x=julian)) +
 # +
 #  theme(legend.position="bottom")
 
-savePDF(image=ambient231, filenameNoExt="cimis-ambient231")
 
 
 temp.df <- df2.df %>% dplyr::filter(DayPrecip>0)
@@ -138,7 +137,6 @@ precip231 <- ggplot(data = temp.df, aes(x=julian, y=DayPrecip)) +
   theme_bw() +
   theme(legend.position="none")
 
-savePDF(image=precip231, filenameNoExt="cimis-precip231")
   
   
 humidity231 <- ggplot(data = df2.df, aes(x=julian, y=DayRelHumAvg)) + 
@@ -164,8 +162,6 @@ humidity231 <- ggplot(data = df2.df, aes(x=julian, y=DayRelHumAvg)) +
   theme_bw() +
   theme(legend.position="none")
 
-savePDF(image=humidity231, filenameNoExt="cimis-humidity231")
-  
 
 ground231 <- ggplot(data = df2.df, aes(x=julian, y=DaySoilTmpAvg)) + 
   geom_point(shape=21) + 
@@ -194,7 +190,7 @@ ground231 <- ggplot(data = df2.df, aes(x=julian, y=DaySoilTmpAvg)) +
   theme(axis.title.y.right = element_text(angle = 90)) +
   theme(legend.position="none")
 
-savePDF(image=ground231, filenameNoExt="cimis-ground231")
+
 
 wind231 <- ggplot(data = df2.df, aes(x=julian, y=DayWindSpdAvg)) + 
   geom_point(shape=21) + 
@@ -219,15 +215,39 @@ wind231 <- ggplot(data = df2.df, aes(x=julian, y=DayWindSpdAvg)) +
   theme_bw() +
   theme(axis.title.y.right = element_text(angle = 90)) 
 
-savePDF(image=wind231, filenameNoExt="cimis-wind231")
+
 
 ```
 
-```{r}
+```{r, ambient}
 print(ambient231)
+
+```
+
+
+```{r, precip}
+
 print(precip231)
+
+```
+
+```{r, humidity}
+
 print(humidity231)
+
+```
+
+
+```{r, ground}
+
 print(ground231)
+
+```
+
+
+```{r, wind}
+
 print(wind231)
 ```
+
 

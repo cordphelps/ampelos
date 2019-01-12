@@ -329,7 +329,7 @@ modelDiags <- function(daytime) {
   
   }
 
-  plotPosteriorPredictiveCheck <- function(df, modelList) {
+  plotPosteriorPredictiveCheck <- function(df) {
 
     # "Ordinal model with continuous predictor"
     # https://cran.rstudio.com/web/packages/tidybayes/vignettes/tidy-brms.html
@@ -340,6 +340,7 @@ modelDiags <- function(daytime) {
     ## week, transect, time, cluster, totalSpiders
     ##
 
+    library(tidybayes)
     library(brms)
     library(ggrepel)
 
@@ -398,7 +399,9 @@ modelDiags <- function(daytime) {
         # we use `select` instead of `data_grid` here because we want to make posterior predictions
         # for exactly the same set of observations we have in the original data
         select(log_pop, seasonalPeriod, cluster, contact_high) %>%
-        add_predicted_draws(model=modelList[[i]], prediction = "totalSpiders", seed = 1234) 
+        add_predicted_draws(model=modelList[[i]], prediction = "totalSpiders", seed = 1234) %>%
+        group_by(totalSpiders, cluster) %>%
+        summarize(ts=n()/length(.))
 
     }
 
@@ -411,7 +414,8 @@ modelDiags <- function(daytime) {
 
         gg.list[[i]] <- ggplot(data = predicted.bugs.timeframe[[i]], aes(y = cluster, x = totalSpiders)) +
 
-          geom_count(color = "gray32", position=position_jitter(width=0, height=0.2)) +
+          geom_count(color = "gray32") +
+          #geom_count(color = "gray32", position=position_jitter(width=0, height=0.2)) +
           scale_size(guide=FALSE) +       # turn off legend for size
 
           geom_point(data = predicted.bugs.timeframe[[i]], aes(fill = cluster), shape = 21, size=2) +
@@ -420,11 +424,10 @@ modelDiags <- function(daytime) {
           #scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
           #scale_x_discrete(breaks=seq(0,30,1)) + 
     
-          labs(title=paste("model performance: observed data (colored)\noverlayed on posterior predictions (grey)", sep=""),
-            subtitle=paste(descriptive[[i]], sep=""), 
-            y="cluster", 
+          # labs(title=paste("model performance: observed data (colored)\noverlayed on posterior predictions (grey)", sep=""),
+          labs(y="cluster", 
             x="trapped spider counts", 
-            caption = paste("  ", sep="") ) +
+            caption = paste(descriptive[[i]] )) +
     
           theme_bw() +
 
@@ -1315,12 +1318,11 @@ plotRawWeekly <- function(df) {
     scale_y_continuous(breaks = seq(min(0), max(31), by = 5)) +
     scale_x_continuous(breaks=seq(22,40,2)) + 
     
-    
-    labs(title=paste("total spiders trapped by week", sep=""),
-         subtitle=paste("oakMargin and control transects, counts by cluster", sep=""), 
+    # labs(title=paste("total spiders trapped by week", sep=""),
+    labs(
          y="spider counts", 
          x="week", 
-         caption = paste(" ", sep="") ) +
+         caption = paste("oakMargin and control transects, counts by cluster", sep="") ) +
     
     theme_bw() +
 
@@ -1363,8 +1365,8 @@ plotTransectWeekly <- function(df) {
     
     geom_jitter(aes(fill = transect), shape=21, size=5, alpha=.7, show.legend=TRUE) +
     
-    # geom_vline(xintercept=25.5) + # seasonal timeframe seperators
-    # geom_vline(xintercept=31.5) + #
+    geom_vline(xintercept=25.5) + # seasonal timeframe seperators
+    geom_vline(xintercept=31.5) + #
     
     ylim(c(0, 31)) + 
     expand_limits(y=c(0,31)) + 
@@ -1374,18 +1376,18 @@ plotTransectWeekly <- function(df) {
     scale_y_continuous(breaks = seq(min(0), max(31), by = 5)) +
     scale_x_continuous(breaks=seq(22,40,2)) + 
     
-    
-    labs(title=paste("total spiders trapped by week", sep=""),
-         subtitle=paste("oakMargin and control transects, counts by cluster", sep=""), 
-         y="spider counts", 
+    #labs(title=paste("total spiders trapped by week", sep=""),
+    #     subtitle=paste("oakMargin and control transects, counts by cluster", sep=""),
+
+    labs(y="spider counts", 
          x="week", 
-         caption = paste(" ", sep="") ) +
+         caption = paste("oakMargin and control transects, counts by cluster", sep="") ) +
     
     theme_bw() +
 
     scale_fill_manual(values = colours, 
                       breaks = c("oakMargin", "control"),
-                      labels = c("semi-natural habitat", "null field margin")) +
+                      labels = c("oak margin", "control")) +
     
     theme(legend.title = element_blank(),
           legend.spacing.y = unit(0, "mm"), 

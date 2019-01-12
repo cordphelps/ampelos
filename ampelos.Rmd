@@ -292,7 +292,7 @@ if (FALSE) {
 
 if (TRUE) {
 
-  gg.list <- plotPosteriorPredictiveCheck(df=rl[[4]]) 
+  gg.list <- plotPosteriorPredictiveCheck(df=returnList[[4]]) 
 
     for (i in 1:length(gg.list)) {
       print(gg.list[[i]])
