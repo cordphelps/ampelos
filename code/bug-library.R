@@ -772,10 +772,10 @@ ggTrendOrCumulative <- function(df1, df2,
       
       ylim(0,150) +
     
-      labs(title= paste(st, " weekly population counts", sep=""), 
-         subtitle = subtitle,
-         x="week", y= "daily total",
-         caption=paste(' ', sep="")) 
+      #labs(title= paste(st, " weekly population counts", sep=""), 
+         #subtitle = subtitle,
+      labs(x="week", y= "daily total",
+         caption=paste(st, " weekly population counts, ", subtitle,  sep=""))
     
   } else {
     
@@ -786,11 +786,11 @@ ggTrendOrCumulative <- function(df1, df2,
       geom_line(data=df2, aes(x=week, y=cumulativeBugs, color="c2")) +
       
       ylim(0,450) +
-      
-      labs(title= paste(st, " cumulative population counts", sep=""), 
-           subtitle = subtitle,
-           x="week", y= "cumulative count",
-           caption=paste(' ', sep="")) 
+   
+      #labs(title= paste(st, " cumulative population counts", sep=""), 
+           #subtitle = subtitle,   
+      labs(x="week", y= "cumulative count",
+           caption=paste(st, " cumulative population counts, ", subtitle,  sep="")) 
   }
     
   gg <- gg + 
@@ -849,10 +849,11 @@ ggTrendClusters <- function(df1, df2,
       ylim(0,60) +
       expand_limits(y=c(0,60)) +
       
-      labs(title= paste("weekly population counts by cluster", sep=""), 
-           subtitle = paste("oakMargin transect, ", subtitle, sep=""),
-           x="week", y= "daily total",
-           caption=paste(' ', sep="")) +
+      #labs(title= paste("weekly population counts by cluster", sep=""), 
+           #subtitle = paste("oakMargin transect, ", subtitle, sep=""),
+
+      labs(x="week", y= "daily total",
+           caption=paste("weekly population counts by cluster\n", "oakMargin transect, ", subtitle, sep="")) +
       
       expand_limits(x=c(23,34)) +
       scale_x_continuous(breaks = seq(24, 34, 2)) +
@@ -894,10 +895,10 @@ ggTrendClusters <- function(df1, df2,
       ylim(0,60) +
       expand_limits(y=c(0,60)) +
       
-      labs(title= paste("weekly population counts by cluster", sep=""), 
-           subtitle = paste("control transect, ", subtitle, sep=""),
-           x="week", y= "daily total",
-           caption=paste(' ', sep="")) +
+      #labs(title= paste("weekly population counts by cluster", sep=""), 
+           #subtitle = paste("control transect, ", subtitle, sep=""),
+      labs(x="week", y= "daily total",
+           caption=paste("weekly population counts by cluster\n", "oakMargin transect, ", subtitle, sep="")) +
       
       expand_limits(x=c(23,34)) +
       scale_x_continuous(breaks = seq(24, 34, 2)) +
@@ -1184,7 +1185,7 @@ selectDataAcrossTransects <- function(data, week, species) {
 }
 
 
-plotBugDistribution <- function (data, title, caption) {
+plotBugDistribution <- function (data, cap) {
 
 
   # http://t-redactyl.io/blog/2016/02/creating-plots-in-r-using-ggplot2-part-6-weighted-scatterplots.html
@@ -1203,10 +1204,11 @@ plotBugDistribution <- function (data, title, caption) {
                        sec.axis = sec_axis(~.*.3048,
                                            breaks= seq(0, 80, 10),
                                            name= "trap distance from field margin (m)"))  +
-    ggtitle(title) +
+    # ggtitle(title) +
+
     labs( x = "trap distance from field margin (ft)", 
           y = "row",
-          caption = paste(' ', sep="")) +
+          caption = cap) +
 
     annotate("rect", xmin=4, xmax=210, ymin=42.5,ymax=54.5, alpha=0.2, fill="blue") +
     annotate("rect", xmin=-12, xmax=5, ymin=42.5,ymax=54.5, alpha=0.2, fill="red") +
@@ -1328,16 +1330,20 @@ plotRidgesV2 <- function(data, combined, bugs, speciesText, when, wk, caption) {
       sec.axis = sec_axis(~.*.3048,
       breaks= seq(0, 70, 10),
       name= "trap distance from row start (m)"))  +
-    labs(title= paste(speciesText, " probability density\n", 
-                      "transect: ", where, sep=""), 
-         subtitle = paste("collection time: ", when, 
-                          "\ntotal ", speciesText,  " observations: ", spider_rows,
-                          "\ntraps with ", speciesText, "s: ", percentOcurrence, " %", 
-                          sep=""),
-         x="trap distance from row start (ft)",
+    #labs(title= paste(speciesText, " probability density\n", 
+                      #"transect: ", where, sep=""), 
+         #subtitle = paste("collection time: ", when, 
+                          #"\ntotal ", speciesText,  " observations: ", spider_rows,
+                          #"\ntraps with ", speciesText, "s: ", percentOcurrence, " %", 
+                          #sep=""),
+    labs(x="trap distance from row start (ft)",
          y= paste(speciesText, "\ncounts per trap", sep=""),
          #caption="10 June 2018")
-         caption=paste(' ', sep="")) +
+         caption=paste(speciesText, " probability density\n", 
+                      "transect: ", where, "collection time: ", when, 
+                      "\ntotal ", speciesText,  " observations: ", spider_rows, 
+                      "\ntraps with ", speciesText, "s: ", percentOcurrence, " %",
+                      sep="")) +
     theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
     theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
     theme_bw()
@@ -1362,12 +1368,14 @@ plotRidgesV2 <- function(data, combined, bugs, speciesText, when, wk, caption) {
       sec.axis = sec_axis(~.*.3048,
       breaks= seq(0, 70, 10),
       name= "trap distance from row start (m)"))  +
-    labs(title= paste(speciesText, " probability density",  sep=""), 
-         subtitle = paste("collection time: ", when, sep=""),
-         x="trap distance from row start (ft)",
+
+    #labs(title= paste(speciesText, " probability density",  sep=""), 
+         #subtitle = paste("collection time: ", when, sep=""),
+    labs(x="trap distance from row start (ft)",
          y= paste("counts per trap > 0", sep=""),
          #caption="10 June 2018")
-         caption=paste(' ', sep="")) +
+         caption=paste(speciesText, " probability density,",  " collection time: ", when, sep="")) +
+
     theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
     theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
     theme_bw()

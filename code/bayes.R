@@ -469,11 +469,14 @@ modelDiags <- function(daytime) {
     scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
     scale_x_continuous(breaks=seq(-15,5,5)) + 
     
-    labs(title=paste("the joint posterior distribution of bc and bpc", sep=""),
-         subtitle=paste(mt, sep=""), 
-         y="bpc", 
+    #labs(title=paste("the joint posterior distribution of bc and bpc", sep=""),
+         #subtitle=paste(mt, sep=""), 
+    #labs(title=paste("the joint posterior distribution of bc and bpc", sep=""),
+         #subtitle=paste(mt, sep=""), 
+    labs(y="bpc", 
          x="bc", 
-         caption = paste("identical clusters with population ", cap, sep="") ) +
+         caption = paste("the joint posterior distribution of bc and bpc\n", 
+                          mt, " identical clusters with population ", cap, sep="") ) +
     
     theme_bw() +
 
@@ -498,11 +501,12 @@ modelDiags <- function(daytime) {
     scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
     scale_x_continuous(breaks=seq(-15,5,5)) + 
     
-    labs(title=paste("the joint posterior distribution of bc and bpc", sep=""),
-         subtitle=paste(mt, sep=""), 
-         y="bpc", 
+    #labs(title=paste("the joint posterior distribution of bc and bpc", sep=""),
+         #subtitle=paste(mt, sep=""),
+    labs(y="bpc", 
          x="bc", 
-         caption = paste("identical clusters with population ", cap, sep="") ) +
+         caption = paste("the joint posterior distribution of bc and bpc, ", 
+                          mt, " identical clusters with population ", cap, sep="") ) +
     
     theme_bw() +
 
@@ -527,11 +531,13 @@ modelDiags <- function(daytime) {
     scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
     scale_x_continuous(breaks=seq(-15,5,5)) + 
     
-    labs(title=paste("the joint posterior distribution of bc and bpc", sep=""),
-         subtitle=paste(mt, sep=""), 
-         y="bpc", 
+    #labs(title=paste("the joint posterior distribution of bc and bpc", sep=""),
+         #subtitle=paste(mt, sep=""), 
+    labs(y="bpc", 
          x="bc", 
-         caption = paste("identical clusters with population ", cap, sep="") ) +
+         caption = paste("the joint posterior distribution of bc and bpc", 
+                          "\n", mt, 
+                          "\nidentical clusters with population ", cap, sep="") ) +
     
     theme_bw() +
 
@@ -563,34 +569,38 @@ modelDiags <- function(daytime) {
 
     gg <- ggplot() + 
     
-    geom_density(data=df1, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE) +
-    geom_density(data=df2, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE) +
-    geom_density(data=df3, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE) +
+    geom_density(data=df1, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, show_guide=FALSE) +
+    geom_density(data=df2, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, show_guide=FALSE) +
+    geom_density(data=df3, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, show_guide=FALSE) +
+
+    # stat_density(aes(x=diff), geom="point") +   # there is some magic here to adjust legend shapes
+    # https://stackoverflow.com/questions/46597079/change-the-shape-of-the-legend-in-density-plots-with-ggplot2
     
     geom_vline(xintercept=0) + #
     
-    xlim(c(-15, 5)) + 
-    expand_limits(x=c(-15, 5)) + 
-    coord_fixed(ratio=20/1) +     # control the aspect ratio of the output; "ratio" refers to the 
+    #xlim(c(-15, 5)) + 
+    #expand_limits(x=c(-15, 5)) + 
+    #coord_fixed(ratio=20/1) +     # control the aspect ratio of the output; "ratio" refers to the 
                                   # ratio of the axis limits themselves
     
-    scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
-    scale_x_continuous(breaks=seq(-15,5,5)) + 
+    #scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
+    #scale_x_continuous(breaks=seq(-15,5,5)) + 
     
     
-    labs(title=paste("the distribution of the plausible difference\nin average trapped spiders", sep=""),
-         subtitle=paste(mt, sep=""), 
-         y="density", 
+    #labs(title=paste("the distribution of the plausible difference\nin average trapped spiders", sep=""),
+         #subtitle=paste(mt, sep=""), 
+    labs(y="density", 
          x="oak margin trapped spiders minus\ncontrol trapped spiders", 
-         caption = paste("identical clusters with population ", cap, sep="") ) +
+         caption = paste("the distribution of the plausible difference in average trapped spiders\n", mt, 
+                          " identical clusters with population ", cap, sep="") ) +
     
     theme_bw() +
 
     scale_fill_manual(values = colours, 
                       breaks = c("1", "2", "3"),
                       labels = c("cluster 1", "cluster 2", "cluster 3")) +
-    scale_shape_manual(
-                      values = 21) +
+    guides(shape = guide_legend(override.aes = list(shape = 21))) +  # define the shape presented in the legend
+
     
     theme(legend.title = element_blank(),
           legend.spacing.y = unit(0, "mm"), 
@@ -628,11 +638,13 @@ plotLikelihood <- function(df, sub, cap) {
     ylim(c(0, 1)) + 
     expand_limits(y=c(0,1)) + 
     #scale_x_continuous(breaks=seq(22,40,2)) +
-    labs(title=paste("'plausibility' of an oakMargin effect\non the crab spider population", sep=""),
-         subtitle=paste(sub, sep=""), 
-         y="plausibility", 
+
+    #labs(title=paste("'plausibility' of an oakMargin effect\non the crab spider population", sep=""),
+     #    subtitle=paste(sub, sep=""), 
+    labs(y="plausibility", 
          x="seasonal timeframe", 
-         caption = paste(cap, sep="") ) +
+         caption = paste("'plausibility' of an oakMargin effect on the crab spider population\n", 
+          sub, ", ", cap, sep="") ) +
     
     scale_x_discrete(labels=c("one" = "weeks\n23-25", "two" = "weeks\n26-31",
                               "three" = "weeks\n32-34")) +
@@ -760,8 +772,11 @@ generateLikelihoodV2 <- function(df, list, daytime) {
     label.list <- list()  # remember which cluster and seasonal timeframe
     #
     log.pop.list <- list()
+
+    trapEfficiency <- 1  # traps capture 10% of the population (4 plants per trap)
+    
     #
-    #        rnorm() mean      cluster spider population         log population
+    #        trapped spiders    cluster spider population         log population
     #   
     #             75                    794                            2.9       
     #             25                    264                            2.4
@@ -773,7 +788,7 @@ generateLikelihoodV2 <- function(df, list, daytime) {
     #
     cl.st.list[[1]] <- df %>% dplyr::filter(week < 26 & cluster == 'one')
     cl.st.list[[1]]$population <- rnorm(nrow(cl.st.list[[1]]), mean=75, sd=15)
-    cl.st.list[[1]]$population <- as.integer(cl.st.list[[1]]$population)
+    cl.st.list[[1]]$population <- as.integer(cl.st.list[[1]]$population * trapEfficiency)
     cl.st.list[[1]]$log_pop <- log(cl.st.list[[1]]$population)  # R code 10.40
     cl.st.list[[1]]$contact_high <- ifelse( cl.st.list[[1]]$transect=="oakMargin" , 1 , 0 )
     log.pop.list[[1]] <- 2.9
@@ -781,7 +796,7 @@ generateLikelihoodV2 <- function(df, list, daytime) {
   
     cl.st.list[[2]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'one')
     cl.st.list[[2]]$population <-rnorm(nrow(cl.st.list[[2]]), mean=25, sd=8)
-    cl.st.list[[2]]$population <- as.integer(cl.st.list[[2]]$population)
+    cl.st.list[[2]]$population <- as.integer(cl.st.list[[2]]$population * trapEfficiency)
     cl.st.list[[2]]$log_pop <- log(cl.st.list[[2]]$population)  # R code 10.40
     cl.st.list[[2]]$contact_high <- ifelse( cl.st.list[[2]]$transect=="oakMargin" , 1 , 0 )
     log.pop.list[[2]] <- 2.4
@@ -789,7 +804,7 @@ generateLikelihoodV2 <- function(df, list, daytime) {
     
     cl.st.list[[3]] <- df %>% dplyr::filter(week > 31 & cluster == 'one')
     cl.st.list[[3]]$population <-rnorm(nrow(cl.st.list[[3]]), mean=15, sd=2)
-    cl.st.list[[3]]$population <- as.integer(cl.st.list[[3]]$population)
+    cl.st.list[[3]]$population <- as.integer(cl.st.list[[3]]$population * trapEfficiency)
     cl.st.list[[3]]$log_pop <- log(cl.st.list[[3]]$population)  # R code 10.40
     cl.st.list[[3]]$contact_high <- ifelse( cl.st.list[[3]]$transect=="oakMargin" , 1 , 0 )
     log.pop.list[[3]] <- 2.2
@@ -797,7 +812,7 @@ generateLikelihoodV2 <- function(df, list, daytime) {
     
     cl.st.list[[4]] <- df %>% dplyr::filter(week < 26 & cluster == 'two')
     cl.st.list[[4]]$population <- rnorm(nrow(cl.st.list[[4]]), mean=75, sd=15)
-    cl.st.list[[4]]$population <- as.integer(cl.st.list[[4]]$population)
+    cl.st.list[[4]]$population <- as.integer(cl.st.list[[4]]$population * trapEfficiency)
     cl.st.list[[4]]$log_pop <- log(cl.st.list[[4]]$population)  # R code 10.40
     cl.st.list[[4]]$contact_high <- ifelse( cl.st.list[[4]]$transect=="oakMargin" , 1 , 0 )
     log.pop.list[[4]] <- 2.9
@@ -805,7 +820,7 @@ generateLikelihoodV2 <- function(df, list, daytime) {
     
     cl.st.list[[5]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'two')
     cl.st.list[[5]]$population <-rnorm(nrow(cl.st.list[[5]]), mean=25, sd=8)
-    cl.st.list[[5]]$population <- as.integer(cl.st.list[[5]]$population)
+    cl.st.list[[5]]$population <- as.integer(cl.st.list[[5]]$population * trapEfficiency)
     cl.st.list[[5]]$log_pop <- log(cl.st.list[[5]]$population)  # R code 10.40
     cl.st.list[[5]]$contact_high <- ifelse( cl.st.list[[5]]$transect=="oakMargin" , 1 , 0 )
     log.pop.list[[5]] <- 2.4
@@ -813,7 +828,7 @@ generateLikelihoodV2 <- function(df, list, daytime) {
   
     cl.st.list[[6]] <- df %>% dplyr::filter(week > 31 & cluster == 'two')
     cl.st.list[[6]]$population <-rnorm(nrow(cl.st.list[[6]]), mean=15, sd=2)
-    cl.st.list[[6]]$population <- as.integer(cl.st.list[[6]]$population)
+    cl.st.list[[6]]$population <- as.integer(cl.st.list[[6]]$population * trapEfficiency)
     cl.st.list[[6]]$log_pop <- log(cl.st.list[[6]]$population)  # R code 10.40
     cl.st.list[[6]]$contact_high <- ifelse( cl.st.list[[6]]$transect=="oakMargin" , 1 , 0 )
     log.pop.list[[6]] <- 2.2
@@ -821,7 +836,7 @@ generateLikelihoodV2 <- function(df, list, daytime) {
     
     cl.st.list[[7]] <- df %>% dplyr::filter(week < 26 & cluster == 'three')
     cl.st.list[[7]]$population <- rnorm(nrow(cl.st.list[[7]]), mean=75, sd=15)
-    cl.st.list[[7]]$population <- as.integer(cl.st.list[[7]]$population)
+    cl.st.list[[7]]$population <- as.integer(cl.st.list[[7]]$population * trapEfficiency)
     cl.st.list[[7]]$log_pop <- log(cl.st.list[[7]]$population)  # R code 10.40
     cl.st.list[[7]]$contact_high <- ifelse( cl.st.list[[7]]$transect=="oakMargin" , 1 , 0 )
     log.pop.list[[7]] <- 2.9
@@ -829,7 +844,7 @@ generateLikelihoodV2 <- function(df, list, daytime) {
     
     cl.st.list[[8]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'three')
     cl.st.list[[8]]$population <-rnorm(nrow(cl.st.list[[8]]), mean=25, sd=8)
-    cl.st.list[[8]]$population <- as.integer(cl.st.list[[8]]$population)
+    cl.st.list[[8]]$population <- as.integer(cl.st.list[[8]]$population * trapEfficiency)
     cl.st.list[[8]]$log_pop <- log(cl.st.list[[8]]$population)  # R code 10.40
     cl.st.list[[8]]$contact_high <- ifelse( cl.st.list[[8]]$transect=="oakMargin" , 1 , 0 )
     log.pop.list[[8]] <- 2.4
@@ -837,7 +852,7 @@ generateLikelihoodV2 <- function(df, list, daytime) {
     
     cl.st.list[[9]] <- df %>% dplyr::filter(week > 31 & cluster == 'three')
     cl.st.list[[9]]$population <-rnorm(nrow(cl.st.list[[9]]), mean=15, sd=2)
-    cl.st.list[[9]]$population <- as.integer(cl.st.list[[9]]$population)
+    cl.st.list[[9]]$population <- as.integer(cl.st.list[[9]]$population * trapEfficiency)
     cl.st.list[[9]]$log_pop <- log(cl.st.list[[9]]$population)  # R code 10.40
     cl.st.list[[9]]$contact_high <- ifelse( cl.st.list[[9]]$transect=="oakMargin" , 1 , 0 )
     log.pop.list[[9]] <- 2.2
@@ -993,6 +1008,8 @@ generateLikelihoodV2 <- function(df, list, daytime) {
   return(gg)
   
 }
+
+
 
 weightedModelGraph <- function(df, model, label) {
 
@@ -1260,11 +1277,11 @@ plotWeekly <- function(df) {
     scale_x_continuous(breaks=seq(22,40,2)) + 
     
     
-    labs(title=paste("total spiders trapped per week", sep=""),
-         subtitle=paste("oakMargin and control transects, counts by cluster", sep=""), 
-         y="spiders per week", 
+    #labs(title=paste("total spiders trapped per week", sep=""),
+         #subtitle=paste("oakMargin and control transects, counts by cluster", sep=""), 
+    labs(y="spiders per week", 
          x="week", 
-         caption = paste("arbitrary seasonal timeframes", sep="") ) +
+         caption = paste("oakMargin and control transects, counts by cluster" ) ) +
     
     theme_bw() +
 

@@ -71,7 +71,10 @@ clusterBoxplot <- function(df, t, time) {
     
     # ylim(0, 1.75, .25) +
     expand_limits(y=c(0, 1.75)) +
-    ggtitle(paste("cluster comparisons by week\n", "transect: ", t, ", period: ", time, sep="")) +
+
+    #ggtitle(paste("cluster comparisons by week\n", "transect: ", t, ", period: ", time, sep="")) +
+
+
     theme_bw() +
     
     #scale_fill_manual(values=c("red", "green", "blue"),
@@ -79,6 +82,8 @@ clusterBoxplot <- function(df, t, time) {
                      # labels = c('cluster 1','cluster 2','cluster 3')) +
     scale_x_discrete(name = "week") +
     scale_y_continuous(name = "crab spiders observed") +
+
+    labs(caption=paste("cluster comparisons by week, ", "transect: ", t, ", period: ", time, sep="")) +
 
     
     theme(legend.title = element_blank(),

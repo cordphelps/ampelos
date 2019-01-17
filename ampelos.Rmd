@@ -119,15 +119,13 @@ print(v2.2)
 reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(24), species=quo(Thomisidae..crab.spider.))
 
 g24 <- plotBugDistribution(data=reducedData.df, 
-                          title=paste("crab spider occurrences", "\nweek 24", sep=""), 
-                          caption="stuff")
+                          cap=paste("crab spider occurrences", " week 24", sep=""))
 
 
 reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(30), species=quo(Thomisidae..crab.spider.))
 
 g30 <- plotBugDistribution(data=reducedData.df, 
-                          title=paste("crab spider occurrences", "\nweek 30", sep=""), 
-                          caption="stuff")
+                            cap=paste("crab spider occurrences", " week 30", sep=""))
 
 
 
@@ -245,11 +243,6 @@ rl <- returnList
 
   
   }  # end if TRUE
-
-
-
-
-  
 
 ```
 

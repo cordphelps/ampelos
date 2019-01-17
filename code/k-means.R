@@ -200,11 +200,12 @@ kmPlot <- function(list, transectText) {
       	# guide_legend(title="clusters") +
       	guides(fill=guide_legend(title="clusters")) +
 
-      	labs(title=paste("crab spider clusters"),
-        subtitle=paste("transect: ", transectText, sep=""),   
-          x="week number", 
+      	#labs(title=paste("crab spider clusters"),
+        #subtitle=paste("transect: ", transectText, sep=""),
+      	labs(x="week number", 
           y="trap position", 
-          caption = paste("stats::kmeans()\n(data for weeks 33-34 is too sparse", sep="") ) +
+          caption = paste("crab spider clusters: ", "transect: ", transectText, 
+          					" (data for weeks 33-34 is too sparse)", sep="") ) +
     
     # https://en.wikipedia.org/wiki/K-means_clustering
 

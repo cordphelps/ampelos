@@ -307,10 +307,12 @@ calculateDistance <- function(df, valuesName, attName, normalize) {
       
       geom_point(aes(fill=as.character(cluster)), shape=23, size=5, show.legend=TRUE) +
       
-      labs(title= paste("Relative Population Strength Between Clusters", sep=""), 
-           subtitle = paste("transect: ", t, " daytime= ", time, sep=""),
-           x="week", y= "cluster relative strength",
-           caption=paste("'strength' as a function of mean and SD", sep="")) +
+      #labs(title= paste("Relative Population Strength Between Clusters", sep=""), 
+           #subtitle = paste("transect: ", t, " daytime= ", time, sep=""),
+
+      labs(x="week", y= "cluster relative strength",
+           caption=paste("Relative Population Strength Between Clusters\n", 
+                          "transect: ", t, " daytime: ", time, sep="")) +
       
       expand_limits(x=c(23,34)) +
       scale_x_continuous(breaks = seq(24, 34, 2)) +

@@ -117,8 +117,7 @@ print(v2.2)
 reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(24), species=quo(Thomisidae..crab.spider.))
 
 g24 <- plotBugDistribution(data=reducedData.df, 
-                          title=paste("crab spider occurrences", "\nweek 24", sep=""), 
-                          caption="stuff")
+                          cap=paste("crab spider occurrences", " week 24", sep=""))
 ```
 
 ![](ampelos_files/figure-markdown_github/overheadCompare-1.png)
@@ -127,8 +126,7 @@ g24 <- plotBugDistribution(data=reducedData.df,
 reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(30), species=quo(Thomisidae..crab.spider.))
 
 g30 <- plotBugDistribution(data=reducedData.df, 
-                          title=paste("crab spider occurrences", "\nweek 30", sep=""), 
-                          caption="stuff")
+                            cap=paste("crab spider occurrences", " week 30", sep=""))
 ```
 
 ![](ampelos_files/figure-markdown_github/overheadCompare-2.png)
@@ -320,12 +318,32 @@ gg.list <- modelDiags(daytime='24h') # read the 9 models from disc and run diags
     ##       have undergone significant name changes in order to adopt a unified naming scheme.
     ##       See help('tidybayes-deprecated') for more information.
 
-    ## Scale for 'x' is already present. Adding another scale for 'x', which
-    ## will replace the existing scale.
-    ## Scale for 'x' is already present. Adding another scale for 'x', which
-    ## will replace the existing scale.
-    ## Scale for 'x' is already present. Adding another scale for 'x', which
-    ## will replace the existing scale.
+    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
+    ## instead.
+
+    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
+    ## instead.
+
+    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
+    ## instead.
+
+    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
+    ## instead.
+
+    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
+    ## instead.
+
+    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
+    ## instead.
+
+    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
+    ## instead.
+
+    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
+    ## instead.
+
+    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
+    ## instead.
 
 ``` r
 for (i in 1:length(gg.list)) {
@@ -359,7 +377,7 @@ if (FALSE) {
 ``` r
 if (TRUE) {
 
-  gg.list <- plotPosteriorPredictiveCheck(df=rl[[4]]) 
+  gg.list <- plotPosteriorPredictiveCheck(df=returnList[[4]]) 
 
     for (i in 1:length(gg.list)) {
       print(gg.list[[i]])
