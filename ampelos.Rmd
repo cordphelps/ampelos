@@ -25,6 +25,7 @@ source('./code/ranking.R')
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 
+# setwd("./code/thesis/ampelos/")
 
 ```
 
@@ -135,7 +136,7 @@ g30 <- plotBugDistribution(data=reducedData.df,
 
 ### are clusters appearing and do they persist across multiple weeks?
 
-```{r overheadClusters, echo=T, include=T, message=F, warning=T}
+```{r overheadClusters, echo=TRUE, include=TRUE, results="hide", message=F, warning=F}
 
 
 clusterNumber <- 3
@@ -184,7 +185,7 @@ if (TRUE) {
   # returnList[[4]] is the data 'dataframe' used for the graphics (total.df)
   # from bayes.R evaluateDailySpiderCounts()
   ##
-  ## multiple records per week with columns
+  ## multiple records per week with columns (372 rows)
   ## week, transect, time, cluster, totalSpiders
   ##
  

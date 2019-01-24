@@ -1,5 +1,5 @@
 
-generateLikelihoodV2()               2019-01-14 06:54:39
+generateLikelihoodV2()               2019-01-22 16:07:59
 
 
 NULL
@@ -11,15 +11,15 @@ NULL
   Links: mu = log 
 Formula: totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop 
    Data: cl.st.list[[i]] (Number of observations: 66) 
-Samples: 4 chains, each with iter = 3000; warmup = 2000; thin = 1;
-         total post-warmup samples = 4000
+Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
+         total post-warmup samples = 8000
 
 Population-Level Effects: 
                      Estimate Est.Error l-89% CI u-89% CI Eff.Sample Rhat
-Intercept                1.77      0.82     0.46     3.07       2135 1.00
-log_pop                 -0.32      0.26    -0.74     0.10       2110 1.00
-contact_high            -0.77      0.77    -2.02     0.47       1591 1.00
-log_pop:contact_high     0.25      0.25    -0.15     0.65       1556 1.00
+Intercept                1.72      0.79     0.46     2.98       4225 1.00
+log_pop                 -0.30      0.26    -0.71     0.11       4131 1.00
+contact_high            -0.73      0.80    -1.99     0.52       3081 1.00
+log_pop:contact_high     0.24      0.26    -0.17     0.66       3035 1.00
 
 Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
 is a crude measure of effective sample size, and Rhat is the potential 

@@ -21,6 +21,8 @@ source('./code/ranking.R')
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
+
+# setwd("./code/thesis/ampelos/")
 ```
 
 ### weekly composition of species and individuals?
@@ -184,7 +186,7 @@ if (TRUE) {
   # returnList[[4]] is the data 'dataframe' used for the graphics (total.df)
   # from bayes.R evaluateDailySpiderCounts()
   ##
-  ## multiple records per week with columns
+  ## multiple records per week with columns (372 rows)
   ## week, transect, time, cluster, totalSpiders
   ##
  
@@ -318,32 +320,23 @@ gg.list <- modelDiags(daytime='24h') # read the 9 models from disc and run diags
     ##       have undergone significant name changes in order to adopt a unified naming scheme.
     ##       See help('tidybayes-deprecated') for more information.
 
-    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
-    ## instead.
+    ## Warning: Ignoring unknown parameters: show_legend
 
-    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
-    ## instead.
+    ## Warning: Ignoring unknown parameters: show_legend
 
-    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
-    ## instead.
+    ## Warning: Ignoring unknown parameters: show_legend
 
-    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
-    ## instead.
+    ## Warning: Ignoring unknown parameters: show_legend
 
-    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
-    ## instead.
+    ## Warning: Ignoring unknown parameters: show_legend
 
-    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
-    ## instead.
+    ## Warning: Ignoring unknown parameters: show_legend
 
-    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
-    ## instead.
+    ## Warning: Ignoring unknown parameters: show_legend
 
-    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
-    ## instead.
+    ## Warning: Ignoring unknown parameters: show_legend
 
-    ## Warning: `show_guide` has been deprecated. Please use `show.legend`
-    ## instead.
+    ## Warning: Ignoring unknown parameters: show_legend
 
 ``` r
 for (i in 1:length(gg.list)) {
