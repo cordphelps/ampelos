@@ -102,9 +102,10 @@ ambient231 <- ggplot(data = df2.df, aes(x=julian)) +
                                            breaks= seq(0, 110, 10),
                                            name= "air temp (F)"))  +
   
-  labs(title = paste("2018 Ambient Temperatures", sep=""), 
-      subtitle = paste("CIMIS Station #231, Lompoc, California", sep=""),
-      x = "julian day", y = "air temp (C)") +
+  labs(x = "julian day", y = "air temp (C)",
+      #title = paste("2018 Ambient Temperatures", sep=""), 
+      #subtitle = paste("CIMIS Station #231, Lompoc, California", sep=""),
+      caption= paste("2018 Ambient Temperatures\n", "CIMIS Station #231, Lompoc, California", sep="") ) +
 
   theme_bw() +
   theme(axis.title.y.right = element_text(angle = 90)) 
@@ -131,8 +132,9 @@ precip231 <- ggplot(data = temp.df, aes(x=julian, y=DayPrecip)) +
   scale_y_continuous(breaks=seq(0,100,10))  +
   xlim(0,250) +
   labs(x = "julian day", y = "precipitation (mm)") +
-  labs(title= paste("2018 Average Precipitation", sep=""), 
-         subtitle = paste("CIMIS Station #231, Lompoc, California", sep="")) +
+  #labs(title= paste("2018 Average Precipitation", sep=""), 
+  #      subtitle = paste("CIMIS Station #231, Lompoc, California", sep="")) +
+  labs(caption= paste("2018 Average Precipitation\n", "CIMIS Station #231, Lompoc, California", sep="")) +
    
   theme_bw() +
   theme(legend.position="none")
@@ -155,9 +157,10 @@ humidity231 <- ggplot(data = df2.df, aes(x=julian, y=DayRelHumAvg)) +
   #geom_vline(xintercept=175) +  # stylet oil
   # ylim(-10,40) +
   scale_y_continuous(breaks=seq(0,100,10))  +
-  labs(x = "julian day", y = "average relative humidity (%)") +
-  labs(title= paste("2018 Average Relative Humidity", sep=""), 
-         subtitle = paste("CIMIS Station #231, Lompoc, California", sep="")) +
+  labs(x = "julian day", y = "average relative humidity (%)",
+       caption= paste("2018 Average Relative Humidity\n", "CIMIS Station #231, Lompoc, California", sep="")) +
+  #labs(title= paste("2018 Average Relative Humidity", sep=""), 
+         #subtitle = paste("CIMIS Station #231, Lompoc, California", sep="")) +
    
   theme_bw() +
   theme(legend.position="none")
@@ -174,6 +177,14 @@ ground231 <- ggplot(data = df2.df, aes(x=julian, y=DaySoilTmpAvg)) +
   geom_label(aes(x = 152, y = 10, label = "1 June")) +
   geom_label(aes(x = 182, y = 10, label = "1 July")) +
   geom_label(aes(x = 213, y = 10, label = "1 August")) +
+
+  geom_vline(xintercept=84, linetype="dotted", alpha=.75) +  # 3/25/18 bud break = julian 84
+  geom_vline(xintercept=142, linetype="dotted", alpha=.75) +  # 5/22/18 bloom = julian 142
+  geom_vline(xintercept=222, linetype="dotted", alpha=.75) +  # 8/10/18 veraison = julian 222
+  
+  geom_label(aes(x = 84, y = 35, label = "bud break")) +
+  geom_label(aes(x = 142, y = 35, label = "bloom")) +
+  geom_label(aes(x = 222, y = 35, label = "veraison")) +
   
   ylim(0,40) +
   expand_limits(y = 40) +
@@ -182,10 +193,13 @@ ground231 <- ggplot(data = df2.df, aes(x=julian, y=DaySoilTmpAvg)) +
     sec.axis = sec_axis(~.*(9/5) + 32,
                         breaks= seq(0, 110, 10),
                         name= "temp (F)")) +
-  labs(x = "julian day", y = "temp (C)") +
-  labs(title = paste("2018 Average Soil Temperature 15 cm below soil surface", sep=""), 
-        subtitle = paste("CIMIS Station #231, Lompoc, California", sep=""),
-        caption=paste("sensor located under irrigated grass", sep="") )  +
+  labs(x = "julian day", y = "temp (C)",
+       caption= paste("2018 Average Soil Temperature 15 cm below soil surface\n", "CIMIS Station #231, Lompoc, California", sep="")) +
+
+  #labs(title = paste("2018 Average Soil Temperature 15 cm below soil surface", sep=""), 
+   #     subtitle = paste("CIMIS Station #231, Lompoc, California", sep=""),
+   #     caption=paste("sensor located under irrigated grass", sep="") )  +
+
   theme_bw() +
   theme(axis.title.y.right = element_text(angle = 90)) +
   theme(legend.position="none")
@@ -208,10 +222,12 @@ wind231 <- ggplot(data = df2.df, aes(x=julian, y=DayWindSpdAvg)) +
   expand_limits(y = 10) +
   # scale_y_continuous(breaks=seq(0,40,10),
   scale_y_continuous() +
-  labs(x = "julian day", y = "meters/second") +
-  labs(title = paste("2018 Average Wind Speed", sep=""), 
-        subtitle = paste("CIMIS Station #231, Lompoc, California", sep=""),
-        caption=paste("", sep="") )  +
+  labs(x = "julian day", y = "meters/second",
+       caption= paste("2018 Average Wind Speed\n", "CIMIS Station #231, Lompoc, California", sep="")) +
+  #labs(title = paste("2018 Average Wind Speed", sep=""), 
+  #      subtitle = paste("CIMIS Station #231, Lompoc, California", sep=""),
+  #     caption=paste("", sep="") )  +
+  
   theme_bw() +
   theme(axis.title.y.right = element_text(angle = 90)) 
 

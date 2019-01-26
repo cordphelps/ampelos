@@ -222,18 +222,18 @@ rl <- returnList
     ## rl[[4]] is multiple records per week with columns
     ## week, transect, time, cluster, totalSpiders
     ##
-    gg.likelihood <- generateLikelihoodV2(df=rl[[4]], list=rl, daytime='24h')
+    gg.likelihood <- generateLikelihoodV2(df=rl[[4]], inboundList=rl, daytime='24h')
     print(gg.likelihood)
   
     if (TRUE) {
   
     filtered.df <- rl[[4]] %>% dplyr::filter(time == 'pm')
-    gg.likelihood <- generateLikelihoodV2(df=filtered.df, list=rl, daytime='pm')
+    gg.likelihood <- generateLikelihoodV2(df=filtered.df, inboundList=rl, daytime='pm')
     print(gg.likelihood) # likelihood by cluster with seasonal timeframes
   
   
     filtered.df <- rl[[4]] %>% dplyr::filter(time == 'am')
-    gg.likelihood <- generateLikelihoodV2(df=filtered.df, list=rl, daytime='am')
+    gg.likelihood <- generateLikelihoodV2(df=filtered.df, inboundList=rl, daytime='am')
     print(gg.likelihood) # likelihood by cluster with seasonal timeframes
   
     }
@@ -252,7 +252,7 @@ rl <- returnList
 ```{r clusterDiags, echo=TRUE, include=TRUE, message=T, warning=T}
 
 
-gg.list <- modelDiags(daytime='24h') # read the 9 models from disc and run diags
+gg.list <- modelDiags(daytime='24h', log.pop.list=rl[[13]]) # read the 9 models from disc and run diags
 
 for (i in 1:length(gg.list)) {
   print(gg.list[[i]])
@@ -286,7 +286,7 @@ if (FALSE) {
 
 if (TRUE) {
 
-  gg.list <- plotPosteriorPredictiveCheck(df=returnList[[4]]) 
+  gg.list <- plotPosteriorPredictiveCheck(df=returnList[[4]], log.pop.list=rl[[13]]) 
 
     for (i in 1:length(gg.list)) {
       print(gg.list[[i]])

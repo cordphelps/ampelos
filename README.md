@@ -221,18 +221,18 @@ rl <- returnList
     ## rl[[4]] is multiple records per week with columns
     ## week, transect, time, cluster, totalSpiders
     ##
-    gg.likelihood <- generateLikelihoodV2(df=rl[[4]], list=rl, daytime='24h')
+    gg.likelihood <- generateLikelihoodV2(df=rl[[4]], inboundList=rl, daytime='24h')
     print(gg.likelihood)
   
     if (TRUE) {
   
     filtered.df <- rl[[4]] %>% dplyr::filter(time == 'pm')
-    gg.likelihood <- generateLikelihoodV2(df=filtered.df, list=rl, daytime='pm')
+    gg.likelihood <- generateLikelihoodV2(df=filtered.df, inboundList=rl, daytime='pm')
     print(gg.likelihood) # likelihood by cluster with seasonal timeframes
   
   
     filtered.df <- rl[[4]] %>% dplyr::filter(time == 'am')
-    gg.likelihood <- generateLikelihoodV2(df=filtered.df, list=rl, daytime='am')
+    gg.likelihood <- generateLikelihoodV2(df=filtered.df, inboundList=rl, daytime='am')
     print(gg.likelihood) # likelihood by cluster with seasonal timeframes
   
     }
@@ -268,6 +268,58 @@ rl <- returnList
     ## 
     ##     extract
 
+    ## Compiling the C++ model
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
     ## Loading 'brms' package (version 2.6.0). Useful instructions
     ## can be found by typing help('brms'). A more detailed introduction
     ## to the package is available through vignette('brms_overview').
@@ -286,6 +338,60 @@ rl <- returnList
     ## The following object is masked from 'package:tidyr':
     ## 
     ##     extract
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
 
 ![](ampelos_files/figure-markdown_github/clusterBayes-1.png)
 
@@ -308,12 +414,66 @@ rl <- returnList
     ## 
     ##     extract
 
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
+    ## Compiling the C++ model
+
+    ## recompiling to avoid crashing R session
+
+    ## Start sampling
+
 ![](ampelos_files/figure-markdown_github/clusterBayes-2.png)![](ampelos_files/figure-markdown_github/clusterBayes-3.png)
 
 ### model diagnostics?
 
 ``` r
-gg.list <- modelDiags(daytime='24h') # read the 9 models from disc and run diags
+gg.list <- modelDiags(daytime='24h', log.pop.list=rl[[13]]) # read the 9 models from disc and run diags
 ```
 
     ## NOTE: As of tidybayes version 1.0, several functions, arguments, and output column names
@@ -370,7 +530,7 @@ if (FALSE) {
 ``` r
 if (TRUE) {
 
-  gg.list <- plotPosteriorPredictiveCheck(df=returnList[[4]]) 
+  gg.list <- plotPosteriorPredictiveCheck(df=returnList[[4]], log.pop.list=rl[[13]]) 
 
     for (i in 1:length(gg.list)) {
       print(gg.list[[i]])
