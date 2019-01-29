@@ -268,58 +268,6 @@ rl <- returnList
     ## 
     ##     extract
 
-    ## Compiling the C++ model
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
     ## Loading 'brms' package (version 2.6.0). Useful instructions
     ## can be found by typing help('brms'). A more detailed introduction
     ## to the package is available through vignette('brms_overview').
@@ -338,60 +286,6 @@ rl <- returnList
     ## The following object is masked from 'package:tidyr':
     ## 
     ##     extract
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
 
 ![](ampelos_files/figure-markdown_github/clusterBayes-1.png)
 
@@ -413,60 +307,6 @@ rl <- returnList
     ## The following object is masked from 'package:tidyr':
     ## 
     ##     extract
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
 
 ![](ampelos_files/figure-markdown_github/clusterBayes-2.png)![](ampelos_files/figure-markdown_github/clusterBayes-3.png)
 
