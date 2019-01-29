@@ -159,18 +159,17 @@ plotRidges <- function(data, combined, bugs, speciesText, where, when, wk, capti
                        sec.axis = sec_axis(~.*.3048,
                                            breaks= seq(0, 80, 10),
                                            name= "trap distance from row start (m)"))  +
-    labs(title= paste(speciesText, " Probability Density\n", 
-                      "transect: ", where, sep=""), 
-         subtitle = paste("week: ", cumulative, ", collection time: ", when, 
-                          "\ntotal ", speciesText,  " observations: ", spider_rows,
-                          "\ntraps with ", speciesText, "s: ", percentOcurrence, " %", 
-                          sep=""),
-         x="trap distance from row start (ft)",
+    #labs(title= paste(speciesText, " Probability Density\n", 
+     #                 "transect: ", where, sep=""), 
+         #subtitle = paste("week: ", cumulative, ", collection time: ", when, 
+            #              "\ntotal ", speciesText,  " observations: ", spider_rows,
+             #             "\ntraps with ", speciesText, "s: ", percentOcurrence, " %", 
+             #             sep=""),
+
+    labs(x="trap distance from row start (ft)",
          y= paste(speciesText, "\ncounts per trap", sep=""),
-         #caption="10 June 2018")
-         caption=paste(caption, 
-                       "\nhttps://en.wikipedia.org/wiki/Kernel_density_estimation", 
-                       sep="")) +
+         caption=paste(speciesText, " Probability Density\n", "week: ", cumulative, ", collection time: ", when, sep="")) +
+
     theme(panel.grid.minor=element_blank()) +  # hide the minor gridlines
     theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
     theme_bw()
@@ -1569,11 +1568,11 @@ plotBugPercentages <- function(list, spidersOnly) {
       scale_x_continuous(breaks=seq(22,40,2)) + 
     
     
-      labs(title=paste("spider abundance", sep=""),
-         subtitle=paste("percent of total insects by week", sep=""), 
-         y="spider percentage", 
-         x="week", 
-         caption = paste(" ", sep="") ) +
+      #labs(title=paste("spider abundance", sep=""),
+      #subtitle=paste("percent of total insects by week", sep=""), 
+      labs(y="spider percentage", 
+          x="week", 
+          caption = paste("spider abundance\n", "percent of total insects by week", sep="") ) +
     
       theme_bw() +
     
@@ -1618,11 +1617,10 @@ plotBugPercentages <- function(list, spidersOnly) {
         scale_x_continuous(breaks=seq(22,40,2)) + 
     
     
-        labs(title=paste("insect abundance by taxonometric Order", sep=""),
-          subtitle=paste("percent of total population by week", sep=""), 
-          y="percent", 
-          x="week", 
-          caption = paste(" ", sep="") ) +
+        #labs(title=paste("insect abundance by taxonometric Order", sep=""),
+        # subtitle=paste("percent of total population by week", sep=""),
+        labs(y="percent", x="week", 
+          caption = paste("insect abundance by taxonometric Order\n", "percent of total population by week", sep="") ) +
     
         theme_bw() +
     

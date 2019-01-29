@@ -676,14 +676,16 @@ modelDiags <- function(daytime, log.pop.list) {
     #coord_fixed(ratio=20/1) +     # control the aspect ratio of the output; "ratio" refers to the 
                                   # ratio of the axis limits themselves
     
-    #scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
+    coord_cartesian(ylim=c(0, .6), xlim=c(-25, 25))  + # clip
+
+    scale_y_continuous(breaks = seq(min(0), max(.6), by = .2)) +
     #scale_x_continuous(breaks=seq(-15,5,5)) + 
     
     
     #labs(title=paste("the distribution of the plausible difference\nin average trapped spiders", sep=""),
          #subtitle=paste(mt, sep=""), 
     labs(y="density", 
-         x="delta trapped spider rate\ncontrol vs. oak margin", 
+         x="trapped spider rate\ncontrol minus oak margin", 
          caption = paste("the distribution of the plausible difference in average trapped spiders\n", mt, sep="") ) +
     
     theme_bw() +
@@ -811,6 +813,10 @@ generateLikelihoodV2 <- function(df, inboundList, daytime) {
     options(mc.cores = parallel::detectCores())
     #To avoid recompilation of unchanged Stan programs, we recommend calling
     rstan_options(auto_write = TRUE)
+
+    if (FALSE) {
+      df <- total.df
+    }
     
       ##
     ##
@@ -820,7 +826,7 @@ generateLikelihoodV2 <- function(df, inboundList, daytime) {
     ##
     ##
 
-  if (TRUE) {   # go through the tedious process of creating the brm models
+  if (FALSE) {   # go through the tedious process of creating the brm models
                  # otherwise, get them from disk 
 
   
@@ -1420,5 +1426,70 @@ sinkAll <- function() {
   }
 }
 
+visualizeBRMSdraws <- function(df) {
 
+  # https://mjskay.github.io/tidybayes/articles/tidy-brms.html
+
+  library(ggstance)
+
+  if (FALSE) {
+    df< total.df
+
+    # use these mean counts to estime the cluster population in the different time frames
+    cl.by.week <- df %>% dplyr::filter(week < 26)
+    cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
+    cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
+
+    cl.by.week <- df %>% dplyr::filter(week > 25 & week < 32)
+    cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
+    cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
+
+    cl.by.week <- df %>% dplyr::filter(week > 31)
+    cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
+    cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
+
+    #> head(cl.pm)
+    #  week  transect time cluster totalSpiders
+    #1   32 oakMargin   pm     one            1
+    #2   32 oakMargin   pm     one            3
+    #3   32 oakMargin   pm     one            0
+    #4   32 oakMargin   pm     two            1
+    #5   32 oakMargin   pm     two            3
+
+
+    # get models from disk
+    daytime <- "pm"
+    inboundList <- readRDS(paste("./code/output/list-", daytime, ".rds", sep=""))
+    model.list <- inboundList[[8]]
+    post.df <- brms::posterior_samples(modelOutput[[i]])
+
+
+  }
+
+  cl.pm %>%
+    ggplot(aes(y = week, x = totalSpiders, size=totalSpiders)) +
+    geom_point()
+
+
+  # Extracting draws from a fit in tidy-format using spread_draws
+
+  get_variables(model.list[[1]])
+
+  # spread_draws() splits the variable indices by commas and spaces. 
+  # It lets you assign columns to the resulting indices in order. 
+
+  model.list[[1]] %>% spread_draws(b_Intercept, b_log_pop, b_contact_high) %>% median_qi() %>% head(10)
+
+  model.list[[1]] %>% spread_draws(`b_Intercept`, `b_contact_high`, `b_log_pop`) %>%
+
+                      mutate(condition_mean = `b_Intercept` + `b_log_pop`) %>%
+
+                      median_qi(condition_mean) %>% 
+
+                      ggplot(aes(y = b_log_pop, x = condition_mean, xmin = .lower, xmax = .upper)) +
+
+                            ggstance::geom_pointrangeh()
+
+
+}
 

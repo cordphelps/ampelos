@@ -329,12 +329,12 @@ plotDivSpeciesV2 <- function(dfOak, dfControl, titleText, subText, captionText) 
     #geom_smooth(aes(x=rowCounts, y=rowSum), method="lm", level=0.95) +
     #geom_smooth(aes(x=rowCounts, y=rowSum, colour = 'Exponential'), method = 'nls', formula = y ~ a*exp(b * x), se = FALSE, start = list(a=1,b=1), fullrange = T) +  
        
-      labs(title=paste(titleText, sep=""),
-        subtitle=paste(subText, sep=""), 
-          y="total individuals", 
+      #labs(title=paste(titleText, sep=""),
+        #subtitle=paste(subText, sep=""), 
+      labs(y="total individuals", 
           #x="total number of 'vane trap apparent' species in sample", 
           x="week",
-          caption = paste(captionText, sep="") ) +
+          caption = paste(titleText, ", ", subText, ", ", captionText, sep="") ) +
       #theme(legend.position="none") +
       theme_bw() 
       
