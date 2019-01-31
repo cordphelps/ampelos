@@ -897,7 +897,7 @@ ggTrendClusters <- function(df1, df2,
       #labs(title= paste("weekly population counts by cluster", sep=""), 
            #subtitle = paste("control transect, ", subtitle, sep=""),
       labs(x="week", y= "daily total",
-           caption=paste("weekly population counts by cluster\n", "oakMargin transect, ", subtitle, sep="")) +
+           caption=paste("weekly population counts by cluster\n", "control transect, ", subtitle, sep="")) +
       
       expand_limits(x=c(23,34)) +
       scale_x_continuous(breaks = seq(24, 34, 2)) +

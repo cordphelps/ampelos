@@ -1,5 +1,5 @@
 
-generateLikelihoodV2()               2019-01-25 17:20:54
+generateLikelihoodV2()               2019-01-31 10:44:04
 
 
 NULL
@@ -16,10 +16,10 @@ Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
 
 Population-Level Effects: 
                      Estimate Est.Error l-89% CI u-89% CI Eff.Sample Rhat
-Intercept                0.24      1.35    -1.95     2.34       6117 1.00
-log_pop                 -0.16      0.64    -1.16     0.88       6002 1.00
-contact_high             0.22      0.87    -1.16     1.62       4297 1.00
-log_pop:contact_high    -0.16      0.49    -0.95     0.62       4130 1.00
+Intercept                0.24      1.35    -1.95     2.31       6407 1.00
+log_pop                 -0.15      0.64    -1.14     0.86       6451 1.00
+contact_high             0.23      0.88    -1.15     1.66       4095 1.00
+log_pop:contact_high    -0.17      0.50    -0.98     0.61       4099 1.00
 
 Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
 is a crude measure of effective sample size, and Rhat is the potential 

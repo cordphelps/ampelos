@@ -49,7 +49,7 @@ print(gg)
 ```
 
 
-#### TO-DO: annotate charts with key dates ( spray events, cover crop collapse, veraision, )
+
 
 ```{r diversity, echo=TRUE, include=TRUE, message=F, warning=F}
 

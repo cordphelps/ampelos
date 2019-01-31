@@ -737,8 +737,7 @@ plotLikelihood <- function(df, cap) {
      #    subtitle=paste(sub, sep=""), 
     labs(y="plausibility", 
          x="seasonal timeframe", 
-         caption = paste("'plausibility' of an oakMargin effect on the crab spider population\n", 
-          cap, sep="") ) +
+         caption = paste("'plausibility' of an SNH effect on the crab spider population\n", cap, sep="") ) +
     
     scale_x_discrete(labels=c("one" = "weeks\n23-25", "two" = "weeks\n26-31",
                               "three" = "weeks\n32-34")) +
@@ -826,7 +825,7 @@ generateLikelihoodV2 <- function(df, inboundList, daytime) {
     ##
     ##
 
-  if (FALSE) {   # go through the tedious process of creating the brm models
+  if (TRUE) {   # go through the tedious process of creating the brm models
                  # otherwise, get them from disk 
 
   
