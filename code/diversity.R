@@ -179,6 +179,68 @@ div <- function(data, species, ignoreBees, t) {
   }
 }
 
+
+  divV3 <- function(data, species, ignoreBees) {
+
+    # this is divV2 modified to return only the dataframes (not graphs) for table generation 
+  
+  #data <- test.df
+  #ignoreBees <- TRUE
+  #data <- bugs.df
+  
+  dataOak <- bugsOnlyByWeek(data, iB=ignoreBees, tR="oakMargin")
+  dataControl <- bugsOnlyByWeek(data, iB=ignoreBees, tR="control")
+
+  
+  weeks.df <- dataOak %>%     # just weeks
+    dplyr::select(week) 
+  
+  dataOak <- dataOak %>%        # bugs only
+    dplyr::select(-week)
+  
+  rowSum <- NULL
+  rowCounts <- NULL
+  for (row in 1:nrow(dataOak)) {
+    rowSum[row] <- countRowIndividuals(dataOak, row)
+    rowCounts[row] <- countRowSpecies(dataOak, row) 
+  }
+  
+  inputOak.df <- cbind(dataOak, 
+                    data.frame(rowSum), 
+                    data.frame(rowCounts),
+                    weeks.df)
+
+  weeks.df <- dataControl %>%     # just weeks
+    dplyr::select(week) 
+  
+  dataControl <- dataControl %>%        # bugs only
+    dplyr::select(-week)
+  
+  rowSum <- NULL
+  rowCounts <- NULL
+  for (row in 1:nrow(dataControl)) {
+    rowSum[row] <- countRowIndividuals(dataControl, row)
+    rowCounts[row] <- countRowSpecies(dataControl, row) 
+  }
+  
+  inputControl.df <- cbind(dataControl, 
+                    data.frame(rowSum), 
+                    data.frame(rowCounts),
+                    weeks.df)
+
+  # inputControl.df and inputOak.df are columns of counts for each species plus
+  # a column 'rowSum' and a column 'rowCounts' indicating individual species presence
+  # rows represent weeks
+  
+  df.list <- list()
+  df.list[[1]] <- inputOak.df
+  df.list[[2]] <- inputControl.df
+
+  return(df.list)
+
+}
+
+
   divV2 <- function(data, species, ignoreBees) {
   
   #data <- test.df

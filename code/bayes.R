@@ -12,6 +12,174 @@ renameFunkyColumns <- function(df, oldName, newName) {
 
 }
 
+calculateSummaryStats <- function(df) {
+
+
+    library(reshape2)
+    melt.total.df <- melt(df, id.vars=c("week", "transect", "time", "cluster"))
+
+    library(dplyr)
+    grouped <- group_by(melt.total.df, week, transect, time, cluster)
+    grouped.total <- summarise(grouped, mean=mean(value), sd=sd(value))
+
+    cl1.by.week <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'one')
+    cl2.by.week <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'two')
+    cl3.by.week <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'three')
+
+    melt.cl <- melt(cl1.by.week, id.vars=c("week", "transect", "time", "cluster"))
+    grouped <- group_by(melt.cl, week, transect, time, cluster)
+    summarise(grouped, mean=mean(value))
+
+    # use these mean counts to estime the cluster population in the different time frames
+    cl.by.week <- df %>% dplyr::filter(week < 26)
+    cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
+    cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
+
+    cl.by.week <- df %>% dplyr::filter(week > 25 & week < 32)
+    cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
+    cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
+
+    cl.by.week <- df %>% dplyr::filter(week > 31)
+    cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
+    cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
+
+    #         cluster    traps per      vines per
+    #                    cluster        cluster
+    #
+    #          1           12            16*5= 80
+    #          2            9            12*5= 60
+    #          3            9            40*5=200
+    #
+    #     
+    #   seasonal     trapped spiders   cluster    cluster mean          normalize by       ASSUMED weekly     
+    #   time frame   by cluster          mean     normalized by         # of weeks         population per 
+    #                (sum)                        # of traps                               trapped vine
+    #                                                                                      (each observation
+    #                                                                                      traps 1% of pop )
+    #       1        93,87,95           92       92 / 12  =  7.66       7.66 / 3 = 2.55        255              
+    #       2        39,43,48           43       43 / 9   =  4.77       4.77 / 6 = 0.80         80
+    #       3        6,5,8               6        6 / 9   =  0.16       0.16 / 2 = 0.08          8
+    #
+    # so, total.df, with 'total spider' observations in the form :   week  transect time cluster totalSpiders
+    # 'total spider' evidence to be folded into priors that are based on relative populations for each 
+    # seasonal period
+    #
+    #                pop    SD (imaginary)    log(pop)
+    #
+    #      1         255         64  85           2.4
+    #      2          80         20  27           1.9
+    #      3           8          2   3           0.9 
+    #
+    # CAUTION: using SD roughly 25% of the mean to prevent the sampler from choking on 
+    #          negative values 
+
+
+
+
+  }
+
+evaluateDailySpiderCountsTables <- function(df) {
+
+  
+  library(dplyr)
+  library(ggplot2)
+  
+  
+  # build a list of spider counts by transect, by cluster, by week, by time-of-day (ref: buildClustersByWeek() )
+  
+  if (FALSE) {
+    source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
+    bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
+    df <- bugs.df
+    i <- 1
+    # formula.w <- (~ week == 25 )
+    formula.s <- (~ Thomisidae..crab.spider. > 0 )
+  }
+  
+  species <- "Thomisidae..crab.spider."
+  speciesString <- paste("~", species, ">0", sep="")
+  formula.s <- as.formula(speciesString)
+  
+  formula.cluster1 <- paste("~ position==1 | position==2 | position==3 | position==4", sep="")
+  formula.cluster2 <- paste("~ position==5 | position==6 | position==7", sep="")
+  formula.cluster3 <- paste("~ position==8 | position==9 | position==10", sep="")
+  
+  weeks.vector <- getWeeks(bugs.df)
+  transectList <- c('oakMargin', 'control')
+
+  timeList <- c('am', 'pm')
+
+  clusterFormulaList <- c(formula.cluster1, formula.cluster2, formula.cluster3)
+  
+  total.df <- NULL
+  
+  for (i in 1:length(weeks.vector)) {
+    
+    for (n in 1:length(transectList)) {
+      
+      for (j in 1:length(timeList)) {
+        
+        for (k in 1:length(clusterFormulaList)) {
+          if (k==1) {
+            clusterListChars <- "one" 
+          } else if (k==2) {
+            clusterListChars <- "two"
+          } else {
+            clusterListChars <- "three"
+          }
+          
+          twtString <- paste("~ transect=='", transectList[[n]], "' & week=='", weeks.vector[[i]], "' & time=='", timeList[[j]], "'", sep="")
+          
+          clusterString <- paste(clusterFormulaList[[k]], sep="")
+          
+          dailySum.list <- dailySumByClusterTimeWeek(df, ft=as.formula(twtString), fc=as.formula(clusterString))
+          
+          # create a df record for each of the averages in the list
+          for (m in 1:length(dailySum.list[[1]])) {
+            temp.df <- data.frame(weeks.vector[[i]],
+                                  transectList[[n]],
+                                  timeList[[j]], 
+                                  clusterListChars,
+                                  dailySum.list[[1]][[m]]
+            )
+            # column names need to match for rbind() to work
+            names(temp.df) <- c("week", "transect", "time", "cluster", "totalSpiders")
+            
+            # tack it on
+            # https://stackoverflow.com/questions/35366187/how-to-write-if-else-statements-if-dataframe-is-empty
+            if (!exists('total.df')) {
+              total.df <- temp.df
+              # (so, on the first pass the column names are cool)
+            } else {
+              total.df <- rbind(total.df, temp.df)
+            }
+            
+          } # end create a df record
+          
+        } # clusterFormulaList
+      } # timeList
+    } # transectList
+  } # weeks.vector
+  
+# > head(total.df, 10)                          <-- 372 rows
+#   week  transect time cluster totalSpiders
+#1    23 oakMargin   am     one            2
+#2    23 oakMargin   am     one            6
+#3    23 oakMargin   am     two            2
+#4    23 oakMargin   am     two            4
+#5    23 oakMargin   am   three            2
+#6    23 oakMargin   am   three            3
+#7    23 oakMargin   pm     one            1
+#8    23 oakMargin   pm     one            7
+#9    23 oakMargin   pm     one           14
+#10   23 oakMargin   pm     two            5
+
+
+  return(total.df)
+
+
+}
+
 evaluateDailySpiderCounts <- function(df) {
   
   if (FALSE) {
@@ -80,7 +248,7 @@ evaluateDailySpiderCounts <- function(df) {
             clusterListChars <- "three"
           }
           
-          twtString <- paste("~ week==", weeks.vector[[i]], " & time=='", timeList[[j]], "'", sep="")
+          twtString <- paste("~ transect=='", transectList[[n]], "' & week=='", weeks.vector[[i]], "' & time=='", timeList[[j]], "'", sep="")
           
           clusterString <- paste(clusterFormulaList[[k]], sep="")
           
@@ -237,7 +405,7 @@ likelihoodPlusModelDiags <- function(rl=returnList) {
     # plot the weekly raw data : plotWeekly()
     # create txt files saving the status output of 9 brm() cycles
 
-    rl <- generateLikelihoodV2(df=rl[[4]], list=rl, daytime='all-day')
+    rl <- generateLikelihoodV2(df=rl[[4]], list=rl, daytime='24h')
   
     # reserved positions:
     # returnList[[1]]) # scatter plot by cluster with seasonal timeframes
@@ -1401,6 +1569,18 @@ plotTransectWeekly <- function(df) {
 dailySumByClusterTimeWeek <- function(df, ft, fc) {
   
   # build and return a list of daily row average spiders for each week / cluster / time
+
+  if (FALSE) {
+
+    paste("~ position==1 | position==2 | position==3 | position==4", sep="")
+
+    twtString <- paste("~ week==23 & time=='pm'", sep="")
+          
+    clusterString <- paste("one", sep="")
+          
+    dailySum.list <- dailySumByClusterTimeWeek(df, ft=as.formula(twtString), fc=as.formula(clusterString))
+          
+  }
   
   dailySum.list <- df %>%
     #dplyr::filter(transect == "oakMargin" & week == 23 & time == 'pm') %>%

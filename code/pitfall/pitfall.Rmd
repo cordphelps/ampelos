@@ -1,0 +1,76 @@
+---
+title: "ampelos"
+output: github_document
+---
+
+![landscape](./photos/landscapeOak.JPG)
+
+## how does a 'natural habitat' field margin influence the population of beneficial insects in an organic vineyard?
+
+
+```{r setup, echo=T, message=F, warning=F}
+
+# setwd("/Users/rcphelps/code/thesis/ampelos/code") 
+
+source("../code/jaccard-similarity.R") # getWeeks()
+source("../code/bayes.R")              # dailySumByClusterTimeWeek()
+source("../code/pitfall.R")            # compressBugsData()
+
+# https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/1365-2664.12023
+# Temperature effects on pitfall catches of epigeal arthropods: a model and method for bias correction
+
+library(dplyr)
+
+source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
+bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
+
+# add a column for delta degrees C for each julian day
+
+# get total spiders by week and cluster
+short.df <- compressBugsData(bugs.df)  # week, transect, time, cluster, totalSpiders
+
+bugs.am.df <- short.df %>% filter(time=='am')
+bugs.pm.df <- short.df %>% filter(time=='pm')
+
+test.df <- bugs.am.df %>%
+    	dplyr::group_by(week, transect, time, cluster) %>%
+    	dplyr::summarise(total_sp = sum(totalSpiders) ) 
+
+
+# setwd("code/thesis/ampelos/pitfall/")
+
+temps.df <- read.csv("../code/weather/CIMIS231.csv")
+temps.df$DayAirTmpMin <- as.numeric(temps.df$DayAirTmpMin.Value)
+temps.df$DayAirTmpMax <- as.numeric(temps.df$DayAirTmpMax.Value)
+temps.df <- temps.df %>% select(Julian, DayAirTmpMax, DayAirTmpMin)
+temps.df <- temps.df %>% mutate(diff=DayAirTmpMax-DayAirTmpMin)
+
+# get julian days occurring in the dataset with associated week
+julian.df <- getObservedJulianSpidersTemps(spiders=bugs.df, temps=temps.df)
+    # > julian.df
+    # A tibble: 11 x 2
+    #    week deltaC
+    #   <dbl>  <dbl>
+    # 1    23   7.47
+    # 2    24  10.7 
+    # 3    25   5.97
+ 
+# https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/1365-2664.12023
+# we are tryoing to correct for temperature bias
+
+# see if corrected am plausibilities match the pm plausibilities
+
+merge(bugs.am.df,julian.df, by="week", all.x=T, sort=F)
+    # week  transect time cluster totalSpiders    deltaC
+    # 1     23 oakMargin   am     one            2  7.466667
+    # 2     23 oakMargin   am     one            6  7.466667
+    # 3     23 oakMargin   am     two            2  7.466667
+
+
+
+
+```
+
+### weekly composition of species and individuals?
+
+

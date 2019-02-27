@@ -1229,6 +1229,82 @@ plotBugDistribution <- function (data, cap) {
 }
 
 
+plotRidgesV2tableOnly <- function(data, combined, bugs, speciesText, when, wk, caption) {
+
+  # https://en.wikipedia.org/wiki/Kernel_density_estimation
+  #
+  # https://stackoverflow.com/questions/7310186/function-in-r-passing-a-dataframe-and-a-column-name
+
+  if (FALSE) {   # available for debug
+    # https://stackoverflow.com/questions/9726705/assign-multiple-objects-to-globalenv-from-within-a-function
+    assign("data", data, envir=.GlobalEnv)
+    assign("bugs", bugs, envir=.GlobalEnv)
+
+    assign("when", when, envir=.GlobalEnv)
+    assign("wk", wk, envir=.GlobalEnv)
+    assign("caption", caption, envir=.GlobalEnv)
+  }
+  
+  # https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html
+  
+  if (wk < 23 | wk > 52) {  # we definitely don't have a valid week
+    # this case indicates 'use data from all weeks'
+    cumulative <- "(cumulative)"
+    
+    if (when != "am" & when != "pm") {    # use all the data (am and pm) for each day
+      #filteredBugs.df <- filter(data, transect == where)
+    } else {                              # use partial data (am or pm) for each day
+      filteredBugs.df <- filter(data, time == when)
+    }
+    
+  } else {  #  we might have a 'valid' week (data for the specified week could be
+    #  missing....)
+    cumulative <- as.character(wk)
+    
+    if (when != "am" & when != "pm") {   # use all the data (am and pm) for each day
+      filteredBugs.df <- filter(data, week == wk)
+    } else {                             # use partial data (am or pm) for each day
+      filteredBugs.df <- filter(data, time == when & week == wk)
+    }
+    
+    
+  }
+  
+  
+  # simplify to include the trap position and the bug in the list
+  newBugs.df <- subset(filteredBugs.df, select= c("positionX", "transect", bugs))
+
+  # exclude counts == 0
+  newBugs.df <- newBugs.df %>% dplyr::filter(newColumn > 0)
+  
+  ################################################################################################
+  # get some stats to add to the plot
+
+  # note: nuance of using the > operator and sum()
+  # As a result you can SUM over this to find the number of values which are TRUE (>2000), 
+  # ie Count. While you may have been expecting this input to SUM the actual values themselves
+  # https://stackoverflow.com/questions/22690255/count-observations-greater-than-a-particular-value
+
+  spider_rows <- nrow(newBugs.df)
+  trapsWithSpiders <- nrow(newBugs.df[newBugs.df[,bugs] > 0, ])
+  # trapsWithSpiders <- sum(newBugs.df[,bugs])
+  percentOcurrence <- (trapsWithSpiders / spider_rows) * 100
+  # https://stackoverflow.com/questions/3443687/formatting-decimal-places-in-r
+  percentOcurrence <- format(round(percentOcurrence, 2), nsmall = 2)
+
+  ################################################################################################
+  
+  # get factors for geom_density_ridges
+  # (grouping by "count")
+  factor.list <- newBugs.df[,bugs]   #     
+  newBugs.df$geomFactors <- NULL                        
+  newBugs.df$geomFactors <- as.factor(factor.list)
+
+  return(newBugs.df)
+  
+  }
+
+
 plotRidgesV2 <- function(data, combined, bugs, speciesText, when, wk, caption) {
 
   # https://en.wikipedia.org/wiki/Kernel_density_estimation
@@ -1336,7 +1412,7 @@ plotRidgesV2 <- function(data, combined, bugs, speciesText, when, wk, caption) {
                           #"\ntraps with ", speciesText, "s: ", percentOcurrence, " %", 
                           #sep=""),
     labs(x="trap distance from row start (ft)",
-         y= paste(speciesText, "\ncounts per trap", sep=""),
+         y= paste(speciesText, "\nobservations with spiders", sep=""),
          #caption="10 June 2018")
          caption=paste(speciesText, " probability density\n", 
                       "transect: ", where, "collection time: ", when, 
@@ -1371,7 +1447,7 @@ plotRidgesV2 <- function(data, combined, bugs, speciesText, when, wk, caption) {
     #labs(title= paste(speciesText, " probability density",  sep=""), 
          #subtitle = paste("collection time: ", when, sep=""),
     labs(x="trap distance from row start (ft)",
-         y= paste("counts per trap > 0", sep=""),
+         y= paste("observations with spiders", sep=""),
          #caption="10 June 2018")
          caption=paste(speciesText, " probability density,",  " collection time: ", when, sep="")) +
 
