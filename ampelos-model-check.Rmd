@@ -1,0 +1,71 @@
+---
+title: "ampelos model check"
+output: html_document
+---
+
+
+```{r setup, echo=FALSE, include=FALSE, message=F, warning=F}
+
+source("./code/bug-library.R")
+source("./code/similarity.R")
+source("./code/jaccard-similarity.R")
+source("./code/diversity.R")
+source("./code/k-means.R")
+source("./code/clusterSimilarity.R")
+source('./code/bayes.R')
+source('./code/ranking.R')
+
+# library(ampelos)   <-- failed replacement for sample.int, 
+# see bayes.R likelihoodPlusModelDiags()
+
+source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
+bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
+
+# setwd("./code/thesis/ampelos/")
+
+```
+
+
+
+```{r results = 'asis' }
+
+# build the likelihood data : generateLikelihoodV2() 
+returnList <- evaluateDailySpiderCounts(bugs.df)
+  
+# returnList[[4]] is the data 'dataframe' used for the graphics (total.df)
+# from bayes.R evaluateDailySpiderCounts()
+
+rl <- returnList
+## rl[[4]] is multiple records per week with columns
+## week, transect, time, cluster, totalSpiders
+
+filtered.df <- rl[[4]] %>% dplyr::filter(time == 'pm')
+models.list <- generateLikelihoodV2models(df=filtered.df, inboundList=rl, daytime='pm')
+
+
+
+```
+
+
+
+
+```{r results = 'asis' }
+
+# ref: https://www.rensvandeschoot.com/brms-wambs/
+# BRMS Tutorial: Applying the WAMBS – checklist
+#
+
+
+```
+
+
+
+```{r results = 'asis' }
+
+# long text tables
+
+# "column spec"
+# https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+
+```
+

@@ -198,7 +198,7 @@ if (TRUE) {
 
 ### How plausible is it that an oakMargin transect row will have more spiders than a control transect row?
 
-```{r clusterBayes, echo=TRUE, include=TRUE, results="hide", message=T, warning=T}
+```{r clusterBayes, echo=FALSE, message=TRUE, warning=TRUE}
 
 # gg.list <- likelihoodPlusModelDiags(rl=returnList)  <-- avoid brm() internal error
 

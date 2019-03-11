@@ -1,0 +1,467 @@
+---
+title: "ampelos tables"
+output: html_document
+---
+
+
+```{r setup, echo=FALSE, include=FALSE, message=F, warning=F}
+
+source("./code/bug-library.R")
+source("./code/similarity.R")
+source("./code/jaccard-similarity.R")
+source("./code/diversity.R")
+source("./code/k-means.R")
+source("./code/clusterSimilarity.R")
+source('./code/bayes.R')
+source('./code/ranking.R')
+
+# library(ampelos)   <-- failed replacement for sample.int, 
+# see bayes.R likelihoodPlusModelDiags()
+
+source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
+bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
+
+# setwd("./code/thesis/ampelos/")
+
+```
+
+
+
+```{r insectPop-func, echo=FALSE, include=FALSE, message=F, warning=F }
+
+returnList <- scanBugPercentages(bugs.df)
+
+returnList <- createFamilyPercentages(returnList)
+
+#gg <- plotBugPercentages(returnList, spidersOnly=FALSE)
+
+#print(gg)
+
+#gg <- plotBugPercentages(returnList, spidersOnly=TRUE)
+
+#print(gg)
+
+
+
+library(knitr)
+library(kableExtra)
+
+df <- returnList[[1]]
+dfAraneae <- df[, c(4,2,1,3,5)] %>% rownames_to_column %>% select(-rowname, -family)
+
+
+df <- returnList[[2]]
+dfDiptera <- df[, c(3,1,2,4)] %>% rownames_to_column %>% select(-rowname, -family)
+
+df <- returnList[[3]]
+dfHymenoptera <- df[, c(8,1,2,3,4,5,6,7,9)] %>% rownames_to_column %>% select(-rowname, -family)
+
+df <- returnList[[4]]
+dfHemiptera <- df[, c(4,1,2,3,5)] %>% rownames_to_column %>% select(-rowname, -family)
+
+df <- returnList[[5]]
+dfLepidoptera <- df[, c(4,1,2,3,5)] %>% rownames_to_column %>% select(-rowname, -family)
+
+df <- returnList[[6]]
+dfOther <- df[, c(7,1,2,3,4,5,6,8)] %>% rownames_to_column %>% select(-rowname, -family)
+
+
+
+```
+
+
+```{r results = 'asis' }
+# plot bug percentages
+
+dfAraneaeTemp <- dfAraneae %>% select(week, sumPct) %>% rename(Araneae = sumPct)
+dfDipteraTemp <- dfDiptera %>% select(week, sumPct) %>% rename(Diptera = sumPct)
+dfHymenopteraTemp <- dfHymenoptera %>% select(week, sumPct) %>% rename(Hymenoptera = sumPct)
+dfHemipteraTemp <- dfHemiptera %>% select(week, sumPct) %>% rename(Hemiptera = sumPct)
+dfLepidopteraTemp <- dfLepidoptera %>% select(week, sumPct) %>% rename(Lepidoptera = sumPct)
+dfOtherTemp <- dfOther %>% select(week, sumPct) %>% rename(Other = sumPct)
+
+dfAllBugs <- dfAraneaeTemp
+dfAllBugs <- left_join(dfAllBugs, dfDipteraTemp, by="week")
+dfAllBugs <- left_join(dfAllBugs, dfHymenopteraTemp, by="week")
+dfAllBugs <- left_join(dfAllBugs, dfHemipteraTemp, by="week")
+dfAllBugs <- left_join(dfAllBugs, dfLepidopteraTemp, by="week")
+dfAllBugs <- left_join(dfAllBugs, dfOtherTemp, by="week")
+
+
+knitr::kable( dfAllBugs, caption = "Population Percentages - All Observed Insects") %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", full_width = F)
+
+```
+
+
+```{r results = 'asis' }
+
+# spider populations by week
+
+dfAraneaeTemp <- dfAraneae %>% rename(AraneaeTotal = sumPct) %>% 
+  rename(Thomisidae = spiderPct) %>% 
+  rename(other = otherPct)
+
+knitr::kable( dfAraneaeTemp, caption = "Araneae Occurrence (percent)") %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", full_width = F)
+
+```
+
+
+```{r results = 'asis' }
+
+# insect diversity and abundance in the canopy
+
+result.list <- divV3(bugs.df, species=FALSE, ignoreBees=FALSE)
+# df#1 = oak margin ; df#2 = control
+# looking for rowSum (=abundance) and rowCounts (=diversity) by week
+
+snh.df <- result.list[[1]] %>% select(week, rowSum) %>% rename(SNH = rowSum)
+control.df <- result.list[[2]] %>% select(week, rowSum) %>% rename(control = rowSum)
+abundance.df <- snh.df
+abundance.df <- left_join(abundance.df, control.df, by="week")
+
+knitr::kable( abundance.df, caption = "Apparent Abundance - insect counts") %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", full_width = F)
+
+snh.df <- result.list[[1]] %>% select(week, rowCounts) %>% rename(SNH = rowCounts)
+control.df <- result.list[[2]] %>% select(week, rowCounts) %>% rename(control = rowCounts)
+diversity.df <- snh.df
+diversity.df <- left_join(diversity.df, control.df, by="week")
+
+knitr::kable( diversity.df, caption = "Apparent Diversity - species counts") %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", full_width = F)
+
+```
+
+
+```{r results = 'asis' }
+
+# crab spider spatial distribution
+
+new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
+spatial.df <- plotRidgesV2tableOnly(data=new.df, combined=TRUE, bugs="newColumn", speciesText="crab spider", when="pm", wk=1, caption=Sys.Date())
+
+dist.df <- spatial.df %>% 
+  group_by(positionX, transect) %>%
+  summarise(occurrences = sum(newColumn))
+
+dist.snh.df <- dist.df %>% 
+  filter(transect=="oakMargin") %>%
+  select(positionX, occurrences) %>%
+  rename(SNHoccurrences = occurrences)
+
+dist.control.df <- dist.df %>% 
+  filter(transect=="control") %>%
+  select(positionX, occurrences) %>%
+  rename(controlOccurrences = occurrences)
+
+dist.combo.df <- left_join(dist.snh.df, dist.control.df, by="positionX")
+dist.combo.df <- dist.combo.df %>% 
+  mutate(positionMeters = round(positionX * .3048)) %>%
+  rename(positionFeet = positionX)
+
+dist.combo.df <- dist.combo.df[,c(1,4,2,3)]
+
+
+knitr::kable( dist.combo.df, caption = "Seasonal Crab Spider Occurrence - by trap position") %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", full_width = F)
+
+```
+
+
+
+```{r results = 'asis' }
+
+# are clusters appearing and do they persist across multiple weeks?
+
+cluster.control.list <- buildClustersByWeek(bugs.df, t="control", species="Thomisidae..crab.spider.", cn=3)
+
+cluster.control.list[[1]] <- cluster.control.list[[1]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK23 = mean(as.integer(newCluster)))
+
+cluster.control.list[[2]] <- cluster.control.list[[2]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK24 = mean(as.integer(newCluster)))
+
+cluster.control.list[[3]] <- cluster.control.list[[3]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK25 = mean(as.integer(newCluster)))
+
+cluster.control.list[[4]] <- cluster.control.list[[4]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK26 = mean(as.integer(newCluster)))
+
+cluster.control.list[[5]] <- cluster.control.list[[5]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK27 = mean(as.integer(newCluster)))
+
+cluster.control.list[[6]] <- cluster.control.list[[6]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK28 = mean(as.integer(newCluster)))
+
+cluster.control.list[[7]] <- cluster.control.list[[7]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK29 = mean(as.integer(newCluster)))
+
+cluster.control.list[[8]] <- cluster.control.list[[8]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK30 = mean(as.integer(newCluster)))
+
+cluster.control.list[[9]] <- cluster.control.list[[9]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK31 = mean(as.integer(newCluster)))
+
+cluster.control.list[[10]] <- cluster.control.list[[10]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK32 = mean(as.integer(newCluster)))
+
+cluster.df <- cluster.control.list[[1]]
+cluster.df <- left_join(cluster.df, cluster.control.list[[2]], by="position")
+cluster.df <- left_join(cluster.df, cluster.control.list[[3]], by="position")
+cluster.df <- left_join(cluster.df, cluster.control.list[[4]], by="position")
+cluster.df <- left_join(cluster.df, cluster.control.list[[5]], by="position")
+cluster.df <- left_join(cluster.df, cluster.control.list[[6]], by="position")
+cluster.df <- left_join(cluster.df, cluster.control.list[[7]], by="position")
+cluster.df <- left_join(cluster.df, cluster.control.list[[8]], by="position")
+cluster.df <- left_join(cluster.df, cluster.control.list[[9]], by="position")
+cluster.df <- left_join(cluster.df, cluster.control.list[[10]], by="position")
+
+# https://stackoverflow.com/questions/42888008/changing-multiple-column-values-given-a-condition-in-dplyr
+
+cluster.df <- cluster.df %>% 
+  mutate_at(.vars = c("WK23", "WK24", "WK25", "WK26", "WK27", "WK28","WK29", "WK30", "WK31", "WK32"), funs(ifelse(.==1, "one", .)) ) %>%
+  mutate_at(.vars = c("WK23", "WK24", "WK25", "WK26", "WK27", "WK28","WK29", "WK30", "WK31", "WK32"), funs(ifelse(.==2, "two", .)) ) %>%
+  mutate_at(.vars = c("WK23", "WK24", "WK25", "WK26", "WK27", "WK28","WK29", "WK30", "WK31", "WK32"), funs(ifelse(.==3, "three", .)) ) %>%
+  mutate_at(.vars = c("WK23", "WK24", "WK25", "WK26", "WK27", "WK28","WK29", "WK30", "WK31", "WK32"), funs(ifelse(is.na(.), "---", .)) )
+
+knitr::kable( cluster.df, caption = "assigned cluster numbers - control transect") %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", full_width = F) %>%
+  footnote(general = "'NA' indicates that no observations were made")
+
+```
+
+
+
+```{r results = 'asis' }
+
+# are clusters appearing and do they persist across multiple weeks?
+
+cluster.snh.list <- buildClustersByWeek(bugs.df, t="oakMargin", species="Thomisidae..crab.spider.", cn=3)
+
+cluster.snh.list[[1]] <- cluster.snh.list[[1]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK23 = mean(as.integer(newCluster)))
+
+cluster.snh.list[[2]] <- cluster.snh.list[[2]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK24 = mean(as.integer(newCluster)))
+
+cluster.snh.list[[3]] <- cluster.snh.list[[3]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK25 = mean(as.integer(newCluster)))
+
+cluster.snh.list[[4]] <- cluster.snh.list[[4]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK26 = mean(as.integer(newCluster)))
+
+cluster.snh.list[[5]] <- cluster.snh.list[[5]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK27 = mean(as.integer(newCluster)))
+
+cluster.snh.list[[6]] <- cluster.snh.list[[6]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK28 = mean(as.integer(newCluster)))
+
+cluster.snh.list[[7]] <- cluster.snh.list[[7]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK29 = mean(as.integer(newCluster)))
+
+cluster.snh.list[[8]] <- cluster.snh.list[[8]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK30 = mean(as.integer(newCluster)))
+
+cluster.snh.list[[9]] <- cluster.snh.list[[9]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK31 = mean(as.integer(newCluster)))
+
+cluster.snh.list[[10]] <- cluster.snh.list[[10]] %>%
+  select(position, newCluster) %>%
+  group_by(position) %>%
+  summarise(WK32 = mean(as.integer(newCluster)))
+
+cluster.df <- cluster.snh.list[[1]]
+cluster.df <- left_join(cluster.df, cluster.snh.list[[2]], by="position")
+cluster.df <- left_join(cluster.df, cluster.snh.list[[3]], by="position")
+cluster.df <- left_join(cluster.df, cluster.snh.list[[4]], by="position")
+cluster.df <- left_join(cluster.df, cluster.snh.list[[5]], by="position")
+cluster.df <- left_join(cluster.df, cluster.snh.list[[6]], by="position")
+cluster.df <- left_join(cluster.df, cluster.snh.list[[7]], by="position")
+cluster.df <- left_join(cluster.df, cluster.snh.list[[8]], by="position")
+cluster.df <- left_join(cluster.df, cluster.snh.list[[9]], by="position")
+cluster.df <- left_join(cluster.df, cluster.snh.list[[10]], by="position")
+
+# https://stackoverflow.com/questions/42888008/changing-multiple-column-values-given-a-condition-in-dplyr
+
+cluster.df <- cluster.df %>% 
+  mutate_at(.vars = c("WK23", "WK24", "WK25", "WK26", "WK27", "WK28","WK29", "WK30", "WK31", "WK32"), funs(ifelse(.==1, "one", .)) ) %>%
+  mutate_at(.vars = c("WK23", "WK24", "WK25", "WK26", "WK27", "WK28","WK29", "WK30", "WK31", "WK32"), funs(ifelse(.==2, "two", .)) ) %>%
+  mutate_at(.vars = c("WK23", "WK24", "WK25", "WK26", "WK27", "WK28","WK29", "WK30", "WK31", "WK32"), funs(ifelse(.==3, "three", .)) ) %>%
+  mutate_at(.vars = c("WK23", "WK24", "WK25", "WK26", "WK27", "WK28","WK29", "WK30", "WK31", "WK32"), funs(ifelse(is.na(.), "---", .)) )
+
+knitr::kable( cluster.df, caption = "assigned cluster numbers - SNH transect") %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", full_width = F) %>%
+  footnote(general = "'NA' indicates that no observations were made")
+
+```
+
+
+```{r results = 'asis' }
+
+  # organize data into
+  # ("week", "transect", "time", "cluster", "totalSpiders")
+  #
+
+  total.df <- evaluateDailySpiderCountsTables(df=bugs.df)
+
+  totalPM.snh.df <- total.df %>% 
+    filter(time=='pm', transect=='oakMargin') %>%
+    select(-time, -transect) %>%
+    group_by(week, cluster) %>%
+    summarise(totalSpiders = sum(totalSpiders))  
+    
+  totalPM.snh.cl1.df <- totalPM.snh.df %>% 
+    filter(cluster=="one") %>% 
+    select(-cluster) %>%
+    rename(Spiders.cl1 = totalSpiders)
+  
+  totalPM.snh.cl2.df <- totalPM.snh.df %>% 
+    filter(cluster=="two") %>% 
+    select(-cluster) %>%
+    rename(Spiders.cl2 = totalSpiders)
+    
+  totalPM.snh.cl3.df <- totalPM.snh.df %>% 
+    filter(cluster=="three") %>% 
+    select(-cluster) %>%
+    rename(Spiders.cl3 = totalSpiders)
+  
+  cluster.df <- totalPM.snh.cl1.df
+  cluster.df <- left_join(cluster.df, totalPM.snh.cl2.df, by="week")
+  cluster.df <- left_join(cluster.df, totalPM.snh.cl3.df, by="week")
+  
+  knitr::kable( cluster.df, caption = "Crab Spider Observations by Cluster - SNH transect") %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", full_width = F) %>%
+  footnote(general = "collection time = 'pm'")
+
+```
+
+
+
+```{r results = 'asis' }
+
+  # organize data into
+  # ("week", "transect", "time", "cluster", "totalSpiders")
+  #
+
+  totalPM.ctl.df <- total.df %>% 
+    filter(time=='pm', transect=='control') %>%
+    select(-time, -transect) %>%
+    group_by(week, cluster) %>%
+    summarise(totalSpiders = sum(totalSpiders))  
+    
+  totalPM.ctl.cl1.df <- totalPM.ctl.df %>% 
+    filter(cluster=="one") %>% 
+    select(-cluster) %>%
+    rename(Spiders.cl1 = totalSpiders)
+  
+  totalPM.ctl.cl2.df <- totalPM.ctl.df %>% 
+    filter(cluster=="two") %>% 
+    select(-cluster) %>%
+    rename(Spiders.cl2 = totalSpiders)
+    
+  totalPM.ctl.cl3.df <- totalPM.ctl.df %>% 
+    filter(cluster=="three") %>% 
+    select(-cluster) %>%
+    rename(Spiders.cl3 = totalSpiders)
+  
+  cluster.df <- totalPM.ctl.cl1.df
+  cluster.df <- left_join(cluster.df, totalPM.ctl.cl2.df, by="week")
+  cluster.df <- left_join(cluster.df, totalPM.ctl.cl3.df, by="week")
+  
+  knitr::kable( cluster.df, caption = "Crab Spider Observations by Cluster - control transect") %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", full_width = F) %>%
+  footnote(general = "collection time = 'pm'")
+
+```
+
+
+
+```{r results = 'asis' }
+
+# build the likelihood data : generateLikelihoodV2() 
+returnList <- evaluateDailySpiderCounts(bugs.df)
+  
+# returnList[[4]] is the data 'dataframe' used for the graphics (total.df)
+# from bayes.R evaluateDailySpiderCounts()
+
+rl <- returnList
+## rl[[4]] is multiple records per week with columns
+## week, transect, time, cluster, totalSpiders
+
+filtered.df <- rl[[4]] %>% dplyr::filter(time == 'pm')
+likelihood.pm.df <- generateLikelihoodV2tables(df=filtered.df, inboundList=rl, daytime='pm')
+
+knitr::kable( likelihood.pm.df, caption = "'plausibility' of SNH effect on crap spider populations") %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", full_width = F) %>%
+  footnote(general = "collection time = 'pm'")
+
+
+```
+
+
+
+
+```{r results = 'asis' }
+
+
+filtered.df <- rl[[4]] %>% dplyr::filter(time == 'am')
+likelihood.am.df <- generateLikelihoodV2tables(df=filtered.df, inboundList=rl, daytime='am')
+
+knitr::kable( likelihood.am.df, caption = "'plausibility' of SNH effect on crap spider populations") %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", full_width = F) %>%
+  footnote(general = "collection time = 'am'")
+
+
+```
+
+
+
+```{r results = 'asis' }
+
+# long text tables
+
+# "column spec"
+# https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+
+```
+
