@@ -965,6 +965,25 @@ plotLikelihood <- function(df, cap) {
   
 }
 
+generateLikelihoodV2models <- function(df, inboundList, daytime) {
+
+# read the structure from disk
+
+    inboundList <- readRDS(paste("./code/output/list-", daytime, ".rds", sep=""))
+
+    return(inboundList[[8]])   # that is a list of the 9 models
+
+}
+
+generateLikelihoodV2tables <- function(df, inboundList, daytime) {
+
+# read the structure from disk
+
+    inboundList <- readRDS(paste("./code/output/list-", daytime, ".rds", sep=""))
+
+    return(inboundList[[5]])   # likelihood.df
+
+}
 
 generateLikelihoodV2 <- function(df, inboundList, daytime) {
 
