@@ -1,6 +1,6 @@
 ---
 title: "ampelos model check"
-output: html_document
+output: github_document
 ---
 
 
@@ -55,9 +55,95 @@ models.list <- generateLikelihoodV2models(df=filtered.df, inboundList=rl, daytim
 # BRMS Tutorial: Applying the WAMBS – checklist
 #
 
+library(brms)
+library(ggmcmc)
+library(mcmcplots) 
+
+get_prior(b_Intercept ~ 1 + b_log_pop + b_contact_high + b_contact_high:b_log_pop, data=as.data.frame(models.list[[1]]))
+
+
 
 ```
 
+
+
+```{r results = 'asis' }
+
+# l2. Does the trace-plot exhibit convergence?
+
+modeltranformed<-ggs(models.list[[1]]) # the ggs function transforms the BRMS output into a longformat tibble, that we can use to make different types of plots.
+
+ggplot(filter(modeltranformed, Parameter==c("b_Intercept", "b_log_pop", "b_contact_high", "b_log_pop:b_contact_high"), Iteration>1000), aes(x=Iteration, y=value, col=as.factor(Chain))) +
+  geom_line() +
+  facet_grid(Parameter ~ .,scale='free_y',switch = 'y') +
+  labs(title="Caterpillar Plots", col= "Chains")
+
+
+
+```
+
+
+```{r results = 'asis' }
+
+# To obtain convergence diagnostics to check convergence for the parameters of interest we use the Gelman and Rubin diagnostic (Gelman and Rubin 1992) and the Geweke (1992) diagnostic.
+
+modelposterior<-as.mcmc(models.list[[1]]) # with the as.mcmc() command we can use all the CODA package convergence statistics and plotting options
+gelman.diag(modelposterior[, 1:5])
+
+gelman.plot(modelposterior[, 1:5])
+
+```
+
+
+```{r results = 'asis' }
+
+# 4. Does the posterior distribution histogram have enough information?
+
+plot(hypothesis(models.list[[1]], "log_pop = 0"), plot = F, theme = theme_get())[[1]]+ scale_x_continuous(limits=c(-5, 5))
+
+```
+
+
+```{r results = 'asis' }
+
+# 5. Do the chains exhibit a strong degree of autocorrelation?
+
+autocorr.diag(modelposterior[,1:5], lags = c(0, 1,2,3,4, 5, 10, 50))
+
+```
+
+
+```{r results = 'asis' }
+
+# 6. Do the posterior distributions make substantive sense?
+
+model <- models.list[[1]]
+
+ggplot(filter(modeltranformed, Parameter==c("b_log_pop","b_contact_high"), Iteration>1000), aes(x=value, fill=Parameter)) +
+  geom_density(alpha=.5) +
+  geom_vline(xintercept = 0, col="red", size=1) +
+  scale_x_continuous(name="Value", limits=c(-3, 3)) + 
+    geom_vline(xintercept = summary(model)$fixed[1,3:4], col="darkgreen", linetype=2) +
+    geom_vline(xintercept = summary(model)$fixed[2,3:4], col="blue", linetype=2) +
+    geom_vline(xintercept = summary(model)$fixed[3,3:4], col="red", linetype=2) +
+  theme_light() +
+   scale_fill_manual(name='Parameters', values = c("red","darkgreen" , "lightblue"), labels=c(expression( " "  ~  gamma[Exraversion]), expression( " "  ~  gamma[Intercept]),  expression( " "  ~  gamma[Sex]))) +
+  labs(title="Posterior Density of Parameters With 95% CCI lines (1)")
+
+
+```
+
+
+
+```{r results = 'asis' }
+
+# 10. Is the Bayesian way of interpreting and reporting model results used?
+
+# For a summary on how to interpret and report models, please refer to https://www.rensvandeschoot.com/bayesian-analyses-where-to-start-and-what-to-report/
+
+summary(model)
+
+```
 
 
 ```{r results = 'asis' }
@@ -68,4 +154,3 @@ models.list <- generateLikelihoodV2models(df=filtered.df, inboundList=rl, daytim
 # https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
 
 ```
-
