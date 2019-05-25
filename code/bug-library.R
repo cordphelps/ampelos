@@ -588,6 +588,7 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
                               subtitle="afternoon collection", caption=" ")
     
     print(g1)
+    g <- g1
     
     # don't run this twice
     if (trend==FALSE) {
@@ -613,6 +614,7 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
                             subtitle="morning collection", caption=" ")
     
     print(g2)
+    g <- g2
 
     # don't run this twice
     if (trend==FALSE) {
@@ -639,6 +641,7 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
                               subtitle="24 hour collection", caption=" ") 
     
     print(g3)
+    g <- g3
 
     # don't run this twice
     if (trend==FALSE) {
@@ -658,7 +661,7 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
   }
   
   
-  return()
+  return(g)
   
 }
 

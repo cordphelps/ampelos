@@ -141,6 +141,9 @@ ggplot(filter(modeltranformed, Parameter==c("b_log_pop","b_contact_high"), Itera
 
 # For a summary on how to interpret and report models, please refer to https://www.rensvandeschoot.com/bayesian-analyses-where-to-start-and-what-to-report/
 
+# Dear rc.phelps Thanks for your email! Yes, I agree with McElreath that this is not the best statement. I actually very much like the approach of Kruschke: http://www.indiana.edu/~kruschke/articles/Kruschke2011PoPScorrected.pdf
+#Hope this helps! Rens Prof. Dr. Rens van de Schoot - Department of Methodology & Statistics – Faculty of Social and Behavioral Sciences - Utrecht University –  The Netherlands  - Member Young Academy of the Royal Dutch Academy of Science Office:  Sjoerd Groenman building A105 – Email: a.g.j.vandeschoot@uu.nl –  Homepage: www.rensvandeschoot.com
+
 summary(model)
 
 ```

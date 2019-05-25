@@ -238,6 +238,10 @@ wind231 <- ggplot(data = df2.df, aes(x=julian, y=DayWindSpdAvg)) +
 ```{r, ambient}
 print(ambient231)
 
+ggsave("ambient231.pdf", plot = ambient231, device = NULL, path = "./CIMIS-api_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+
 ```
 
 

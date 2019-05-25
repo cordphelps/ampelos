@@ -417,7 +417,11 @@ plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="
 
 plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+g <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+
+ggsave("1.pdf", plot = g, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
 
 
 ```
@@ -428,6 +432,7 @@ plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="
 plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 
 plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+
 
 
 ```
