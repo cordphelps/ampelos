@@ -487,7 +487,7 @@ modelDiags <- function(daytime, log.pop.list) {
   modelTime[[3]] <- "seasonal timeframe: weeks 32-34"    # model #3 
 
 
-  daytime <- '24h'
+  # daytime <- 'pm'
 
   list <- readRDS(paste("./code/output/list-", daytime, ".rds", sep=""))
 

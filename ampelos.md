@@ -40,12 +40,22 @@ print(gg)
 ![](ampelos_files/figure-markdown_github/insectPop-1.png)
 
 ``` r
+ggsave("1.1.pdf", plot = gg, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+
 gg <- plotBugPercentages(returnList, spidersOnly=TRUE)
 
 print(gg)
 ```
 
 ![](ampelos_files/figure-markdown_github/insectPop-2.png)
+
+``` r
+ggsave("1.2.pdf", plot = gg, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+```
 
 ``` r
 # (fig.keep='none' suppresses the plots temporarily)
@@ -123,6 +133,10 @@ g24 <- plotBugDistribution(data=reducedData.df,
 ![](ampelos_files/figure-markdown_github/overheadCompare-1.png)
 
 ``` r
+ggsave("left.pdf", plot = g24, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+
 reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(30), species=quo(Thomisidae..crab.spider.))
 
 g30 <- plotBugDistribution(data=reducedData.df, 
@@ -161,6 +175,16 @@ print(cl2.gg)
 
 ![](ampelos_files/figure-markdown_github/overheadClusters-2.png)
 
+``` r
+ggsave("3.1.pdf", plot = cl1.gg, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+
+ggsave("3.2.pdf", plot = cl2.gg, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+```
+
 #### (control cluster \#2 is slightly wider than oakMargin cluster \#2)
 
 ### 'big picture' data by cluster, time, and transect
@@ -178,7 +202,17 @@ if (TRUE) {
   returnList <- evaluateDailySpiderCounts(bugs.df)
   
   print(returnList[[1]]) # scatter plot by cluster with seasonal timeframes
+  
+  ggsave("4.1.pdf", plot = returnList[[1]], device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+  
   print(returnList[[2]]) # scatter plot by am/pm
+  
+  ggsave("4.2.pdf", plot = returnList[[2]], device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+  
   print(returnList[[3]]) # scatter plot by transect
   #
   # returnList[[4]] is the data 'dataframe' used for the graphics (total.df)
@@ -195,53 +229,6 @@ if (TRUE) {
 ![](ampelos_files/figure-markdown_github/bigPicture-1.png)![](ampelos_files/figure-markdown_github/bigPicture-2.png)![](ampelos_files/figure-markdown_github/bigPicture-3.png)
 
 ### How plausible is it that an oakMargin transect row will have more spiders than a control transect row?
-
-``` r
-# gg.list <- likelihoodPlusModelDiags(rl=returnList)  <-- avoid brm() internal error
-
-rl <- returnList
-
-  if (TRUE) {
-    #source('./code/bayes.R')
-
-    # organize data into
-    #       "week", "transect", "time", "cluster", "totalSpiders"
-    # ( already done by evaluateDailySpiderCounts() )
-    #
-    # plot the weekly raw data : plotWeekly()
-    # create txt files saving the status output of 9 brm() cycles
-
-    #
-    #         existing models will be read from disc
-    #         with FALSE logic in generateLikelihoodV2() ......
-    #
-    ##
-    ## rl[[4]] is multiple records per week with columns
-    ## week, transect, time, cluster, totalSpiders
-    ##
-    gg.likelihood <- generateLikelihoodV2(df=rl[[4]], inboundList=rl, daytime='24h')
-    print(gg.likelihood)
-  
-    if (TRUE) {
-  
-    filtered.df <- rl[[4]] %>% dplyr::filter(time == 'pm')
-    gg.likelihood <- generateLikelihoodV2(df=filtered.df, inboundList=rl, daytime='pm')
-    print(gg.likelihood) # likelihood by cluster with seasonal timeframes
-  
-  
-    filtered.df <- rl[[4]] %>% dplyr::filter(time == 'am')
-    gg.likelihood <- generateLikelihoodV2(df=filtered.df, inboundList=rl, daytime='am')
-    print(gg.likelihood) # likelihood by cluster with seasonal timeframes
-  
-    }
-    # kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
-
-    # pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
-     #                     p.adjust.method = "BH")
-
-  
-  }  # end if TRUE
-```
 
     ## Loading required package: Rcpp
 
@@ -270,11 +257,7 @@ rl <- returnList
 
     ## Start sampling
 
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
+    ## [1] "./code/output/clBRMsummary-pm-1.txt"
 
     ## Compiling the C++ model
 
@@ -282,11 +265,7 @@ rl <- returnList
 
     ## Start sampling
 
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
+    ## [1] "./code/output/clBRMsummary-pm-2.txt"
 
     ## Compiling the C++ model
 
@@ -294,11 +273,7 @@ rl <- returnList
 
     ## Start sampling
 
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
+    ## [1] "./code/output/clBRMsummary-pm-3.txt"
 
     ## Compiling the C++ model
 
@@ -306,11 +281,7 @@ rl <- returnList
 
     ## Start sampling
 
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
+    ## [1] "./code/output/clBRMsummary-pm-4.txt"
 
     ## Compiling the C++ model
 
@@ -318,24 +289,7 @@ rl <- returnList
 
     ## Start sampling
 
-    ## Loading 'brms' package (version 2.6.0). Useful instructions
-    ## can be found by typing help('brms'). A more detailed introduction
-    ## to the package is available through vignette('brms_overview').
-    ## Run theme_set(theme_default()) to use the default bayesplot theme.
-
-    ## rstan (Version 2.17.3, GitRev: 2e1f913d3ca3)
-
-    ## For execution on a local, multicore CPU with excess RAM we recommend calling
-    ## options(mc.cores = parallel::detectCores()).
-    ## To avoid recompilation of unchanged Stan programs, we recommend calling
-    ## rstan_options(auto_write = TRUE)
-
-    ## 
-    ## Attaching package: 'rstan'
-
-    ## The following object is masked from 'package:tidyr':
-    ## 
-    ##     extract
+    ## [1] "./code/output/clBRMsummary-pm-5.txt"
 
     ## Compiling the C++ model
 
@@ -343,11 +297,7 @@ rl <- returnList
 
     ## Start sampling
 
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
+    ## [1] "./code/output/clBRMsummary-pm-6.txt"
 
     ## Compiling the C++ model
 
@@ -355,11 +305,7 @@ rl <- returnList
 
     ## Start sampling
 
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
+    ## [1] "./code/output/clBRMsummary-pm-7.txt"
 
     ## Compiling the C++ model
 
@@ -367,11 +313,7 @@ rl <- returnList
 
     ## Start sampling
 
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
+    ## [1] "./code/output/clBRMsummary-pm-8.txt"
 
     ## Compiling the C++ model
 
@@ -379,99 +321,16 @@ rl <- returnList
 
     ## Start sampling
 
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
+    ## [1] "./code/output/clBRMsummary-pm-9.txt"
 
 ![](ampelos_files/figure-markdown_github/clusterBayes-1.png)
 
-    ## Loading 'brms' package (version 2.6.0). Useful instructions
-    ## can be found by typing help('brms'). A more detailed introduction
-    ## to the package is available through vignette('brms_overview').
-    ## Run theme_set(theme_default()) to use the default bayesplot theme.
-
-    ## rstan (Version 2.17.3, GitRev: 2e1f913d3ca3)
-
-    ## For execution on a local, multicore CPU with excess RAM we recommend calling
-    ## options(mc.cores = parallel::detectCores()).
-    ## To avoid recompilation of unchanged Stan programs, we recommend calling
-    ## rstan_options(auto_write = TRUE)
-
-    ## 
-    ## Attaching package: 'rstan'
-
-    ## The following object is masked from 'package:tidyr':
-    ## 
-    ##     extract
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-    ## Compiling the C++ model
-
-    ## recompiling to avoid crashing R session
-
-    ## Start sampling
-
-![](ampelos_files/figure-markdown_github/clusterBayes-2.png)![](ampelos_files/figure-markdown_github/clusterBayes-3.png)
+    ## Saving 6 x 5 in image
 
 ### model diagnostics?
 
 ``` r
-gg.list <- modelDiags(daytime='24h', log.pop.list=rl[[13]]) # read the 9 models from disc and run diags
+gg.list <- modelDiags(daytime='pm', log.pop.list=rl[[13]]) # read the 9 models from disc and run diags
 ```
 
     ## NOTE: As of tidybayes version 1.0, several functions, arguments, and output column names
@@ -497,12 +356,26 @@ gg.list <- modelDiags(daytime='24h', log.pop.list=rl[[13]]) # read the 9 models 
     ## Warning: Ignoring unknown parameters: show_legend
 
 ``` r
-for (i in 1:length(gg.list)) {
+print(gg.list[[1]])
+```
+
+![](ampelos_files/figure-markdown_github/clusterDiags-1.png)
+
+``` r
+ggsave("6.2.pdf", plot = gg.list[[1]], device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+```
+
+    ## Saving 6 x 5 in image
+
+``` r
+for (i in 2:length(gg.list)) {
   print(gg.list[[i]])
 }
 ```
 
-![](ampelos_files/figure-markdown_github/clusterDiags-1.png)![](ampelos_files/figure-markdown_github/clusterDiags-2.png)![](ampelos_files/figure-markdown_github/clusterDiags-3.png)![](ampelos_files/figure-markdown_github/clusterDiags-4.png)![](ampelos_files/figure-markdown_github/clusterDiags-5.png)![](ampelos_files/figure-markdown_github/clusterDiags-6.png)![](ampelos_files/figure-markdown_github/clusterDiags-7.png)![](ampelos_files/figure-markdown_github/clusterDiags-8.png)![](ampelos_files/figure-markdown_github/clusterDiags-9.png)![](ampelos_files/figure-markdown_github/clusterDiags-10.png)![](ampelos_files/figure-markdown_github/clusterDiags-11.png)![](ampelos_files/figure-markdown_github/clusterDiags-12.png)
+![](ampelos_files/figure-markdown_github/clusterDiags-2.png)![](ampelos_files/figure-markdown_github/clusterDiags-3.png)![](ampelos_files/figure-markdown_github/clusterDiags-4.png)![](ampelos_files/figure-markdown_github/clusterDiags-5.png)![](ampelos_files/figure-markdown_github/clusterDiags-6.png)![](ampelos_files/figure-markdown_github/clusterDiags-7.png)![](ampelos_files/figure-markdown_github/clusterDiags-8.png)![](ampelos_files/figure-markdown_github/clusterDiags-9.png)![](ampelos_files/figure-markdown_github/clusterDiags-10.png)![](ampelos_files/figure-markdown_github/clusterDiags-11.png)![](ampelos_files/figure-markdown_github/clusterDiags-12.png)
 
 ``` r
 if (FALSE) {
@@ -658,52 +531,50 @@ bubbleClusterRanks(rankOakPM.df, "oakMargin", "am")
 ### does the crab spider population appear to change over time? Is there a difference between the two transects?
 
 ``` r
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
 ![](ampelos_files/figure-markdown_github/pop-trends-am-1.png)
 
-    ## NULL
-
 ``` r
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
 ![](ampelos_files/figure-markdown_github/pop-trends-am-2.png)![](ampelos_files/figure-markdown_github/pop-trends-am-3.png)![](ampelos_files/figure-markdown_github/pop-trends-am-4.png)
 
-    ## NULL
-
 ``` r
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
 ![](ampelos_files/figure-markdown_github/pop-trends-pm-1.png)
 
-    ## NULL
-
 ``` r
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
 ![](ampelos_files/figure-markdown_github/pop-trends-pm-2.png)![](ampelos_files/figure-markdown_github/pop-trends-pm-3.png)![](ampelos_files/figure-markdown_github/pop-trends-pm-4.png)
 
-    ## NULL
-
 ``` r
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/population-trends-both-1.png)
-
-    ## NULL
+![](ampelos_files/figure-markdown_github/population-trends-both-1.png)![](ampelos_files/figure-markdown_github/population-trends-both-2.png)![](ampelos_files/figure-markdown_github/population-trends-both-3.png)
 
 ``` r
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+ggsave("2.2.pdf", plot = g.gg, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+
+g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/population-trends-both-2.png)![](ampelos_files/figure-markdown_github/population-trends-both-3.png)![](ampelos_files/figure-markdown_github/population-trends-both-4.png)
+![](ampelos_files/figure-markdown_github/population-trends-both-4.png)![](ampelos_files/figure-markdown_github/population-trends-both-5.png)![](ampelos_files/figure-markdown_github/population-trends-both-6.png)
 
-    ## NULL
+``` r
+ggsave("2.1.pdf", plot = g.gg, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+```
 
 ### and the species counts?
 

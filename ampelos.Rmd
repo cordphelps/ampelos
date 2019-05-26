@@ -42,9 +42,17 @@ gg <- plotBugPercentages(returnList, spidersOnly=FALSE)
 
 print(gg)
 
+ggsave("1.1.pdf", plot = gg, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+
 gg <- plotBugPercentages(returnList, spidersOnly=TRUE)
 
 print(gg)
+
+ggsave("1.2.pdf", plot = gg, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
 
 ```
 
@@ -122,6 +130,9 @@ reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(24), species=
 g24 <- plotBugDistribution(data=reducedData.df, 
                           cap=paste("crab spider occurrences", " week 24", sep=""))
 
+ggsave("left.pdf", plot = g24, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
 
 reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(30), species=quo(Thomisidae..crab.spider.))
 
@@ -155,6 +166,15 @@ print(cl1.gg)
 
 print(cl2.gg)
 
+ggsave("3.1.pdf", plot = cl1.gg, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+
+ggsave("3.2.pdf", plot = cl2.gg, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+
+
 ```
 
 
@@ -179,7 +199,17 @@ if (TRUE) {
   returnList <- evaluateDailySpiderCounts(bugs.df)
   
   print(returnList[[1]]) # scatter plot by cluster with seasonal timeframes
+  
+  ggsave("4.1.pdf", plot = returnList[[1]], device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+  
   print(returnList[[2]]) # scatter plot by am/pm
+  
+  ggsave("4.2.pdf", plot = returnList[[2]], device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+  
   print(returnList[[3]]) # scatter plot by transect
   #
   # returnList[[4]] is the data 'dataframe' used for the graphics (total.df)
@@ -222,19 +252,20 @@ rl <- returnList
     ## rl[[4]] is multiple records per week with columns
     ## week, transect, time, cluster, totalSpiders
     ##
-    gg.likelihood <- generateLikelihoodV2(df=rl[[4]], inboundList=rl, daytime='24h')
-    print(gg.likelihood)
-  
-    if (TRUE) {
-  
     filtered.df <- rl[[4]] %>% dplyr::filter(time == 'pm')
-    gg.likelihood <- generateLikelihoodV2(df=filtered.df, inboundList=rl, daytime='pm')
-    print(gg.likelihood) # likelihood by cluster with seasonal timeframes
+    gg.likelihood.pm <- generateLikelihoodV2(df=filtered.df, inboundList=rl, daytime='pm')
+    print(gg.likelihood.pm)
+    
   
+    if (FALSE) {
   
     filtered.df <- rl[[4]] %>% dplyr::filter(time == 'am')
-    gg.likelihood <- generateLikelihoodV2(df=filtered.df, inboundList=rl, daytime='am')
-    print(gg.likelihood) # likelihood by cluster with seasonal timeframes
+    gg.likelihood.pm <- generateLikelihoodV2(df=filtered.df, inboundList=rl, daytime='am')
+    print(gg.likelihood.am) # likelihood by cluster with seasonal timeframes
+  
+  
+    gg.likelihood.24 <- generateLikelihoodV2(df=rl[[4]], inboundList=rl, daytime='24h')
+    print(gg.likelihood.24)
   
     }
     # kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
@@ -245,6 +276,10 @@ rl <- returnList
   
   }  # end if TRUE
 
+    ggsave("6.1.pdf", plot = gg.likelihood.pm, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+
 ```
 
 ### model diagnostics?
@@ -252,9 +287,15 @@ rl <- returnList
 ```{r clusterDiags, echo=TRUE, include=TRUE, message=T, warning=T}
 
 
-gg.list <- modelDiags(daytime='24h', log.pop.list=rl[[13]]) # read the 9 models from disc and run diags
+gg.list <- modelDiags(daytime='pm', log.pop.list=rl[[13]]) # read the 9 models from disc and run diags
 
-for (i in 1:length(gg.list)) {
+print(gg.list[[1]])
+
+ggsave("6.2.pdf", plot = gg.list[[1]], device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+
+for (i in 2:length(gg.list)) {
   print(gg.list[[i]])
 }
 
@@ -406,22 +447,18 @@ if (FALSE) {
 
 ```{r pop-trends-am, echo=TRUE, include=TRUE, message=F, warning=F}
 
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 
 ```
 
 
 ```{r pop-trends-pm, echo=TRUE, include=TRUE, message=F, warning=F}
 
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 
-g <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
-
-ggsave("1.pdf", plot = g, device = NULL, path = "./IALE/poster_files",
-       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
-       units = c("in", "cm", "mm"))
+g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 
 
 ```
@@ -429,11 +466,17 @@ ggsave("1.pdf", plot = g, device = NULL, path = "./IALE/poster_files",
 
 ```{r population-trends-both, echo=TRUE, include=TRUE, message=F, warning=F}
 
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 
-plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="both", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+ggsave("2.2.pdf", plot = g.gg, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
 
+g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 
+ggsave("2.1.pdf", plot = g.gg, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
 
 ```
 
