@@ -40,7 +40,7 @@ print(gg)
 ![](ampelos_files/figure-markdown_github/insectPop-1.png)
 
 ``` r
-ggsave("1.1.pdf", plot = gg, device = NULL, path = "./IALE/poster_files",
+ggsave("left.1.1.pdf", plot = gg, device = NULL, path = "./IALE/poster_files",
        scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
        units = c("in", "cm", "mm"))
 
@@ -52,7 +52,7 @@ print(gg)
 ![](ampelos_files/figure-markdown_github/insectPop-2.png)
 
 ``` r
-ggsave("1.2.pdf", plot = gg, device = NULL, path = "./IALE/poster_files",
+ggsave("left.1.2.pdf", plot = gg, device = NULL, path = "./IALE/poster_files",
        scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
        units = c("in", "cm", "mm"))
 ```
@@ -133,7 +133,7 @@ g24 <- plotBugDistribution(data=reducedData.df,
 ![](ampelos_files/figure-markdown_github/overheadCompare-1.png)
 
 ``` r
-ggsave("left.pdf", plot = g24, device = NULL, path = "./IALE/poster_files",
+ggsave("left.2.1.pdf", plot = g24, device = NULL, path = "./IALE/poster_files",
        scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
        units = c("in", "cm", "mm"))
 
@@ -146,6 +146,10 @@ g30 <- plotBugDistribution(data=reducedData.df,
 ![](ampelos_files/figure-markdown_github/overheadCompare-2.png)
 
 ``` r
+ggsave("left.2.2.pdf", plot = g30, device = NULL, path = "./IALE/poster_files",
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+
 # g <- arrangeGrob(g1, g2, nrow=1)
 ```
 
@@ -176,11 +180,11 @@ print(cl2.gg)
 ![](ampelos_files/figure-markdown_github/overheadClusters-2.png)
 
 ``` r
-ggsave("3.1.pdf", plot = cl1.gg, device = NULL, path = "./IALE/poster_files",
+ggsave("right.2.1.pdf", plot = cl1.gg, device = NULL, path = "./IALE/poster_files",
        scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
        units = c("in", "cm", "mm"))
 
-ggsave("3.2.pdf", plot = cl2.gg, device = NULL, path = "./IALE/poster_files",
+ggsave("right.2.2.pdf", plot = cl2.gg, device = NULL, path = "./IALE/poster_files",
        scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
        units = c("in", "cm", "mm"))
 ```
@@ -203,13 +207,13 @@ if (TRUE) {
   
   print(returnList[[1]]) # scatter plot by cluster with seasonal timeframes
   
-  ggsave("4.1.pdf", plot = returnList[[1]], device = NULL, path = "./IALE/poster_files",
+  ggsave("right.3.1.pdf", plot = returnList[[1]], device = NULL, path = "./IALE/poster_files",
        scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
        units = c("in", "cm", "mm"))
   
   print(returnList[[2]]) # scatter plot by am/pm
   
-  ggsave("4.2.pdf", plot = returnList[[2]], device = NULL, path = "./IALE/poster_files",
+  ggsave("right.3.2.pdf", plot = returnList[[2]], device = NULL, path = "./IALE/poster_files",
        scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
        units = c("in", "cm", "mm"))
   
@@ -362,7 +366,7 @@ print(gg.list[[1]])
 ![](ampelos_files/figure-markdown_github/clusterDiags-1.png)
 
 ``` r
-ggsave("6.2.pdf", plot = gg.list[[1]], device = NULL, path = "./IALE/poster_files",
+ggsave("right.4.2.pdf", plot = gg.list[[1]], device = NULL, path = "./IALE/poster_files",
        scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
        units = c("in", "cm", "mm"))
 ```
@@ -555,23 +559,23 @@ g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), 
 ![](ampelos_files/figure-markdown_github/pop-trends-pm-2.png)![](ampelos_files/figure-markdown_github/pop-trends-pm-3.png)![](ampelos_files/figure-markdown_github/pop-trends-pm-4.png)
 
 ``` r
-g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+g.gg.am <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
 ![](ampelos_files/figure-markdown_github/population-trends-both-1.png)![](ampelos_files/figure-markdown_github/population-trends-both-2.png)![](ampelos_files/figure-markdown_github/population-trends-both-3.png)
 
 ``` r
-ggsave("2.2.pdf", plot = g.gg, device = NULL, path = "./IALE/poster_files",
+ggsave("right.1.2.pdf", plot = g.gg.am, device = NULL, path = "./IALE/poster_files",
        scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
        units = c("in", "cm", "mm"))
 
-g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
+g.gg.pm <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
 ![](ampelos_files/figure-markdown_github/population-trends-both-4.png)![](ampelos_files/figure-markdown_github/population-trends-both-5.png)![](ampelos_files/figure-markdown_github/population-trends-both-6.png)
 
 ``` r
-ggsave("2.1.pdf", plot = g.gg, device = NULL, path = "./IALE/poster_files",
+ggsave("right.1.1.pdf", plot = g.gg.pm, device = NULL, path = "./IALE/poster_files",
        scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
        units = c("in", "cm", "mm"))
 ```
