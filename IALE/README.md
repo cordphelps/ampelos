@@ -7,7 +7,6 @@ code and data are freely available in the [parent directory](https://github.com/
 
 please direct questions to: rc.phelps@gmail.com
 
-================
 
 ![landscape](../photos/landscapeOak.JPG)
 
