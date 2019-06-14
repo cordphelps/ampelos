@@ -8,7 +8,7 @@ how does a 'natural habitat' field margin influence the population of beneficial
 
 
 
-![landscape](./Phelps poster landscape FINAL for web.jpg)
+![landscape](./posters/posterWeb.jpg)
 
 
 
