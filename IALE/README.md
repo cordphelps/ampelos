@@ -3,12 +3,15 @@ ampelos
 
 ![landscape](../photos/landscapeOak.JPG)
 
-how does a 'natural habitat' field margin influence the population of beneficial insects in an organic vineyard?
-----------------------------------------------------------------------------------------------------------------
-
 
 
 ![landscape](./posters/posterWeb.jpg)
+
+
+code and data are freely available in the [parent directory](https://github.com/cordphelps/ampelos)
+----------------------------------------------------------------------------------------------------------------
+
+
 
 
 
