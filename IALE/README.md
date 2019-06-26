@@ -1,11 +1,15 @@
 
-poster presentation: semi-natural habitat and beneficial spiders in a California vineyard
 
-authors: Cord Phelps and Lindsey Norgrove
+"Early Science" : Semi-natural Habitat and Beneficial Spiders in a California Vineyard
 
-code and data are freely available in the [parent directory](https://github.com/cordphelps/ampelos) (https://github.com/cordphelps/ampelos)
+Cord Phelps (rc.phelps@gmail.com) and Lindsey Norgrove (lindsey.norgrove@bfh.ch)
 
-please direct questions to: rc.phelps@gmail.com
+Bern University of Applied Sciences
+Länggasse 85, 3052 Zollikofen, Switzerland
+https://www.bfh.ch/hafl/de
+
+
+Code and data are freely available in the [parent directory](https://github.com/cordphelps/ampelos) (https://github.com/cordphelps/ampelos)
 
 
 ![landscape](../photos/landscapeOak.JPG)
