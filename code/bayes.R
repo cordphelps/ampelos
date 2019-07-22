@@ -1247,6 +1247,16 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path) {
     print(summary(modelOutput[[i]], prob=.89))
     sink(NULL)
 
+  }
+
+  # print the posterior graphs separately so that the color can be adjusted to math the cluster info
+
+  color_scheme_set("red")
+
+  index <- c(1,4,7)
+
+  for (i in index) {
+
     # plot the posterior distributions
     ggList[[i+1]] <- post.df.list[[i]] %>%
 
@@ -1258,12 +1268,63 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path) {
         axis.text.y  = element_text(hjust = 0)) +
       theme_bw() +
       ggplot2::labs(
-        title = "Posterior distribution coefficient plot",
-        subtitle = paste( "cluster: ", likelihood.df[[1]][[i]], 
-                          " ; seasonal timeframe: ", likelihood.df[[2]][[i]], 
-                          "\npopulation adjustment factor: ", populationAdjustmentFactor,
-                          "\ninteraction plausibility: ", round(likelihood.df[[3]][[i]],2), sep=""),
-        caption = "with medians and 89% intervals")
+        caption = paste("posterior distribution coefficient plot with medians and 89% intervals",
+                        "\ncluster: ", likelihood.df[[1]][[i]], 
+                        " ; seasonal timeframe: ", likelihood.df[[2]][[i]], 
+                        "\npopulation adjustment factor: ", populationAdjustmentFactor,
+                        "\ninteraction plausibility: ", round(likelihood.df[[3]][[i]],2), sep="")
+                    )
+    }
+
+
+  color_scheme_set("green")
+  index <- c(2,5,8)
+
+  for (i in index) {
+
+    # plot the posterior distributions
+    ggList[[i+1]] <- post.df.list[[i]] %>%
+
+      select(-lp__) %>% 
+      rename(b_interaction = `b_log_pop:contact_high`) %>%
+
+      bayesplot::mcmc_intervals(prob = .5, prob_outer = .89) +
+      theme(axis.ticks.y = element_blank(),
+        axis.text.y  = element_text(hjust = 0)) +
+      theme_bw() +
+      ggplot2::labs(
+        caption = paste("posterior distribution coefficient plot with medians and 89% intervals",
+                        "\ncluster: ", likelihood.df[[1]][[i]], 
+                        " ; seasonal timeframe: ", likelihood.df[[2]][[i]], 
+                        "\npopulation adjustment factor: ", populationAdjustmentFactor,
+                        "\ninteraction plausibility: ", round(likelihood.df[[3]][[i]],2), sep="")
+                    )
+    }
+
+
+  color_scheme_set("blue")
+  index <- c(3,6,9)
+
+  for (i in index) {
+
+    # plot the posterior distributions
+    ggList[[i+1]] <- post.df.list[[i]] %>%
+
+      select(-lp__) %>% 
+      rename(b_interaction = `b_log_pop:contact_high`) %>%
+
+      bayesplot::mcmc_intervals(prob = .5, prob_outer = .89) +
+      theme(axis.ticks.y = element_blank(),
+        axis.text.y  = element_text(hjust = 0)) +
+      theme_bw() +
+      ggplot2::labs(
+        caption = paste("posterior distribution coefficient plot with medians and 89% intervals",
+                        "\ncluster: ", likelihood.df[[1]][[i]], 
+                        " ; seasonal timeframe: ", likelihood.df[[2]][[i]], 
+                        "\npopulation adjustment factor: ", populationAdjustmentFactor,
+                        "\ninteraction plausibility: ", round(likelihood.df[[3]][[i]],2), sep="")
+                    )
+
 
   }
 
