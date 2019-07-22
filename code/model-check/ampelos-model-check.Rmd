@@ -6,6 +6,8 @@ output: github_document
 
 ```{r setup, echo=FALSE, include=FALSE, message=F, warning=F}
 
+setwd("/Users/rcphelps/code/thesis/ampelos")
+
 source("./code/bug-library.R")
 source("./code/similarity.R")
 source("./code/jaccard-similarity.R")
@@ -21,7 +23,6 @@ source('./code/ranking.R')
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 
-# setwd("./code/thesis/ampelos/")
 
 ```
 
@@ -39,7 +40,11 @@ rl <- returnList
 ## rl[[4]] is multiple records per week with columns
 ## week, transect, time, cluster, totalSpiders
 
+setwd("/Users/rcphelps/code/thesis/ampelos")
+getwd()
+
 filtered.df <- rl[[4]] %>% dplyr::filter(time == 'pm')
+# read models from disc
 models.list <- generateLikelihoodV2models(df=filtered.df, inboundList=rl, daytime='pm')
 
 
