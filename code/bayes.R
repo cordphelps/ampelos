@@ -312,7 +312,7 @@ evaluateDailySpiderCounts <- function(df) {
     grouped <- group_by(melt.cl, week, transect, time, cluster)
     summarise(grouped, mean=mean(value))
 
-    # use these mean counts to estime the cluster population in the different time frames
+    # use these mean counts to estimate the vine population in the different time frames
     cl.by.week <- total.df %>% dplyr::filter(week < 26)
     cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
     cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
@@ -346,11 +346,11 @@ evaluateDailySpiderCounts <- function(df) {
     # 'total spider' evidence to be folded into priors that are based on relative populations for each 
     # seasonal period
     #
-    #                pop    SD (imaginary)    log(pop)
+    #                pop    SD (imaginary)    log10(pop)  ln(pop)
     #
-    #      1         255         64  85           2.4
-    #      2          80         20  27           1.9
-    #      3           8          2   3           0.9 
+    #      1         255         64  85           2.4       5.5
+    #      2          80         20  27           1.9       4.4
+    #      3           8          2   3           0.9       2.1
     #
     # CAUTION: using SD roughly 25% of the mean to prevent the sampler from choking on 
     #          negative values 
@@ -380,7 +380,7 @@ evaluateDailySpiderCounts <- function(df) {
 
   returnList[[11]] <- list(255, 80, 8, 255, 80, 8, 255, 80, 8)                # mean population for 9 models
   returnList[[12]] <- list(85, 27, 3, 85, 27, 3, 85, 27, 3)              # population SD for 9 models
-  returnList[[13]] <- list(2.4, 1.9, 0.9, 2.4, 1.9, 0.9, 2.4, 1.9, 0.9)  # log mean population for 9 models
+  returnList[[13]] <- list(5.5,4.4,2.1,5.5,4.4,2.1,5.5,4.4,2.1)  # logE mean population for 9 models
   
 
   
@@ -592,9 +592,6 @@ modelDiags <- function(daytime, log.pop.list) {
     library(ggrepel)
 
     gg.list <- list()
-    #log.pop.list <- c(2.9, 2.4, 2.2, 2.9, 2.4, 2.2, 2.9, 2.4, 2.2)
-    #log.pop.list <- c(2.4, 1.9, 0.9, 2.4, 1.9, 0.9, 2.4, 1.9, 0.9) 
-    #log.pop.list <- inboundList
 
     bugs_clean <- df %>%
       mutate(totalSpiders = ordered(totalSpiders)) %>%
@@ -875,7 +872,7 @@ modelDiags <- function(daytime, log.pop.list) {
 }
 
 
-plotLikelihood <- function(df, cap) {
+plotLikelihood <- function(df, hypoPop, cap) {
   
   # input df :
   # cluster{one, two, three}, seasonalTimeframe{one, two, three}, plausibility(decimal)
@@ -903,7 +900,9 @@ plotLikelihood <- function(df, cap) {
      #    subtitle=paste(sub, sep=""), 
     labs(y="plausibility", 
          x="seasonal timeframe", 
-         caption = paste("'plausibility' of an SNH effect on the crab spider population\n", cap, sep="") ) +
+         caption = paste("the 'plausibility' of an SNH effect on the crab spider population\n", 
+                          "for a hypothetical vine population of ", hypoPop, " spiders\n", 
+                          cap, sep="") ) +
     
     scale_x_discrete(labels=c("one" = "weeks\n23-25", "two" = "weeks\n26-31",
                               "three" = "weeks\n32-34")) +
@@ -983,20 +982,26 @@ generateLikelihoodV2tables <- function(df, inboundList, daytime) {
 
 }
 
-generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path) {
+generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, populationAdjustmentFactor) {
 
-    populationAdjustmentFactor <- 1.0
 
     ##
     ##
     ## build a df of likelihood (the probability that the
     ## spider population is influenced by the oakMargin) by cluster by week
-    ## UPDATE ELEMENT 5 of the inbound list and RETURN the entire list
+    ## UPDATE ELEMENT 5 of the inbound list (a list of 9 likelihoods) and 
+    ## returning the new list.
+    ##
+    ## save a text file summary() of each model to disc
     ##
     ## return a plot the likelihoods
     ##
     ## return plots of the mcmc_intervals for 9 models
     ##
+
+    ## parameter df is the 4th member of the output of evaluateDailySpiderCounts(bugs.df)
+
+    ## parameter inboundList is the output of evaluateDailySpiderCounts(bugs.df)
 
   
     if("rethinking" %in% (.packages())){
@@ -1085,16 +1090,14 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path) {
     #
     # lists containing parameters developed in evaluateDailySpiderCounts()
     # 
-    # mean population for 9 models     :  inboundList[[11]]            
-    # population SD for 9 models       :  inboundList[[12]]             
-    # log mean population for 9 models :  inboundList[[13]] 
-    #  
-    #
-    # this is a list of 9
     # 34 observations of 8 variables
     # week, transect, time, cluster, totalSpiders, population, log_pop, contact_high
     #
     #
+    # mean population for 9 models     :  inboundList[[11]]            
+    # population SD for 9 models       :  inboundList[[12]]             
+    # log mean population for 9 models :  inboundList[[13]] 
+    #  
   
     cl.st.list[[1]] <- df %>% dplyr::filter(week < 26 & cluster == 'one')
     cl.st.list[[1]]$population <- inboundList[[11]][[1]] * populationAdjustmentFactor
@@ -1146,6 +1149,9 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path) {
     #### model building ####
     #### model building ####
     for (i in 1:length(cl.st.list)) {  # build model for each seasonal timeframe
+
+      # ref: Oceanic Tool Complexity Model
+      # https://bookdown.org/connect/#/apps/1850/access 
     
         
         b10.10 <-
@@ -1162,10 +1168,14 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path) {
       
 
         post.df.list[[i]] <- brms::posterior_samples(modelOutput[[i]])  # 
+
+        # compare predictions for a high contact and low contact vine with spider population of 100 spiders 
+
+        hypotheticalPopultion <- 40 
  
         temp.df <- post.df.list[[i]] %>%   
-          mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log.pop.list[[i]]),
-                 lambda_low  = exp(b_Intercept + b_log_pop * log.pop.list[[i]])) %>% 
+          mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log(hypotheticalPopultion) ),
+                 lambda_low  = exp(b_Intercept + b_log_pop * log(hypotheticalPopultion) ) ) %>% 
           mutate(diff        = lambda_high - lambda_low) 
         
         like.df <- temp.df %>%
@@ -1227,7 +1237,7 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path) {
   ggList <- list()
 
   # plot the likelihood for the 9 models
-  ggList[[1]] <- plotLikelihood(df=inboundList[[5]],  
+  ggList[[1]] <- plotLikelihood(df=inboundList[[5]],  hypoPop=hypotheticalPopultion,
                                 cap=paste("population seasonal trend, daytime: ", daytime,
                                 "\npopulation adjustment factor: ", populationAdjustmentFactor,           
                                 sep=""))
@@ -1251,34 +1261,9 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path) {
 
   # print the posterior graphs separately so that the color can be adjusted to math the cluster info
 
-  color_scheme_set("red")
+  color_scheme_set("red")      # cluster 'one'
 
-  index <- c(1,4,7)
-
-  for (i in index) {
-
-    # plot the posterior distributions
-    ggList[[i+1]] <- post.df.list[[i]] %>%
-
-      select(-lp__) %>% 
-      rename(b_interaction = `b_log_pop:contact_high`) %>%
-
-      bayesplot::mcmc_intervals(prob = .5, prob_outer = .89) +
-      theme(axis.ticks.y = element_blank(),
-        axis.text.y  = element_text(hjust = 0)) +
-      theme_bw() +
-      ggplot2::labs(
-        caption = paste("posterior distribution coefficient plot with medians and 89% intervals",
-                        "\ncluster: ", likelihood.df[[1]][[i]], 
-                        " ; seasonal timeframe: ", likelihood.df[[2]][[i]], 
-                        "\npopulation adjustment factor: ", populationAdjustmentFactor,
-                        "\ninteraction plausibility: ", round(likelihood.df[[3]][[i]],2), sep="")
-                    )
-    }
-
-
-  color_scheme_set("green")
-  index <- c(2,5,8)
+  index <- c(1,2,3)
 
   for (i in index) {
 
@@ -1302,8 +1287,33 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path) {
     }
 
 
-  color_scheme_set("blue")
-  index <- c(3,6,9)
+  color_scheme_set("green")      # cluster 'two'
+  index <- c(4,5,6)
+
+  for (i in index) {
+
+    # plot the posterior distributions
+    ggList[[i+1]] <- post.df.list[[i]] %>%
+
+      select(-lp__) %>% 
+      rename(b_interaction = `b_log_pop:contact_high`) %>%
+
+      bayesplot::mcmc_intervals(prob = .5, prob_outer = .89) +
+      theme(axis.ticks.y = element_blank(),
+        axis.text.y  = element_text(hjust = 0)) +
+      theme_bw() +
+      ggplot2::labs(
+        caption = paste("posterior distribution coefficient plot with medians and 89% intervals",
+                        "\ncluster: ", likelihood.df[[1]][[i]], 
+                        " ; seasonal timeframe: ", likelihood.df[[2]][[i]], 
+                        "\npopulation adjustment factor: ", populationAdjustmentFactor,
+                        "\ninteraction plausibility: ", round(likelihood.df[[3]][[i]],2), sep="")
+                    )
+    }
+
+
+  color_scheme_set("blue")      # cluster 'three'
+  index <- c(7,8,9)
 
   for (i in index) {
 
