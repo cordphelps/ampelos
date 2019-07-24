@@ -379,8 +379,6 @@ evaluateDailySpiderCounts <- function(df) {
   #
 
   returnList[[11]] <- list(255, 80, 8, 255, 80, 8, 255, 80, 8)                # mean population for 9 models
-  returnList[[12]] <- list(85, 27, 3, 85, 27, 3, 85, 27, 3)              # population SD for 9 models
-  returnList[[13]] <- list(5.5,4.4,2.1,5.5,4.4,2.1,5.5,4.4,2.1)  # logE mean population for 9 models
   
 
   
@@ -470,7 +468,7 @@ likelihoodPlusModelDiags <- function(rl=returnList) {
 }
 
 
-modelDiags <- function(daytime, log.pop.list) {
+modelDiags <- function(daytime, hp) {
 
   # https://cran.rstudio.com/web/packages/tidybayes/vignettes/tidy-brms.html
 
@@ -520,8 +518,8 @@ modelDiags <- function(daytime, log.pop.list) {
     # one with high oak influence, the other with low oak influence 
 
       post.df[[j]] <- post.df[[j]] %>%   
-          mutate(trappedSpiders_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log.pop.list[[j]]),
-                 trappedSpiders_low  = exp(b_Intercept + b_log_pop * log.pop.list[[j]])) %>% 
+          mutate(trappedSpiders_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log(hp) ),
+                 trappedSpiders_low  = exp(b_Intercept + b_log_pop * log(hp) )) %>% 
           mutate(diff        = trappedSpiders_high - trappedSpiders_low) %>% 
           mutate(trappedSpiders_high_pct = trappedSpiders_high / (trappedSpiders_high + trappedSpiders_low)) %>% 
           mutate(trappedSpiders_low_pct = trappedSpiders_low / (trappedSpiders_high + trappedSpiders_low)) 
@@ -568,150 +566,12 @@ modelDiags <- function(daytime, log.pop.list) {
 
   gg.list[[10]] <- gg.tmp.list[[1]]
   gg.list[[11]] <- gg.tmp.list[[2]]
-  gg.list[[12]] <- gg.tmp.list[[3]]
+  
 
 
 
   return(gg.list)
   
-  }
-
-  plotPosteriorPredictiveCheck <- function(df, log.pop.list) {
-
-    # "Ordinal model with continuous predictor"
-    # https://cran.rstudio.com/web/packages/tidybayes/vignettes/tidy-brms.html
-
-    ## df is evaluateDailySpiderCounts() total.df
-    ##
-    ## multiple records per week with columns
-    ## week, transect, time, cluster, totalSpiders
-    ##
-
-    library(tidybayes)
-    library(brms)
-    library(ggrepel)
-
-    gg.list <- list()
-
-    bugs_clean <- df %>%
-      mutate(totalSpiders = ordered(totalSpiders)) %>%
-      mutate(seasonalPeriod = ifelse( (df$week>22 & df$week<26), 'one',
-                           ifelse( (df$week>25 & df$week<31), 'two',
-                                   'three' ) ) ) %>%
-      mutate(log_pop = ifelse( (df$week>22 & df$week<26), log.pop.list[[1]],
-                           ifelse( (df$week>25 & df$week<31), log.pop.list[[2]],
-                                   log.pop.list[[3]] ) ) ) %>%
-      mutate(contact_high = ifelse(transect=='oakMargin', 1, 0))
-
-#    week  transect time cluster totalSpiders seasonalPeriod log_pop contact_high
-# 1    23 oakMargin   am     one            2            one     2.9            1
-# 2    23 oakMargin   am     one            6            one     2.9            1
-# 3    23 oakMargin   am     two            2            one     2.9            1
-
-    # now partition data by seasonal timeframe
-    bugs_timeframe <- list()
-    descriptive <- list()
-
-    bugs_timeframe[[1]] <- bugs_clean %>% dplyr::filter(bugs_clean$week < 26 & cluster == 'one')
-    bugs_timeframe[[2]] <- bugs_clean %>% dplyr::filter(bugs_clean$week < 26 & cluster == 'two')
-    bugs_timeframe[[3]] <- bugs_clean %>% dplyr::filter(bugs_clean$week < 26 & cluster == 'three')
-    descriptive[[1]] <- 'seasonal timeframe: one'
-
-    bugs_timeframe[[4]] <- bugs_clean %>% dplyr::filter(bugs_clean$week > 25 & week < 31 & cluster == 'one')
-    bugs_timeframe[[5]] <- bugs_clean %>% dplyr::filter(bugs_clean$week > 25 & week < 31 & cluster == 'two')
-    bugs_timeframe[[6]] <- bugs_clean %>% dplyr::filter(bugs_clean$week > 25 & week < 31 & cluster == 'three')
-    descriptive[[2]] <- 'seasonal timeframe: two'
-
-    bugs_timeframe[[7]] <- bugs_clean %>% dplyr::filter(bugs_clean$week > 30 & cluster == 'one')
-    bugs_timeframe[[8]] <- bugs_clean %>% dplyr::filter(bugs_clean$week > 30 & cluster == 'two')
-    bugs_timeframe[[9]] <- bugs_clean %>% dplyr::filter(bugs_clean$week > 30 & cluster == 'three')
-    descriptive[[3]] <- 'seasonal timeframe: three'
-
-
-
-    # use the existing models
-
-    daytime <- '24h'
-    list <- readRDS(paste("./code/output/list-", daytime, ".rds", sep=""))
-    modelList <- list[[8]]
-
-    bugs.list <- list()
-    gg.list <- list()
-    colours = c("one" = "red", "two" = "green", "three" = "blue")
-
-
-    # logic from # Estimating Multivariate Models with brms 
-    # https://cran.r-project.org/web/packages/brms/vignettes/brms_multivariate.html
-
-    for (i in 1:9) {
-      # https://cran.r-project.org/web/packages/tidybayes/vignettes/tidy-brms.html
-      bugs.list[[i]] <- bugs_timeframe[[i]] %>%
-        # we use `select` instead of `data_grid` here because we want to make posterior predictions
-        # for exactly the same set of observations we have in the original data
-        select(log_pop, seasonalPeriod, cluster, contact_high) %>%
-        add_predicted_draws(model=modelList[[i]], prediction = "totalSpiders", seed = 1234) 
-        #%>%
-        #group_by(totalSpiders, cluster) %>%
-        #summarize(ts=n()/length(.))
-
-    }
-
-    predicted.bugs.timeframe <- list()
-    predicted.bugs.timeframe[[1]] <- dplyr::bind_rows(bugs.list[[1]], bugs.list[[2]], bugs.list[[3]])
-    predicted.bugs.timeframe[[2]] <- dplyr::bind_rows(bugs.list[[4]], bugs.list[[5]], bugs.list[[6]])
-    predicted.bugs.timeframe[[3]] <- dplyr::bind_rows(bugs.list[[7]], bugs.list[[8]], bugs.list[[9]])
-
-# > head(predicted.bugs.timeframe[[3]], 10)
-#  A tibble: 10 x 9
-#  Groups:   log_pop, seasonalPeriod, cluster, contact_high, .row [1]
-#   log_pop seasonalPeriod cluster contact_high  .row .chain .iteration .draw totalSpiders
-#     <dbl> <chr>          <fct>          <dbl> <int>  <int>      <int> <int>        <int>
-# 1     2.2 three          one                1     1     NA         NA     1           90
-# 2     2.2 three          one                1     1     NA         NA     2          133
-# 3     2.2 three          one                1     1     NA         NA     3          100
-
-    for (i in 1:3) {
-
-        gg.list[[i]] <- ggplot(data = predicted.bugs.timeframe[[i]], aes(y = cluster, x = totalSpiders)) +
-
-          geom_count(color = "gray32") +
-          #geom_count(color = "gray32", position=position_jitter(width=0, height=0.2)) +
-          scale_size(guide=FALSE) +       # turn off legend for size
-
-          geom_point(data = predicted.bugs.timeframe[[i]], aes(fill = cluster), shape = 21, size=2) +
-          #scale_fill_brewer(palette = "Dark2") +
-
-          #scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
-          #scale_x_discrete(breaks=seq(0,30,1)) + 
-    
-          # labs(title=paste("model performance: observed data (colored)\noverlayed on posterior predictions (grey)", sep=""),
-          labs(y="cluster", 
-            x="trapped spider counts", 
-            caption = paste(descriptive[[i]] )) +
-    
-          theme_bw() +
-
-          scale_fill_manual(values = colours, 
-                      breaks = c("one", "two", "three"),
-                      labels = c("cluster 1", "cluster 2", "cluster 3")) +
-          #scale_shape_manual(values = 21) +
-
-          theme(axis.text.y=element_blank(),
-            axis.ticks.y=element_blank())     +
-    
-          theme(legend.title = element_blank(),
-            legend.spacing.y = unit(0, "mm"), 
-            legend.justification=c(1,0),
-            panel.border = element_rect(colour = "black", fill=NA),
-            aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
-            legend.background = element_blank(),
-            legend.box.background = element_rect(colour = "black"))
-
-    } 
-
-    return(gg.list)
-
-
   }
 
 
@@ -890,7 +750,7 @@ plotLikelihood <- function(df, hypoPop, cap) {
   
   gg <- ggplot(df, aes(x=seasonalTimeframe, y=plausibility)) +
     
-    geom_point(aes(fill = cluster), shape = 21, size=5, show.legend=TRUE) +
+    geom_jitter(aes(fill = cluster), shape = 21, size=5, show.legend=TRUE, width=.1) +
     
     ylim(c(0, 1)) + 
     expand_limits(y=c(0,1)) + 
@@ -982,7 +842,7 @@ generateLikelihoodV2tables <- function(df, inboundList, daytime) {
 
 }
 
-generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, populationAdjustmentFactor) {
+generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, populationAdjustmentFactor) {
 
 
     ##
@@ -1003,6 +863,8 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, popul
 
     ## parameter inboundList is the output of evaluateDailySpiderCounts(bugs.df)
 
+    ## parameter hp is the hypotheticalPopulation used to generate likelihood
+
   
     if("rethinking" %in% (.packages())){
      detach("package:rethinking", unload=TRUE) 
@@ -1016,7 +878,7 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, popul
     #To avoid recompilation of unchanged Stan programs, we recommend calling
     rstan_options(auto_write = TRUE)
 
-    
+
 
 
   if (fromDisc==TRUE) {   # read the structure from disk
@@ -1047,10 +909,6 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, popul
     # week 26, 27, 28, 29, 30   : mean 50, sd 8
     # week 31, 32, 33, 34       : mean 15, sd 2
     
-    # generate nrow(ave.df) random population numbers with a normal distribution
-    # t.df$population <- rnorm(nrow(t.df), mean=50, sd=5)
-    
-    # set.seed(10.2) # make the results reproducible
     
     
     likelihood.df <- NULL
@@ -1075,17 +933,6 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, popul
     label.list[[8]] <- "cluster: three, seasonal timeframe: two"
     label.list[[9]] <- "cluster: three, seasonal timeframe: three"
 
-    #
-    log.pop.list <- list()
-    log.pop.list[[1]] <- inboundList[[13]][[1]]
-    log.pop.list[[2]] <- inboundList[[13]][[2]]
-    log.pop.list[[3]] <- inboundList[[13]][[3]]
-    log.pop.list[[4]] <- inboundList[[13]][[4]]
-    log.pop.list[[5]] <- inboundList[[13]][[5]]
-    log.pop.list[[6]] <- inboundList[[13]][[6]]
-    log.pop.list[[7]] <- inboundList[[13]][[7]]
-    log.pop.list[[8]] <- inboundList[[13]][[8]]
-    log.pop.list[[9]] <- inboundList[[13]][[9]]
     
     #
     # lists containing parameters developed in evaluateDailySpiderCounts()
@@ -1095,8 +942,6 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, popul
     #
     #
     # mean population for 9 models     :  inboundList[[11]]            
-    # population SD for 9 models       :  inboundList[[12]]             
-    # log mean population for 9 models :  inboundList[[13]] 
     #  
   
     cl.st.list[[1]] <- df %>% dplyr::filter(week < 26 & cluster == 'one')
@@ -1169,13 +1014,11 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, popul
 
         post.df.list[[i]] <- brms::posterior_samples(modelOutput[[i]])  # 
 
-        # compare predictions for a high contact and low contact vine with spider population of 100 spiders 
 
-        hypotheticalPopultion <- 40 
  
         temp.df <- post.df.list[[i]] %>%   
-          mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log(hypotheticalPopultion) ),
-                 lambda_low  = exp(b_Intercept + b_log_pop * log(hypotheticalPopultion) ) ) %>% 
+          mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log(hp) ),
+                 lambda_low  = exp(b_Intercept + b_log_pop * log(hp) ) ) %>% 
           mutate(diff        = lambda_high - lambda_low) 
         
         like.df <- temp.df %>%
@@ -1237,9 +1080,9 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, popul
   ggList <- list()
 
   # plot the likelihood for the 9 models
-  ggList[[1]] <- plotLikelihood(df=inboundList[[5]],  hypoPop=hypotheticalPopultion,
-                                cap=paste("population seasonal trend, daytime: ", daytime,
-                                "\npopulation adjustment factor: ", populationAdjustmentFactor,           
+  ggList[[1]] <- plotLikelihood(df=inboundList[[5]],  hypoPop=hp,
+                                cap=paste("daytime: ", daytime,
+                                " , population adjustment factor: ", populationAdjustmentFactor,           
                                 sep=""))
 
   #library(ggthemes)
@@ -1630,7 +1473,7 @@ plotTransectWeekly <- function(df) {
   
   gg <- ggplot(df, aes(x=week, y=totalSpiders)) + 
     
-    geom_jitter(aes(fill = transect), shape=21, size=5, alpha=.7, show.legend=TRUE) +
+    geom_jitter(aes(fill = transect), shape=21, size=5, alpha=.7, show.legend=TRUE, width = .1) +
     
     geom_vline(xintercept=25.5) + # seasonal timeframe seperators
     geom_vline(xintercept=31.5) + #
