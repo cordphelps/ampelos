@@ -311,9 +311,15 @@ rl <- returnList
 
 ```{r clusterDiags, echo=TRUE, include=TRUE, message=T, warning=T}
 
-ggsave.path <- "./code/output/"
+source('./code/bayes.R')
 
-gg.list <- modelDiags(daytime='pm', hp=hypotheticalPopulation) # read the 9 models from disc and run diags
+ggsave.path <- "./code/output/"
+daytime <- "pm"
+hypotheticalPopulation <- 100
+
+gg.list <- modelDiagsV2(daytime='pm', hp=hypotheticalPopulation, path=ggsave.path)
+
+#gg.list <- modelDiags(daytime='pm', hp=hypotheticalPopulation) # read the 9 models from disc and run diags
 
 
 for (i in 1:length(gg.list)) {

@@ -209,8 +209,7 @@ if (TRUE) {
   # ("week", "transect", "time", "cluster", "totalSpiders")
   #
   # plot the weekly raw data : plotWeekly()
-  # create txt files saving the status output of 9 brm() cycles
-  # build the likelihood data : generateLikelihoodV2() 
+
   returnList <- evaluateDailySpiderCounts(bugs.df)
   
 # returnList[[1]] # plotWeekly(total.df) # total spiders by week/cluster differentiated by time of day
@@ -228,8 +227,7 @@ if (TRUE) {
 # returnList[[9]]   # reserved for label.list 
 # returnList[[10]]  # reserved for post.df.list (posterior distributions)
 # returnList[[11]]  # reserved for mean population for 9 models
-# returnList[[12]]  # reserved for population SD for 9 models
-# returnList[[13]]  # reserved for log mean population for 9 models
+
   
   print(returnList[[1]]) # scatter plot by cluster with seasonal timeframes
   
@@ -341,7 +339,7 @@ if (TRUE) {
 ``` r
 ggsave.path <- "./code/output/"
 
-gg.list <- modelDiags(daytime='pm', log.pop.list=rl[[13]]) # read the 9 models from disc and run diags
+gg.list <- modelDiags(daytime='pm', hp=hypotheticalPopulation) # read the 9 models from disc and run diags
 ```
 
     ## NOTE: As of tidybayes version 1.0, several functions, arguments, and output column names
@@ -421,38 +419,6 @@ for (i in 1:length(gg.list)) {
     ## Saving 6 x 5 in image
 
 ![](ampelos_files/figure-markdown_github/clusterDiags-11.png)
-
-    ## Saving 6 x 5 in image
-
-![](ampelos_files/figure-markdown_github/clusterDiags-12.png)
-
-``` r
-if (FALSE) {
-  
-  # weightedModelGraph() / likelihoodPlusModelDiags() is choking on       
-  # base::sample.int with replace=TRUE
-  # ref comments in likelihoodPlusModelDiags()
-  
-      graphList[[2]] <- weightedModelGraph(df=rl[[7]][[1]], model=rl[[8]][[1]], label=rl[[9]][[1]])
-
-    graphList[[3]] <- weightedModelGraph(df=rl[[7]][[4]], model=rl[[8]][[4]], label=rl[[9]][[4]])
-
-    graphList[[4]] <- weightedModelGraph(df=rl[[7]][[7]], model=rl[[8]][[7]], label=rl[[9]][[7]])
-
-}
-```
-
-``` r
-if (FALSE) {
-
-  gg.list <- plotPosteriorPredictiveCheck(df=returnList[[4]], log.pop.list=rl[[13]]) 
-
-    for (i in 1:length(gg.list)) {
-      print(gg.list[[i]])
-    }
-
-}
-```
 
 ### how do the clusters compare to each other across multiple weeks?
 
