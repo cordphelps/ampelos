@@ -315,12 +315,10 @@ source('./code/bayes.R')
 
 ggsave.path <- "./code/output/"
 daytime <- "pm"
-hypotheticalPopulation <- 100
+hypotheticalPopulation <- c(76,47,1)  # hypothetical population by seasonal timeframe 
 
+# read the 9 models from disc and run diags
 gg.list <- modelDiagsV2(daytime='pm', hp=hypotheticalPopulation, path=ggsave.path)
-
-#gg.list <- modelDiags(daytime='pm', hp=hypotheticalPopulation) # read the 9 models from disc and run diags
-
 
 for (i in 1:length(gg.list)) {
   

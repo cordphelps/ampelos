@@ -473,16 +473,16 @@ modelDiagsV2 <- function(daytime, hp, path) {
 
     # adjust hypothetical population by seasonal timeframe 
       if ((j == 1) || (j == 4) || (j == 7)) {
-        hp <- 76
+        hPop <- hp[[1]]
       } else if ((j == 2) || (j == 5) || (j == 8)) {
-        hp <- 47
+        hPop <- hp[[2]]
       } else {
-        hp <- 1
+        hPop <- hp[[3]]
       }  
 
     post.df.list[[j]] <- post.df.list[[j]] %>%   
-          mutate(trappedSpiders_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log(hp) ),
-                 trappedSpiders_low  = exp(b_Intercept + b_log_pop * log(hp) )) %>% 
+          mutate(trappedSpiders_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log(hPop) ),
+                 trappedSpiders_low  = exp(b_Intercept + b_log_pop * log(hPop) )) %>% 
           mutate(diff        = (trappedSpiders_high - trappedSpiders_low) / trappedSpiders_high )
 
      # add a cluster indicator for the graphics
@@ -493,11 +493,6 @@ modelDiagsV2 <- function(daytime, hp, path) {
       } else {
         post.df.list[[j]] <- post.df.list[[j]] %>% mutate(cluster = '3')
       }
-
-
-      #postGT.7.df <- post.df[[j]] %>% filter(diff >= .7) %>% mutate(oakInfluence = 'active')
-      #postLT.7.df <- post.df[[j]] %>% filter(diff <= .699999) %>% mutate(oakInfluence = 'inactive')
-      #combo.df[[j]] <- dplyr::bind_rows(postGT.7.df, postLT.7.df)
 
       names(post.df.list[[j]])[names(post.df.list[[j]])=='b_contact_high'] <- 'bc'
       names(post.df.list[[j]])[names(post.df.list[[j]])=='b_log_pop:contact_high'] <- 'bpc'
@@ -513,12 +508,6 @@ modelDiagsV2 <- function(daytime, hp, path) {
   gg.list[[3]] <- plotPosteriorDensity(df1= post.df.list[[7]], df2= post.df.list[[8]], 
     df3=post.df.list[[9]], mt = modelTime[[3]])
 
-  #for (j in 1:9) {
-    #combo.df[[j]] <- renameFunkyColumns(df=combo.df[[j]], oldName='b_contact_high', newName='bc')
-    #names(combo.df[[j]])[names(combo.df[[j]])=='b_contact_high'] <- 'bc'
-    #combo.df[[j]] <- renameFunkyColumns(df=combo.df[[j]], oldName='b_log_pop:contact_high', newName='bpc')
-    #names(combo.df[[j]])[names(combo.df[[j]])=='b_log_pop:contact_high'] <- 'bpc'
-  #}
 
   gg.tmp.list <- plotPosteriorJitter(df1= post.df.list[[1]], df2= post.df.list[[2]], df3=post.df.list[[3]], mt = modelTime[[1]])
 
@@ -543,114 +532,6 @@ modelDiagsV2 <- function(daytime, hp, path) {
 
 }
 
-modelDiags <- function(daytime, hp) {
-
-  # https://cran.rstudio.com/web/packages/tidybayes/vignettes/tidy-brms.html
-
-  library(broom)
-  library(tidybayes)
-
-  # get a list of 9 models
-
-  modelTime <- list()
-  modelTime[[1]] <- "seasonal timeframe: weeks 23-25"      # model #1 
-  modelTime[[2]] <- "seasonal timeframe: weeks 26-31"      # model #2 
-  modelTime[[3]] <- "seasonal timeframe: weeks 32-34"    # model #3 
-
-
-  # daytime <- 'pm'
-
-  large.list <- readRDS(paste("./code/output/list-", daytime, ".rds", sep=""))
-
-    
-    # models were created assuming spider populations 
-    #        rnorm() mean      cluster spider population         log population
-    #   
-    #             75                    794                            2.9       
-    #             25                    264                            2.4
-    #             15                    159                            2.2
-    #log.pop.list <- c(2.9, 2.4, 2.2, 2.9, 2.4, 2.2, 2.9, 2.4, 2.2) 
-
-    # models were created assuming spider populations 
-    #             mean          cluster spider population         log population
-    #   
-    #             8.14                    81.4                            1.9       
-    #             2.41                    24.1                            1.4
-    #             0.72                     7.2                            0.9
-    # log.pop.list <- c(2.4, 1.9, 0.9, 2.4, 1.9, 0.9, 2.4, 1.9, 0.9) 
-
-    post.df <- list()
-    combo.df <- list()
-    gg.list <- list()
-    gg.tmp.list <- list()
-
-    # 1. build a df of posterior samples
-
-    for (j in 1:9) {
-
-      post.df[[j]] <- brms::posterior_samples(large.list[[8]][[j]])
-    # 2. add a column of predicted trappedSpiders for two clusters of population log.pop.list[[j]], 
-    # one with high oak influence, the other with low oak influence 
-
-      post.df[[j]] <- post.df[[j]] %>%   
-          mutate(trappedSpiders_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log(hp) ),
-                 trappedSpiders_low  = exp(b_Intercept + b_log_pop * log(hp) )) %>% 
-          mutate(diff        = trappedSpiders_high - trappedSpiders_low) %>% 
-          mutate(trappedSpiders_high_pct = trappedSpiders_high / (trappedSpiders_high + trappedSpiders_low)) %>% 
-          mutate(trappedSpiders_low_pct = trappedSpiders_low / (trappedSpiders_high + trappedSpiders_low)) 
-
-    # add a cluster indicator for the graphics
-      if ((j == 1) || (j == 4) || (j == 7)) {
-        post.df[[j]] <- post.df[[j]] %>% mutate(cluster = '1')
-      } else if ((j == 2) || (j == 5) || (j == 8)) {
-        post.df[[j]] <- post.df[[j]] %>% mutate(cluster = '2')
-      } else {
-        post.df[[j]] <- post.df[[j]] %>% mutate(cluster = '3')
-      }
-
-    # 3. separate into two df; likelihood diff on either side of .7, add a factor, merge to new df
-    postGT.7.df <- post.df[[j]] %>% filter(diff >= .7) %>% mutate(oakInfluence = 'active')
-    postLT.7.df <- post.df[[j]] %>% filter(diff <= .699999) %>% mutate(oakInfluence = 'inactive')
-    combo.df[[j]] <- dplyr::bind_rows(postGT.7.df, postLT.7.df)
-
-  }
-
-
-  gg.list[[1]] <- plotPosteriorDensity(df1= combo.df[[1]], df2= combo.df[[2]], df3=combo.df[[3]], mt = modelTime[[1]])
-  gg.list[[2]] <- plotPosteriorDensity(df1= combo.df[[4]], df2= combo.df[[5]], df3=combo.df[[6]], mt = modelTime[[2]])
-  gg.list[[3]] <- plotPosteriorDensity(df1= combo.df[[7]], df2= combo.df[[8]], df3=combo.df[[9]], mt = modelTime[[3]])
-
-  for (j in 1:9) {
-    #combo.df[[j]] <- renameFunkyColumns(df=combo.df[[j]], oldName='b_contact_high', newName='bc')
-    names(combo.df[[j]])[names(combo.df[[j]])=='b_contact_high'] <- 'bc'
-    #combo.df[[j]] <- renameFunkyColumns(df=combo.df[[j]], oldName='b_log_pop:contact_high', newName='bpc')
-    names(combo.df[[j]])[names(combo.df[[j]])=='b_log_pop:contact_high'] <- 'bpc'
-  }
-
-  gg.tmp.list <- plotPosteriorJitter(df1= combo.df[[1]], df2= combo.df[[2]], df3=combo.df[[3]], mt = modelTime[[1]])
-
-  gg.list[[4]] <- gg.tmp.list[[1]]
-  gg.list[[5]] <- gg.tmp.list[[2]]
-  gg.list[[6]] <- gg.tmp.list[[3]]
-
-  gg.tmp.list <- plotPosteriorJitter(df1= combo.df[[4]], df2= combo.df[[5]], df3=combo.df[[6]], mt = modelTime[[2]])
-
-  gg.list[[7]] <- gg.tmp.list[[1]]
-  gg.list[[8]] <- gg.tmp.list[[2]]
-  gg.list[[9]] <- gg.tmp.list[[3]]
-
-  gg.tmp.list <- plotPosteriorJitter(df1= combo.df[[7]], df2= combo.df[[8]], df3=combo.df[[9]], mt = modelTime[[3]])
-
-  gg.list[[10]] <- gg.tmp.list[[1]]
-  gg.list[[11]] <- gg.tmp.list[[2]]
-  gg.list[[12]] <- gg.tmp.list[[3]]
-
-
-
-  return(gg.list)
-  
-  }
-
 
 plotPosteriorJitter <- function(df1, df2, df3, mt) {
 
@@ -666,10 +547,6 @@ plotPosteriorJitter <- function(df1, df2, df3, mt) {
     scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
     scale_x_continuous(breaks=seq(-15,5,5)) + 
     
-    #labs(title=paste("the joint posterior distribution of bc and bpc", sep=""),
-         #subtitle=paste(mt, sep=""), 
-    #labs(title=paste("the joint posterior distribution of bc and bpc", sep=""),
-         #subtitle=paste(mt, sep=""), 
     labs(y="bpc", 
          x="bc", 
          caption = paste("the joint posterior distribution of bc and bpc\n", mt, sep="") ) +
@@ -762,9 +639,9 @@ plotPosteriorDensity <- function(df1, df2, df3, mt) {
 
     gg <- ggplot() + 
     
-    geom_density(data=df1, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, show_legend=FALSE) +
-    geom_density(data=df2, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, show_legend=FALSE) +
-    geom_density(data=df3, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, show_legend=FALSE) +
+    geom_density(data=df1, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE) +
+    geom_density(data=df2, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE) +
+    geom_density(data=df3, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE) +
 
     # stat_density(aes(x=diff), geom="point") +   # there is some magic here to adjust legend shapes
     # https://stackoverflow.com/questions/46597079/change-the-shape-of-the-legend-in-density-plots-with-ggplot2
@@ -776,7 +653,8 @@ plotPosteriorDensity <- function(df1, df2, df3, mt) {
     #coord_fixed(ratio=20/1) +     # control the aspect ratio of the output; "ratio" refers to the 
                                   # ratio of the axis limits themselves
     
-    coord_cartesian(ylim=c(0, 1), xlim=c(-25, 25))  + # clip
+    coord_cartesian(ylim=c(0, 1), xlim=c(-5, 3))  + # clip
+    #coord_cartesian(ylim=c(0, 1), xlim=c(-25, 25))  + # clip
 
     scale_y_continuous(breaks = seq(min(0), max(1), by = .2)) +
     #scale_x_continuous(breaks=seq(-15,5,5)) + 
@@ -1274,95 +1152,6 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, p
 
 
 
-weightedModelGraph <- function(df, model, label) {
-
-  # https://bookdown.org/connect/#/apps/1850/access  end of 10.2.1
-
-  # no interaction
-  b10.11 <- stats::update(model, formula = totalSpiders ~ 1 + log_pop + contact_high)
-
-  # no contact rate
-  b10.12 <- stats::update(model, formula = totalSpiders ~ 1 + log_pop)
-
-  # no log-population
-  b10.13 <- stats::update(model, formula = totalSpiders ~ 1 + contact_high)
-
-  # intercept only
-  b10.14 <- stats::update(model, formula = totalSpiders ~ 1)
-
-
-  nd <- tibble(log_pop  = seq(from = 2.0, to = 3.0, length.out = 50) %>% 
-           rep(., times = 2), contact_high = rep(0:1, each = 50))
-
-
-  ppa_10.9 <- brms::pp_average(model, b10.11, b10.12, weights = "loo", method  = "fitted", newdata = nd) %>%
-    as_tibble() %>%
-    bind_cols(nd)
-
-  ggWeighted <- ggplot(ppa_10.9, aes(x = log_pop, group = contact_high)) +
-
-    geom_ribbon(aes(ymin = Q2.5, ymax = Q97.5, fill = contact_high), alpha = 1/4) +
-
-    geom_line(aes(y = Estimate, color = contact_high)) +
-
-    geom_text(data = df,  # that's the original 'island' dataset (top of section)
-             aes(y = totalSpiders, label = totalSpiders, color = contact_high), size = 3.5) +
-
-    coord_cartesian(xlim = c(1.75, 3.25), ylim = c(0, 40)) +
-
-    labs(x = "log population",
-       y = "total crab spiders",
-       title = label,
-       subtitle = label,
-       caption = "Blue is the high contact rate; black is the low.") +
-
-    theme(legend.position = "none", panel.border = element_blank()) +
-
-    theme_bw()
-
-  return(ggWeighted)
-
-}
-
-bayesAnalysis <- function(list) {
-
-library(GGally)
-
-if (FALSE) {     
-
-  for (i in 1:length(list)) {
-      # same problem as below
-      print(plot((list[[i]])))
-      
-    }
-  }
-
-if (FALSE) {     
-
-  for (i in 1:length(list)) {
-
-      post <- posterior_samples(list[[i]])
-      
-      ggally <- post %>% ggpairs() +
-      
-        labs(title=paste("brm model check", sep=""),
-         subtitle=paste("variable selection (i = ", i, ")", sep="")) +
-
-        theme_bw()
-      
-        # this list is unreasonably long, perhaps due to the multi-chain operation
-        # of brm(); set to TRUE and uncomment the print() statement to get the pairs() 
-        # pairwise scatterplots
-        #
-      print(ggally)
-    }
-  }
-}
-
-
-
-
-
 plotWeekly <- function(df) {
   
   # input df :
@@ -1604,79 +1393,4 @@ dailySumByClusterTimeWeek <- function(df, ft, fc) {
   return(dailySum.list)
 }
 
-sinkAll <- function() {
-  # https://stackoverflow.com/questions/18730491/sink-does-not-release-file
-  i <- sink.number()
-  while (i > 0) {
-    sink()
-    i <- i - 1
-  }
-}
-
-visualizeBRMSdraws <- function(df) {
-
-  # https://mjskay.github.io/tidybayes/articles/tidy-brms.html
-
-  library(ggstance)
-
-  if (FALSE) {
-    df< total.df
-
-    # use these mean counts to estime the cluster population in the different time frames
-    cl.by.week <- df %>% dplyr::filter(week < 26)
-    cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
-    cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
-
-    cl.by.week <- df %>% dplyr::filter(week > 25 & week < 32)
-    cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
-    cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
-
-    cl.by.week <- df %>% dplyr::filter(week > 31)
-    cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
-    cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
-
-    #> head(cl.pm)
-    #  week  transect time cluster totalSpiders
-    #1   32 oakMargin   pm     one            1
-    #2   32 oakMargin   pm     one            3
-    #3   32 oakMargin   pm     one            0
-    #4   32 oakMargin   pm     two            1
-    #5   32 oakMargin   pm     two            3
-
-
-    # get models from disk
-    daytime <- "pm"
-    inboundList <- readRDS(paste("./code/output/list-", daytime, ".rds", sep=""))
-    model.list <- inboundList[[8]]
-    post.df <- brms::posterior_samples(modelOutput[[i]])
-
-
-  }
-
-  cl.pm %>%
-    ggplot(aes(y = week, x = totalSpiders, size=totalSpiders)) +
-    geom_point()
-
-
-  # Extracting draws from a fit in tidy-format using spread_draws
-
-  get_variables(model.list[[1]])
-
-  # spread_draws() splits the variable indices by commas and spaces. 
-  # It lets you assign columns to the resulting indices in order. 
-
-  model.list[[1]] %>% spread_draws(b_Intercept, b_log_pop, b_contact_high) %>% median_qi() %>% head(10)
-
-  model.list[[1]] %>% spread_draws(`b_Intercept`, `b_contact_high`, `b_log_pop`) %>%
-
-                      mutate(condition_mean = `b_Intercept` + `b_log_pop`) %>%
-
-                      median_qi(condition_mean) %>% 
-
-                      ggplot(aes(y = b_log_pop, x = condition_mean, xmin = .lower, xmax = .upper)) +
-
-                            ggstance::geom_pointrangeh()
-
-
-}
 

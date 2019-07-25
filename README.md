@@ -337,34 +337,15 @@ if (TRUE) {
 ### model diagnostics?
 
 ``` r
+source('./code/bayes.R')
+
 ggsave.path <- "./code/output/"
+daytime <- "pm"
+hypotheticalPopulation <- c(76,47,1)  # hypothetical population by seasonal timeframe 
 
-gg.list <- modelDiags(daytime='pm', hp=hypotheticalPopulation) # read the 9 models from disc and run diags
-```
+# read the 9 models from disc and run diags
+gg.list <- modelDiagsV2(daytime='pm', hp=hypotheticalPopulation, path=ggsave.path)
 
-    ## NOTE: As of tidybayes version 1.0, several functions, arguments, and output column names
-    ##       have undergone significant name changes in order to adopt a unified naming scheme.
-    ##       See help('tidybayes-deprecated') for more information.
-
-    ## Warning: Ignoring unknown parameters: show_legend
-
-    ## Warning: Ignoring unknown parameters: show_legend
-
-    ## Warning: Ignoring unknown parameters: show_legend
-
-    ## Warning: Ignoring unknown parameters: show_legend
-
-    ## Warning: Ignoring unknown parameters: show_legend
-
-    ## Warning: Ignoring unknown parameters: show_legend
-
-    ## Warning: Ignoring unknown parameters: show_legend
-
-    ## Warning: Ignoring unknown parameters: show_legend
-
-    ## Warning: Ignoring unknown parameters: show_legend
-
-``` r
 for (i in 1:length(gg.list)) {
   
   print(gg.list[[i]])
@@ -419,6 +400,10 @@ for (i in 1:length(gg.list)) {
     ## Saving 6 x 5 in image
 
 ![](ampelos_files/figure-markdown_github/clusterDiags-11.png)
+
+    ## Saving 6 x 5 in image
+
+![](ampelos_files/figure-markdown_github/clusterDiags-12.png)
 
 ### how do the clusters compare to each other across multiple weeks?
 
