@@ -1,16 +1,5 @@
 
-renameFunkyColumns <- function(df, oldName, newName) {
 
-  # because ggplot() chokes on brm() 'interaction' column names.....
-
-  # http://www.cookbook-r.com/Manipulating_data/Renaming_columns_in_a_data_frame/
-
-  # Rename column by name: change "beta" to "two"
-  names(df)[names(df)==oldName] <- newName
-
-  return(df)
-
-}
 
 calculateSummaryStats <- function(df) {
 
@@ -72,9 +61,6 @@ calculateSummaryStats <- function(df) {
     #
     # CAUTION: using SD roughly 25% of the mean to prevent the sampler from choking on 
     #          negative values 
-
-
-
 
   }
 
@@ -281,18 +267,18 @@ evaluateDailySpiderCounts <- function(df) {
     } # transectList
   } # weeks.vector
   
-# > head(total.df, 10)                          <-- 372 rows
-#   week  transect time cluster totalSpiders
-#1    23 oakMargin   am     one            2
-#2    23 oakMargin   am     one            6
-#3    23 oakMargin   am     two            2
-#4    23 oakMargin   am     two            4
-#5    23 oakMargin   am   three            2
-#6    23 oakMargin   am   three            3
-#7    23 oakMargin   pm     one            1
-#8    23 oakMargin   pm     one            7
-#9    23 oakMargin   pm     one           14
-#10   23 oakMargin   pm     two            5
+    # > head(total.df, 10)                          <-- 372 rows
+    #   week  transect time cluster totalSpiders
+    #1    23 oakMargin   am     one            2
+    #2    23 oakMargin   am     one            6
+    #3    23 oakMargin   am     two            2
+    #4    23 oakMargin   am     two            4
+    #5    23 oakMargin   am   three            2
+    #6    23 oakMargin   am   three            3
+    #7    23 oakMargin   pm     one            1
+    #8    23 oakMargin   pm     one            7
+    #9    23 oakMargin   pm     one           14
+    #10   23 oakMargin   pm     two            5
 
   if (FALSE) {        # calculate summary stats *by hand* to develop brm() prior mean and SD for each seasonal time frame
                       # https://onunicornsandgenes.blog/2014/03/26/using-r-quickly-calculating-summary-statistics-with-dplyr/
@@ -469,8 +455,6 @@ likelihoodPlusModelDiags <- function(rl=returnList) {
 
 modelDiagsV2 <- function(daytime, hp, path) {
 
-  
-
   prev.list <- list()
   post.df.list <- list()
 
@@ -499,7 +483,7 @@ modelDiagsV2 <- function(daytime, hp, path) {
     post.df.list[[j]] <- post.df.list[[j]] %>%   
           mutate(trappedSpiders_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log(hp) ),
                  trappedSpiders_low  = exp(b_Intercept + b_log_pop * log(hp) )) %>% 
-          mutate(diff        = trappedSpiders_high - trappedSpiders_low)
+          mutate(diff        = (trappedSpiders_high - trappedSpiders_low) / trappedSpiders_high )
 
      # add a cluster indicator for the graphics
       if ((j == 1) || (j == 4) || (j == 7)) {
@@ -509,6 +493,14 @@ modelDiagsV2 <- function(daytime, hp, path) {
       } else {
         post.df.list[[j]] <- post.df.list[[j]] %>% mutate(cluster = '3')
       }
+
+
+      #postGT.7.df <- post.df[[j]] %>% filter(diff >= .7) %>% mutate(oakInfluence = 'active')
+      #postLT.7.df <- post.df[[j]] %>% filter(diff <= .699999) %>% mutate(oakInfluence = 'inactive')
+      #combo.df[[j]] <- dplyr::bind_rows(postGT.7.df, postLT.7.df)
+
+      names(post.df.list[[j]])[names(post.df.list[[j]])=='b_contact_high'] <- 'bc'
+      names(post.df.list[[j]])[names(post.df.list[[j]])=='b_log_pop:contact_high'] <- 'bpc'
 
   }
 
@@ -521,8 +513,33 @@ modelDiagsV2 <- function(daytime, hp, path) {
   gg.list[[3]] <- plotPosteriorDensity(df1= post.df.list[[7]], df2= post.df.list[[8]], 
     df3=post.df.list[[9]], mt = modelTime[[3]])
 
-  return(gg.list)
+  #for (j in 1:9) {
+    #combo.df[[j]] <- renameFunkyColumns(df=combo.df[[j]], oldName='b_contact_high', newName='bc')
+    #names(combo.df[[j]])[names(combo.df[[j]])=='b_contact_high'] <- 'bc'
+    #combo.df[[j]] <- renameFunkyColumns(df=combo.df[[j]], oldName='b_log_pop:contact_high', newName='bpc')
+    #names(combo.df[[j]])[names(combo.df[[j]])=='b_log_pop:contact_high'] <- 'bpc'
+  #}
 
+  gg.tmp.list <- plotPosteriorJitter(df1= post.df.list[[1]], df2= post.df.list[[2]], df3=post.df.list[[3]], mt = modelTime[[1]])
+
+  gg.list[[4]] <- gg.tmp.list[[1]]
+  gg.list[[5]] <- gg.tmp.list[[2]]
+  gg.list[[6]] <- gg.tmp.list[[3]]
+
+  gg.tmp.list <- plotPosteriorJitter(df1= post.df.list[[4]], df2= post.df.list[[5]], df3=post.df.list[[6]], mt = modelTime[[2]])
+
+  gg.list[[7]] <- gg.tmp.list[[1]]
+  gg.list[[8]] <- gg.tmp.list[[2]]
+  gg.list[[9]] <- gg.tmp.list[[3]]
+
+  gg.tmp.list <- plotPosteriorJitter(df1= post.df.list[[7]], df2= post.df.list[[8]], df3=post.df.list[[9]], mt = modelTime[[3]])
+
+  gg.list[[10]] <- gg.tmp.list[[1]]
+  gg.list[[11]] <- gg.tmp.list[[2]]
+  gg.list[[12]] <- gg.tmp.list[[3]]
+
+
+  return(gg.list)
 
 }
 
@@ -604,8 +621,10 @@ modelDiags <- function(daytime, hp) {
   gg.list[[3]] <- plotPosteriorDensity(df1= combo.df[[7]], df2= combo.df[[8]], df3=combo.df[[9]], mt = modelTime[[3]])
 
   for (j in 1:9) {
-    combo.df[[j]] <- renameFunkyColumns(df=combo.df[[j]], oldName='b_contact_high', newName='bc')
-    combo.df[[j]] <- renameFunkyColumns(df=combo.df[[j]], oldName='b_log_pop:contact_high', newName='bpc')
+    #combo.df[[j]] <- renameFunkyColumns(df=combo.df[[j]], oldName='b_contact_high', newName='bc')
+    names(combo.df[[j]])[names(combo.df[[j]])=='b_contact_high'] <- 'bc'
+    #combo.df[[j]] <- renameFunkyColumns(df=combo.df[[j]], oldName='b_log_pop:contact_high', newName='bpc')
+    names(combo.df[[j]])[names(combo.df[[j]])=='b_log_pop:contact_high'] <- 'bpc'
   }
 
   gg.tmp.list <- plotPosteriorJitter(df1= combo.df[[1]], df2= combo.df[[2]], df3=combo.df[[3]], mt = modelTime[[1]])
@@ -624,7 +643,7 @@ modelDiags <- function(daytime, hp) {
 
   gg.list[[10]] <- gg.tmp.list[[1]]
   gg.list[[11]] <- gg.tmp.list[[2]]
-  
+  gg.list[[12]] <- gg.tmp.list[[3]]
 
 
 
@@ -633,7 +652,7 @@ modelDiags <- function(daytime, hp) {
   }
 
 
-  plotPosteriorJitter <- function(df1, df2, df3, mt) {
+plotPosteriorJitter <- function(df1, df2, df3, mt) {
 
 
     colours = c("1" = "red", "2" = "green", "3" = "blue")
@@ -700,7 +719,7 @@ modelDiags <- function(daytime, hp) {
           legend.background = element_blank(),
           legend.box.background = element_rect(colour = "black")) 
 
-  gg.list[[3]] <- ggplot() + 
+    gg.list[[3]] <- ggplot() + 
 
     geom_jitter(data=df3, aes(x=bc, y=bpc, fill = cluster), shape=21, size=1, alpha=.3, show.legend=TRUE) +
     
@@ -736,16 +755,16 @@ modelDiags <- function(daytime, hp) {
 
   }
 
-  plotPosteriorDensity <- function(df1, df2, df3, mt) {
+plotPosteriorDensity <- function(df1, df2, df3, mt) {
 
 
     colours = c("1" = "red", "2" = "green", "3" = "blue")
 
-    gg <- ggplot(aes(x=diff, y=cluster, fill = cluster), alpha=.7, show.legend=TRUE) + 
+    gg <- ggplot() + 
     
-    geom_density_ridges(data=as.data.frame(df1)) +
-    geom_density_ridges(data=as.data.frame(df2)) +
-    geom_density_ridges(data=as.data.frame(df3)) +
+    geom_density(data=df1, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, show_legend=FALSE) +
+    geom_density(data=df2, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, show_legend=FALSE) +
+    geom_density(data=df3, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, show_legend=FALSE) +
 
     # stat_density(aes(x=diff), geom="point") +   # there is some magic here to adjust legend shapes
     # https://stackoverflow.com/questions/46597079/change-the-shape-of-the-legend-in-density-plots-with-ggplot2
@@ -880,25 +899,7 @@ plotLikelihood <- function(df, hypoPop, cap) {
   
 }
 
-generateLikelihoodV2models <- function(df, inboundList, daytime) {
 
-# read the structure from disk
-
-    inboundList <- readRDS(paste("./code/output/list-", daytime, ".rds", sep=""))
-
-    return(inboundList[[8]])   # that is a list of the 9 models
-
-}
-
-generateLikelihoodV2tables <- function(df, inboundList, daytime) {
-
-# read the structure from disk
-
-    inboundList <- readRDS(paste("./code/output/list-", daytime, ".rds", sep=""))
-
-    return(inboundList[[5]])   # likelihood.df
-
-}
 
 generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, populationAdjustmentFactor) {
 
@@ -936,12 +937,13 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, p
     #To avoid recompilation of unchanged Stan programs, we recommend calling
     rstan_options(auto_write = TRUE)
 
+    fileName <- paste(path, "list-", daytime, ".rds", sep="")
 
 
 
   if (fromDisc==TRUE) {   # read the structure from disk
 
-    inboundList <- readRDS(paste(path, "list-", daytime, ".rds", sep=""))
+    inboundList <- readRDS(fileName)
 
     likelihood.df <- inboundList[[5]] 
     modelInput <- inboundList[[7]]        # a list of the 9 data sources
@@ -1120,7 +1122,7 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, p
     #### end model building ####
 
     
-    fileName <- paste(path, "list-", daytime, ".rds", sep="")
+    
     if (file.exists(fileName)) { file.remove(fileName) }
 
     inboundList[[5]] <- likelihood.df
