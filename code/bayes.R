@@ -378,7 +378,7 @@ evaluateDailySpiderCounts <- function(df) {
   # lists used as parameters in generateLikelihoodV2() ; developed 'by hand' (above)
   #
 
-  returnList[[11]] <- list(255, 80, 8, 255, 80, 8, 255, 80, 8)                # mean population for 9 models
+  returnList[[11]] <- list(255, 80, 8)                # mean population for 9 models
   
 
   
@@ -467,6 +467,64 @@ likelihoodPlusModelDiags <- function(rl=returnList) {
 
 }
 
+modelDiagsV2 <- function(daytime, hp, path) {
+
+  
+
+  prev.list <- list()
+  post.df.list <- list()
+
+  prev.list <- readRDS(paste(path, "list-", daytime, ".rds", sep=""))
+
+  post.df.list <- prev.list[[10]] 
+
+  modelTime <- list()
+  modelTime[[1]] <- "seasonal timeframe: weeks 23-25"      # model #1 
+  modelTime[[2]] <- "seasonal timeframe: weeks 26-31"      # model #2 
+  modelTime[[3]] <- "seasonal timeframe: weeks 32-34"    # model #3 
+
+  combo.df <- list()
+
+  for (j in 1:9) {   
+
+    # adjust hypothetical population by seasonal timeframe 
+      if ((j == 1) || (j == 4) || (j == 7)) {
+        hp <- 76
+      } else if ((j == 2) || (j == 5) || (j == 8)) {
+        hp <- 47
+      } else {
+        hp <- 1
+      }  
+
+    post.df.list[[j]] <- post.df.list[[j]] %>%   
+          mutate(trappedSpiders_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log(hp) ),
+                 trappedSpiders_low  = exp(b_Intercept + b_log_pop * log(hp) )) %>% 
+          mutate(diff        = trappedSpiders_high - trappedSpiders_low)
+
+     # add a cluster indicator for the graphics
+      if ((j == 1) || (j == 4) || (j == 7)) {
+        post.df.list[[j]] <- post.df.list[[j]] %>% mutate(cluster = '1')
+      } else if ((j == 2) || (j == 5) || (j == 8)) {
+        post.df.list[[j]] <- post.df.list[[j]] %>% mutate(cluster = '2')
+      } else {
+        post.df.list[[j]] <- post.df.list[[j]] %>% mutate(cluster = '3')
+      }
+
+  }
+
+  gg.list <- list()
+
+  gg.list[[1]] <- plotPosteriorDensity(df1= post.df.list[[1]], df2= post.df.list[[2]], 
+    df3=post.df.list[[3]], mt = modelTime[[1]])
+  gg.list[[2]] <- plotPosteriorDensity(df1= post.df.list[[4]], df2= post.df.list[[5]], 
+    df3=post.df.list[[6]], mt = modelTime[[2]])
+  gg.list[[3]] <- plotPosteriorDensity(df1= post.df.list[[7]], df2= post.df.list[[8]], 
+    df3=post.df.list[[9]], mt = modelTime[[3]])
+
+  return(gg.list)
+
+
+}
 
 modelDiags <- function(daytime, hp) {
 
@@ -485,7 +543,7 @@ modelDiags <- function(daytime, hp) {
 
   # daytime <- 'pm'
 
-  list <- readRDS(paste("./code/output/list-", daytime, ".rds", sep=""))
+  large.list <- readRDS(paste("./code/output/list-", daytime, ".rds", sep=""))
 
     
     # models were created assuming spider populations 
@@ -513,7 +571,7 @@ modelDiags <- function(daytime, hp) {
 
     for (j in 1:9) {
 
-      post.df[[j]] <- brms::posterior_samples(list[[8]][[j]])
+      post.df[[j]] <- brms::posterior_samples(large.list[[8]][[j]])
     # 2. add a column of predicted trappedSpiders for two clusters of population log.pop.list[[j]], 
     # one with high oak influence, the other with low oak influence 
 
@@ -683,11 +741,11 @@ modelDiags <- function(daytime, hp) {
 
     colours = c("1" = "red", "2" = "green", "3" = "blue")
 
-    gg <- ggplot() + 
+    gg <- ggplot(aes(x=diff, y=cluster, fill = cluster), alpha=.7, show.legend=TRUE) + 
     
-    geom_density(data=df1, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, show_legend=FALSE) +
-    geom_density(data=df2, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, show_legend=FALSE) +
-    geom_density(data=df3, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, show_legend=FALSE) +
+    geom_density_ridges(data=as.data.frame(df1)) +
+    geom_density_ridges(data=as.data.frame(df2)) +
+    geom_density_ridges(data=as.data.frame(df3)) +
 
     # stat_density(aes(x=diff), geom="point") +   # there is some magic here to adjust legend shapes
     # https://stackoverflow.com/questions/46597079/change-the-shape-of-the-legend-in-density-plots-with-ggplot2
@@ -699,9 +757,9 @@ modelDiags <- function(daytime, hp) {
     #coord_fixed(ratio=20/1) +     # control the aspect ratio of the output; "ratio" refers to the 
                                   # ratio of the axis limits themselves
     
-    coord_cartesian(ylim=c(0, .6), xlim=c(-25, 25))  + # clip
+    coord_cartesian(ylim=c(0, 1), xlim=c(-25, 25))  + # clip
 
-    scale_y_continuous(breaks = seq(min(0), max(.6), by = .2)) +
+    scale_y_continuous(breaks = seq(min(0), max(1), by = .2)) +
     #scale_x_continuous(breaks=seq(-15,5,5)) + 
     
     
