@@ -1,171 +1,5 @@
 
 
-
-calculateSummaryStats <- function(df) {
-
-
-    library(reshape2)
-    melt.total.df <- melt(df, id.vars=c("week", "transect", "time", "cluster"))
-
-    library(dplyr)
-    grouped <- group_by(melt.total.df, week, transect, time, cluster)
-    grouped.total <- summarise(grouped, mean=mean(value), sd=sd(value))
-
-    cl1.by.week <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'one')
-    cl2.by.week <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'two')
-    cl3.by.week <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'three')
-
-    melt.cl <- melt(cl1.by.week, id.vars=c("week", "transect", "time", "cluster"))
-    grouped <- group_by(melt.cl, week, transect, time, cluster)
-    summarise(grouped, mean=mean(value))
-
-    # use these mean counts to estime the cluster population in the different time frames
-    cl.by.week <- df %>% dplyr::filter(week < 26)
-    cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
-    cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
-
-    cl.by.week <- df %>% dplyr::filter(week > 25 & week < 32)
-    cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
-    cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
-
-    cl.by.week <- df %>% dplyr::filter(week > 31)
-    cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
-    cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
-
-    #         cluster    traps per      vines per
-    #                    cluster        cluster
-    #
-    #          1           12            16*5= 80
-    #          2            9            12*5= 60
-    #          3            9            40*5=200
-    #
-    #     
-    #   seasonal     trapped spiders   cluster    cluster mean          normalize by       ASSUMED weekly     
-    #   time frame   by cluster          mean     normalized by         # of weeks         population per 
-    #                (sum)                        # of traps                               trapped vine
-    #                                                                                      (each observation
-    #                                                                                      traps 1% of pop )
-    #       1        93,87,95           92       92 / 12  =  7.66       7.66 / 3 = 2.55        255              
-    #       2        39,43,48           43       43 / 9   =  4.77       4.77 / 6 = 0.80         80
-    #       3        6,5,8               6        6 / 9   =  0.16       0.16 / 2 = 0.08          8
-    #
-    # so, total.df, with 'total spider' observations in the form :   week  transect time cluster totalSpiders
-    # 'total spider' evidence to be folded into priors that are based on relative populations for each 
-    # seasonal period
-    #
-    #                pop    SD (imaginary)    log(pop)
-    #
-    #      1         255         64  85           2.4
-    #      2          80         20  27           1.9
-    #      3           8          2   3           0.9 
-    #
-    # CAUTION: using SD roughly 25% of the mean to prevent the sampler from choking on 
-    #          negative values 
-
-  }
-
-evaluateDailySpiderCountsTables <- function(df) {
-
-  
-  library(dplyr)
-  library(ggplot2)
-  
-  
-  # build a list of spider counts by transect, by cluster, by week, by time-of-day (ref: buildClustersByWeek() )
-  
-  if (FALSE) {
-    source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
-    bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
-    df <- bugs.df
-    i <- 1
-    # formula.w <- (~ week == 25 )
-    formula.s <- (~ Thomisidae..crab.spider. > 0 )
-  }
-  
-  species <- "Thomisidae..crab.spider."
-  speciesString <- paste("~", species, ">0", sep="")
-  formula.s <- as.formula(speciesString)
-  
-  formula.cluster1 <- paste("~ position==1 | position==2 | position==3 | position==4", sep="")
-  formula.cluster2 <- paste("~ position==5 | position==6 | position==7", sep="")
-  formula.cluster3 <- paste("~ position==8 | position==9 | position==10", sep="")
-  
-  weeks.vector <- getWeeks(bugs.df)
-  transectList <- c('oakMargin', 'control')
-
-  timeList <- c('am', 'pm')
-
-  clusterFormulaList <- c(formula.cluster1, formula.cluster2, formula.cluster3)
-  
-  total.df <- NULL
-  
-  for (i in 1:length(weeks.vector)) {
-    
-    for (n in 1:length(transectList)) {
-      
-      for (j in 1:length(timeList)) {
-        
-        for (k in 1:length(clusterFormulaList)) {
-          if (k==1) {
-            clusterListChars <- "one" 
-          } else if (k==2) {
-            clusterListChars <- "two"
-          } else {
-            clusterListChars <- "three"
-          }
-          
-          twtString <- paste("~ transect=='", transectList[[n]], "' & week=='", weeks.vector[[i]], "' & time=='", timeList[[j]], "'", sep="")
-          
-          clusterString <- paste(clusterFormulaList[[k]], sep="")
-          
-          dailySum.list <- dailySumByClusterTimeWeek(df, ft=as.formula(twtString), fc=as.formula(clusterString))
-          
-          # create a df record for each of the averages in the list
-          for (m in 1:length(dailySum.list[[1]])) {
-            temp.df <- data.frame(weeks.vector[[i]],
-                                  transectList[[n]],
-                                  timeList[[j]], 
-                                  clusterListChars,
-                                  dailySum.list[[1]][[m]]
-            )
-            # column names need to match for rbind() to work
-            names(temp.df) <- c("week", "transect", "time", "cluster", "totalSpiders")
-            
-            # tack it on
-            # https://stackoverflow.com/questions/35366187/how-to-write-if-else-statements-if-dataframe-is-empty
-            if (!exists('total.df')) {
-              total.df <- temp.df
-              # (so, on the first pass the column names are cool)
-            } else {
-              total.df <- rbind(total.df, temp.df)
-            }
-            
-          } # end create a df record
-          
-        } # clusterFormulaList
-      } # timeList
-    } # transectList
-  } # weeks.vector
-  
-# > head(total.df, 10)                          <-- 372 rows
-#   week  transect time cluster totalSpiders
-#1    23 oakMargin   am     one            2
-#2    23 oakMargin   am     one            6
-#3    23 oakMargin   am     two            2
-#4    23 oakMargin   am     two            4
-#5    23 oakMargin   am   three            2
-#6    23 oakMargin   am   three            3
-#7    23 oakMargin   pm     one            1
-#8    23 oakMargin   pm     one            7
-#9    23 oakMargin   pm     one           14
-#10   23 oakMargin   pm     two            5
-
-
-  return(total.df)
-
-
-}
-
 evaluateDailySpiderCounts <- function(df) {
   
   if (FALSE) {
@@ -372,86 +206,6 @@ evaluateDailySpiderCounts <- function(df) {
   
 }
 
-likelihoodPlusModelDiags <- function(rl=returnList) {
-
-  graphList <- list()
-
-
-  if (TRUE) {
-    #source('./code/bayes.R')
-
-    # organize data into
-    #       "week", "transect", "time", "cluster", "totalSpiders"
-    # ( already done by evaluateDailySpiderCounts() )
-    #
-    # plot the weekly raw data : plotWeekly()
-    # create txt files saving the status output of 9 brm() cycles
-
-    rl <- generateLikelihoodV2(df=rl[[4]], list=rl, daytime='24h')
-  
-    # reserved positions:
-    # returnList[[1]]) # scatter plot by cluster with seasonal timeframes
-    # returnList[[2]]) # scatter plot by am/pm
-    # returnList[[3]]) # scatter plot by transect
-    #
-    # returnList[[4]] is the dataframe used for the graphics (total.df)
-    # from bayes.R evaluateDailySpiderCounts()
-    # it is raw, not averaged, bugs.df data transformed to : 
-    #          ("week", "transect", "time", "cluster", "totalSpiders")
-    #
-    # returnList[[5]] <- likelihood.df
-    # returnList[[6]]                   # likelihood by cluster with seasonal timeframes
-    # returnList[[7]] <- modelInput     # that is a list of the 9 data sources
-    # returnList[[8]] <- modelOutput    # that is a list of the 9 models
-    # returnList[[9]] <- label.list     # 
-  
-    rl[[6]] <- plotLikelihood(df=rl[[5]],  cap=paste("population seasonal trend, daytime: ", daytime, sep=""))
-    
-    graphList[[1]] <- rl[[6]] # likelihood by cluster with seasonal timeframes
-  
-    # 
-  
-    graphList[[2]] <- weightedModelGraph(df=rl[[7]][[1]], model=rl[[8]][[1]], label=rl[[9]][[1]])
-
-    # graphList[[3]] <- weightedModelGraph(df=rl[[7]][[4]], model=rl[[8]][[4]], label=rl[[9]][[4]])
-    # graphList[[4]] <- weightedModelGraph(df=rl[[7]][[7]], model=rl[[8]][[7]], label=rl[[9]][[7]])
-    # glitch at the smaller end of the range: Error in sample.int(x, size, replace, prob) : 
-    #                                         cannot take a sample larger than the population when 'replace = FALSE' 
-    #
-    # make a local copy for modification : > sample.int <- base:::sample.int
-
-  
-    if (FALSE) {
-  
-    temp.df <- rl[[4]]
-    rl[[4]] <- rl[[4]] %>% dplyr::filter(time == 'pm')
-    rl <- generateLikelihoodV2(df=rl[[4]], list=rl, daytime='pm')
-    rl[[6]] <- plotLikelihood(df=rl[[5]],  cap=paste("population seasonal trend, daytime: ", daytime, sep=""))
-    print(rl[[6]]) # likelihood by cluster with seasonal timeframes
-  
-  
-    rl[[4]] <- temp.df %>% dplyr::filter(time == 'am')
-    rl <- generateLikelihoodV2(df=rl[[4]], list=rl, daytime='am')
-    rl[[6]] <- plotLikelihood(df=rl[[5]],  cap=paste("population seasonal trend, daytime: ", daytime, sep=""))
-    print(rl[[6]]) # likelihood by cluster with seasonal timeframes
-  
-    }
-    # kruskal.test(likelihood ~ seasonalTimeframe, data = lh.df)
-
-    # pairwise.wilcox.test(lh.df$likelihood, lh.df$seasonalTimeframe,
-     #                     p.adjust.method = "BH")
-
-  
-  }  # end if TRUE
-
-  detach("package:brms", unload=TRUE) 
-  detach("package:rstan", unload=TRUE) 
-
-
-  return(graphList)
-
-
-}
 
 modelDiagsV2 <- function(daytime, hp, path) {
 
@@ -630,7 +384,7 @@ plotPosteriorJitter <- function(df1, df2, df3, mt) {
     return(gg.list)
 
 
-  }
+}
 
 plotPosteriorDensity <- function(df1, df2, df3, mt) {
 
@@ -782,40 +536,40 @@ plotLikelihood <- function(df, hypoPop, cap) {
 generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, populationAdjustmentFactor) {
 
 
-    ##
-    ##
-    ## build a df of likelihood (the probability that the
-    ## spider population is influenced by the oakMargin) by cluster by week
-    ## UPDATE ELEMENT 5 of the inbound list (a list of 9 likelihoods) and 
-    ## returning the new list.
-    ##
-    ## save a text file summary() of each model to disc
-    ##
-    ## return a plot the likelihoods
-    ##
-    ## return plots of the mcmc_intervals for 9 models
-    ##
+  ##
+  ##
+  ## build a df of likelihood (the probability that the
+  ## spider population is influenced by the oakMargin) by cluster by week
+  ## UPDATE ELEMENT 5 of the inbound list (a list of 9 likelihoods) and 
+  ## returning the new list.
+  ##
+  ## save a text file summary() of each model to disc
+  ##
+  ## return a plot the likelihoods
+  ##
+  ## return plots of the mcmc_intervals for 9 models
+  ##
 
-    ## parameter df is the 4th member of the output of evaluateDailySpiderCounts(bugs.df)
+  ## parameter df is the 4th member of the output of evaluateDailySpiderCounts(bugs.df)
 
-    ## parameter inboundList is the output of evaluateDailySpiderCounts(bugs.df)
+  ## parameter inboundList is the output of evaluateDailySpiderCounts(bugs.df)
 
-    ## parameter hp is the hypotheticalPopulation used to generate likelihood
+  ## parameter hp is the hypotheticalPopulation used to generate likelihood
 
   
-    if("rethinking" %in% (.packages())){
+  if("rethinking" %in% (.packages())){
      detach("package:rethinking", unload=TRUE) 
-    }
+  }
   
-    # https://bookdown.org/connect/#/apps/1850/access
-    library(brms)
-    library(rstan)
-    #For execution on a local, multicore CPU with excess RAM we recommend calling
-    options(mc.cores = parallel::detectCores())
-    #To avoid recompilation of unchanged Stan programs, we recommend calling
-    rstan_options(auto_write = TRUE)
+  # https://bookdown.org/connect/#/apps/1850/access
+  library(brms)
+  library(rstan)
+  #For execution on a local, multicore CPU with excess RAM we recommend calling
+  options(mc.cores = parallel::detectCores())
+  #To avoid recompilation of unchanged Stan programs, we recommend calling
+  rstan_options(auto_write = TRUE)
 
-    fileName <- paste(path, "list-", daytime, ".rds", sep="")
+  fileName <- paste(path, "list-", daytime, ".rds", sep="")
 
 
 
@@ -853,7 +607,6 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, p
     modelInput <-list()
     post.df.list <- list()
     modelOutput <- list()
-    postOutput <- list()
 
   
     cl.st.list <- list()  # for each cluster  
@@ -942,7 +695,7 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, p
               totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop,  # yes, + contact_high:log_pop
               prior = c(prior(normal(0, 100), class = Intercept),
                         prior(normal(0, 1), class = b)),
-             iter = 3000, warmup = 1000, chains = 4, cores = 4, seed=10.2)
+             iter = 3000, warmup = 1000, chains = 4, cores = 4, seed=10)
 
         #print(b10.10)
 
@@ -1011,45 +764,45 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, p
 
     saveRDS(inboundList, fileName)
 
-  } 
+    } 
 
-  # print(inboundList[[5]])
+    # print(inboundList[[5]])
 
-  ggList <- list()
+    ggList <- list()
 
-  # plot the likelihood for the 9 models
-  ggList[[1]] <- plotLikelihood(df=inboundList[[5]],  hypoPop=hp,
-                                cap=paste("daytime: ", daytime,
-                                " , population adjustment factor: ", populationAdjustmentFactor,           
-                                sep=""))
+    # plot the likelihood for the 9 models
+    ggList[[1]] <- plotLikelihood(df=inboundList[[5]],  hypoPop=hp,
+                                  cap=paste("daytime: ", daytime,
+                                  " , population adjustment factor: ", populationAdjustmentFactor,           
+                                  sep=""))
 
-  #library(ggthemes)
-  library(bayesplot)
+    #library(ggthemes)
+    library(bayesplot)
 
-  for (i in 1:9) {
+    for (i in 1:9) {
 
-    fileName <- paste(path, "clBRMsummary-", daytime, "-", i, ".txt", sep="")
-    if (file.exists(fileName)) file.remove(fileName)
+      fileName <- paste(path, "clBRMsummary-", daytime, "-", i, ".txt", sep="")
+      if (file.exists(fileName)) file.remove(fileName)
 
-    sink(file=fileName, append = TRUE, type = "output")
-    print(writeLines(paste("\ngenerateLikelihoodV2()               ", "\n\n", sep="")))  # Sys.time(), 
-    print(writeLines(paste("i = ", i, "\n\n", sep="")))
+      sink(file=fileName, append = TRUE, type = "output")
+      print(writeLines(paste("\ngenerateLikelihoodV2()               ", "\n\n", sep="")))  # Sys.time(), 
+      print(writeLines(paste("i = ", i, "\n\n", sep="")))
         
-    print(summary(modelOutput[[i]], prob=.89))
-    sink(NULL)
+      print(summary(modelOutput[[i]], prob=.89))
+      sink(NULL)
 
-  }
+    }
 
-  # print the posterior graphs separately so that the color can be adjusted to math the cluster info
+    # print the posterior graphs separately so that the color can be adjusted to math the cluster info
 
-  color_scheme_set("red")      # cluster 'one'
+    color_scheme_set("red")      # cluster 'one'
 
-  index <- c(1,2,3)
+    index <- c(1,2,3)
 
-  for (i in index) {
+    for (i in index) {
 
-    # plot the posterior distributions
-    ggList[[i+1]] <- post.df.list[[i]] %>%
+      # plot the posterior distributions
+      ggList[[i+1]] <- post.df.list[[i]] %>%
 
       select(-lp__) %>% 
       rename(b_interaction = `b_log_pop:contact_high`) %>%
@@ -1068,13 +821,13 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, p
     }
 
 
-  color_scheme_set("green")      # cluster 'two'
-  index <- c(4,5,6)
+    color_scheme_set("green")      # cluster 'two'
+    index <- c(4,5,6)
 
-  for (i in index) {
+    for (i in index) {
 
-    # plot the posterior distributions
-    ggList[[i+1]] <- post.df.list[[i]] %>%
+      # plot the posterior distributions
+      ggList[[i+1]] <- post.df.list[[i]] %>%
 
       select(-lp__) %>% 
       rename(b_interaction = `b_log_pop:contact_high`) %>%
@@ -1093,13 +846,13 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, p
     }
 
 
-  color_scheme_set("blue")      # cluster 'three'
-  index <- c(7,8,9)
+    color_scheme_set("blue")      # cluster 'three'
+    index <- c(7,8,9)
 
-  for (i in index) {
+    for (i in index) {
 
-    # plot the posterior distributions
-    ggList[[i+1]] <- post.df.list[[i]] %>%
+      # plot the posterior distributions
+      ggList[[i+1]] <- post.df.list[[i]] %>%
 
       select(-lp__) %>% 
       rename(b_interaction = `b_log_pop:contact_high`) %>%
@@ -1117,7 +870,7 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, p
                     )
 
 
-  }
+    }
 
   
       # reserved positions:
@@ -1138,16 +891,98 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, p
   
 
 
+    # cleanup
+
+    rm(inboundList)
+    rm(likelihood.df)
+    rm(modelInput)
+    rm(modelOutput)
+    rm(label.list)
+    rm(post.df.list)
+
+    detach("package:brms", unload=TRUE) 
+    detach("package:rstan", unload=TRUE) 
+
+    detach("package:bayesplot", unload=TRUE) 
+    #
+  
+    return(ggList)
+  
+}
+
+
+modelComparison <- function() {
+
+  # Statistical Rethinking, code 10.45 and Statistical Rethinking Recoded
+
+  library(brms)
+  library(rstan)
+  #For execution on a local, multicore CPU with excess RAM we recommend calling
+  options(mc.cores = parallel::detectCores())
+  #To avoid recompilation of unchanged Stan programs, we recommend calling
+  rstan_options(auto_write = TRUE)
+
+  daytime<="pm"
+  path<- "./code/output/"
+
+  noInt <- list()
+  noContact <- list()
+  noLogPop <- list()
+  onlyInt <- list()
+
+  fileName <- paste(path, "list-", daytime, ".rds", sep="")
+
+  inboundList <- readRDS(fileName)
+
+  modelOutput <- inboundList[[8]]       # a list of the 9 models
+
+  for (i in 1:length(modelOutput)) { 
+
+    # no interaction
+    noInt[[i]] <- update(modelOutput[[i]], formula = totalSpiders ~ 1 + log_pop + contact_high)
+
+    # no contact rate
+    noContact[[i]] <- update(modelOutput[[i]], formula = totalSpiders ~ 1 + log_pop)
+
+    # no log-population
+    noLogPop[[i]] <- update(modelOutput[[i]], formula = totalSpiders ~ 1 + contact_high)
+
+    # intercept only
+    onlyInt[[i]] <- update(modelOutput[[i]], formula = totalSpiders ~ 1, seed = 10)
+
+    modelOutput[[i]]  <- brms::add_criterion(modelOutput[[i]], criterion = "waic")
+    noInt[[i]]        <- brms::add_criterion(noInt[[i]], criterion = "waic")
+    noContact[[i]]    <- brms::add_criterion(noContact[[i]], criterion = "waic")
+    noLogPop[[i]]     <- brms::add_criterion(noLogPop[[i]], criterion = "waic")
+    onlyInt[[i]]      <- brms::add_criterion(onlyInt[[i]], criterion = "waic")
+
+
+    w <- brms::loo_compare(modelOutput[[i]], noInt[[i]], noContact[[i]], noLogPop[[i]], onlyInt[[i]], criterion = "waic")
+
+    cbind(waic_diff = w[, 1] * -2, se= w[, 2] *  2) %>% 
+    round(digits = 2)
+
+
+  }
+
+
   # cleanup
+    
   rm(inboundList)
+  rm(modelOutput)
+
+  rm(noInt)
+  rm(noContact)
+  rm(noLogPop)
+  rm(onlyInt)
+
   detach("package:brms", unload=TRUE) 
   detach("package:rstan", unload=TRUE) 
 
   detach("package:bayesplot", unload=TRUE) 
-  #
-  
-  return(ggList)
-  
+
+
+
 }
 
 
@@ -1392,5 +1227,70 @@ dailySumByClusterTimeWeek <- function(df, ft, fc) {
   
   return(dailySum.list)
 }
+
+
+calculateSummaryStats <- function(df) {
+
+
+    library(reshape2)
+    melt.total.df <- melt(df, id.vars=c("week", "transect", "time", "cluster"))
+
+    library(dplyr)
+    grouped <- group_by(melt.total.df, week, transect, time, cluster)
+    grouped.total <- summarise(grouped, mean=mean(value), sd=sd(value))
+
+    cl1.by.week <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'one')
+    cl2.by.week <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'two')
+    cl3.by.week <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'three')
+
+    melt.cl <- melt(cl1.by.week, id.vars=c("week", "transect", "time", "cluster"))
+    grouped <- group_by(melt.cl, week, transect, time, cluster)
+    summarise(grouped, mean=mean(value))
+
+    # use these mean counts to estime the cluster population in the different time frames
+    cl.by.week <- df %>% dplyr::filter(week < 26)
+    cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
+    cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
+
+    cl.by.week <- df %>% dplyr::filter(week > 25 & week < 32)
+    cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
+    cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
+
+    cl.by.week <- df %>% dplyr::filter(week > 31)
+    cl.pm <- cl.by.week %>% filter(time=='pm' & transect=='oakMargin')
+    cl.pm %>% group_by(cluster) %>% summarize(count.pm.Spiders=sum(totalSpiders))
+
+    #         cluster    traps per      vines per
+    #                    cluster        cluster
+    #
+    #          1           12            16*5= 80
+    #          2            9            12*5= 60
+    #          3            9            40*5=200
+    #
+    #     
+    #   seasonal     trapped spiders   cluster    cluster mean          normalize by       ASSUMED weekly     
+    #   time frame   by cluster          mean     normalized by         # of weeks         population per 
+    #                (sum)                        # of traps                               trapped vine
+    #                                                                                      (each observation
+    #                                                                                      traps 1% of pop )
+    #       1        93,87,95           92       92 / 12  =  7.66       7.66 / 3 = 2.55        255              
+    #       2        39,43,48           43       43 / 9   =  4.77       4.77 / 6 = 0.80         80
+    #       3        6,5,8               6        6 / 9   =  0.16       0.16 / 2 = 0.08          8
+    #
+    # so, total.df, with 'total spider' observations in the form :   week  transect time cluster totalSpiders
+    # 'total spider' evidence to be folded into priors that are based on relative populations for each 
+    # seasonal period
+    #
+    #                pop    SD (imaginary)    log(pop)
+    #
+    #      1         255         64  85           2.4
+    #      2          80         20  27           1.9
+    #      3           8          2   3           0.9 
+    #
+    # CAUTION: using SD roughly 25% of the mean to prevent the sampler from choking on 
+    #          negative values 
+
+  }
+
 
 
