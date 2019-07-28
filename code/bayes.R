@@ -237,7 +237,7 @@ modelDiagsV2 <- function(daytime, hp, path) {
     post.df.list[[j]] <- post.df.list[[j]] %>%   
           mutate(trappedSpiders_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log(hPop) ),
                  trappedSpiders_low  = exp(b_Intercept + b_log_pop * log(hPop) )) %>% 
-          mutate(diff        = (trappedSpiders_high - trappedSpiders_low) / trappedSpiders_high )
+          mutate(diff        = (trappedSpiders_high - trappedSpiders_low) / trappedSpiders_low )
 
      # add a cluster indicator for the graphics
       if ((j == 1) || (j == 4) || (j == 7)) {
@@ -296,7 +296,11 @@ plotPosteriorJitter <- function(df1, df2, df3, mt) {
 
     gg.list[[1]] <- ggplot() + 
 
-    geom_jitter(data=df1, aes(x=bc, y=bpc, fill = cluster), shape=21, size=1, alpha=.3, show.legend=TRUE) +
+    geom_jitter(data=df1, aes(x=bc, y=bpc, fill = cluster), shape=21, size=2, alpha=.3, 
+      show.legend=TRUE) +
+      # ggplot2 issue # 3460 
+      # https://github.com/tidyverse/ggplot2/issues/3460
+      # show.legend=TRUE, key_glyph = draw_key_dotplot(data=data.frame(), size=5)) +
     
     scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
     scale_x_continuous(breaks=seq(-15,5,5)) + 
@@ -393,9 +397,9 @@ plotPosteriorDensity <- function(df1, df2, df3, mt) {
 
     gg <- ggplot() + 
     
-    geom_density(data=df1, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE) +
-    geom_density(data=df2, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE) +
-    geom_density(data=df3, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE) +
+    geom_density(data=df1, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=df2, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=df3, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
 
     # stat_density(aes(x=diff), geom="point") +   # there is some magic here to adjust legend shapes
     # https://stackoverflow.com/questions/46597079/change-the-shape-of-the-legend-in-density-plots-with-ggplot2
@@ -407,18 +411,18 @@ plotPosteriorDensity <- function(df1, df2, df3, mt) {
     #coord_fixed(ratio=20/1) +     # control the aspect ratio of the output; "ratio" refers to the 
                                   # ratio of the axis limits themselves
     
-    coord_cartesian(ylim=c(0, 1), xlim=c(-5, 3))  + # clip
+    coord_cartesian(ylim=c(0, 1.5), xlim=c(-3, 5))  + # clip
     #coord_cartesian(ylim=c(0, 1), xlim=c(-25, 25))  + # clip
 
-    scale_y_continuous(breaks = seq(min(0), max(1), by = .2)) +
+    scale_y_continuous(breaks = seq(min(0), max(1.5), by = .2)) +
     #scale_x_continuous(breaks=seq(-15,5,5)) + 
     
     
     #labs(title=paste("the distribution of the plausible difference\nin average trapped spiders", sep=""),
          #subtitle=paste(mt, sep=""), 
     labs(y="density", 
-         x="trapped spider rate\ncontrol minus oak margin", 
-         caption = paste("the distribution of the plausible difference in average trapped spiders\n", mt, sep="") ) +
+         x="trapped spider rate\nSNH treatment compared to control", 
+         caption = paste("the distribution of the plausible\ndifference in average trapped spiders\n", mt, sep="") ) +
     
     theme_bw() +
 
@@ -447,7 +451,6 @@ plotLikelihood <- function(df, hypoPop, cap) {
   # cluster{one, two, three}, seasonalTimeframe{one, two, three}, plausibility(decimal)
   #
   
-  #assign("dfLikely", df, envir=.GlobalEnv)
   
   if (FALSE) {
     df <- likelihood.df
@@ -459,7 +462,7 @@ plotLikelihood <- function(df, hypoPop, cap) {
   
   gg <- ggplot(df, aes(x=seasonalTimeframe, y=plausibility)) +
     
-    geom_jitter(aes(fill = cluster), shape = 21, size=5, show.legend=TRUE, width=.1) +
+        geom_jitter(aes(fill = cluster), shape = 21, size=5, show.legend=TRUE, width=0.05) +
     
     ylim(c(0, 1)) + 
     expand_limits(y=c(0,1)) + 
@@ -470,7 +473,9 @@ plotLikelihood <- function(df, hypoPop, cap) {
     labs(y="plausibility", 
          x="seasonal timeframe", 
          caption = paste("the 'plausibility' of an SNH effect on the crab spider population\n", 
-                          "for a hypothetical vine population of ", hypoPop, " spiders\n", 
+                          "for a hypothetical vine population of ", 
+                          hypoPop[[1]], " / ", hypoPop[[2]], " / ", hypoPop[[3]] , " spiders\n",
+                          "across three seasonal timeframes\n",
                           cap, sep="") ) +
     
     scale_x_discrete(labels=c("one" = "weeks\n23-25", "two" = "weeks\n26-31",
@@ -533,7 +538,7 @@ plotLikelihood <- function(df, hypoPop, cap) {
 
 
 
-generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, populationAdjustmentFactor) {
+generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, randomSeed,  hp, populationAdjustmentFactor) {
 
 
   ##
@@ -695,7 +700,7 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, p
               totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop,  # yes, + contact_high:log_pop
               prior = c(prior(normal(0, 100), class = Intercept),
                         prior(normal(0, 1), class = b)),
-             iter = 3000, warmup = 1000, chains = 4, cores = 4, seed=10)
+             iter = 3000, warmup = 1000, chains = 4, cores = 4, seed = randomSeed)
 
         #print(b10.10)
 
@@ -706,10 +711,20 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, p
         post.df.list[[i]] <- brms::posterior_samples(modelOutput[[i]])  # 
 
 
+        # adjust hypothetical population by seasonal timeframe 
+        if ((i == 1) || (i == 4) || (i == 7)) {
+          hPop <- hp[[1]]
+        } else if ((i == 2) || (i == 5) || (i == 8)) {
+          hPop <- hp[[2]]
+        } else {
+          hPop <- hp[[3]]
+        }  
+
+
  
         temp.df <- post.df.list[[i]] %>%   
-          mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log(hp) ),
-                 lambda_low  = exp(b_Intercept + b_log_pop * log(hp) ) ) %>% 
+          mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log(hPop) ),
+                 lambda_low  = exp(b_Intercept + b_log_pop * log(hPop) ) ) %>% 
           mutate(diff        = lambda_high - lambda_low) 
         
         like.df <- temp.df %>%
@@ -911,24 +926,38 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, hp, p
 }
 
 
-modelComparison <- function() {
+modelComparison <- function(path, daytime, randomSeed) {
 
   # Statistical Rethinking, code 10.45 and Statistical Rethinking Recoded
 
+  library(dplyr)
+  library(knitr)
+  library("tibble")    # for rownames_to_column
+
   library(brms)
   library(rstan)
+  library(Rcpp)   # avoids  Error in cpp_object_initializer(.self, .refClassDef, ...) : 
+                  #         could not find function "cpp_object_initializer"
+                  #         failed to create the sampler; sampling not done
+
   #For execution on a local, multicore CPU with excess RAM we recommend calling
   options(mc.cores = parallel::detectCores())
   #To avoid recompilation of unchanged Stan programs, we recommend calling
   rstan_options(auto_write = TRUE)
 
-  daytime<="pm"
-  path<- "./code/output/"
+  if (FALSE) {
+    daytime<-"pm"
+    path<- "./code/output/"
+  }
 
-  noInt <- list()
+  modelOutput <- list()
+
+  noInteraction <- list()
   noContact <- list()
   noLogPop <- list()
-  onlyInt <- list()
+  onlyIntercept <- list()
+  gg.list <- list()
+
 
   fileName <- paste(path, "list-", daytime, ".rds", sep="")
 
@@ -938,8 +967,10 @@ modelComparison <- function() {
 
   for (i in 1:length(modelOutput)) { 
 
+    # logic from https://bookdown.org/connect/#/apps/1850/access
+
     # no interaction
-    noInt[[i]] <- update(modelOutput[[i]], formula = totalSpiders ~ 1 + log_pop + contact_high)
+    noInteraction[[i]] <- update(modelOutput[[i]], formula = totalSpiders ~ 1 + log_pop + contact_high)
 
     # no contact rate
     noContact[[i]] <- update(modelOutput[[i]], formula = totalSpiders ~ 1 + log_pop)
@@ -948,19 +979,35 @@ modelComparison <- function() {
     noLogPop[[i]] <- update(modelOutput[[i]], formula = totalSpiders ~ 1 + contact_high)
 
     # intercept only
-    onlyInt[[i]] <- update(modelOutput[[i]], formula = totalSpiders ~ 1, seed = 10)
+    onlyIntercept[[i]] <- update(modelOutput[[i]], formula = totalSpiders ~ 1, seed=randomSeed)
 
-    modelOutput[[i]]  <- brms::add_criterion(modelOutput[[i]], criterion = "waic")
-    noInt[[i]]        <- brms::add_criterion(noInt[[i]], criterion = "waic")
-    noContact[[i]]    <- brms::add_criterion(noContact[[i]], criterion = "waic")
-    noLogPop[[i]]     <- brms::add_criterion(noLogPop[[i]], criterion = "waic")
-    onlyInt[[i]]      <- brms::add_criterion(onlyInt[[i]], criterion = "waic")
+    modelOutput[[i]]   <- brms::add_criterion(modelOutput[[i]], criterion = "waic")
+    noInteraction[[i]] <- brms::add_criterion(noInteraction[[i]], criterion = "waic")
+    noContact[[i]]     <- brms::add_criterion(noContact[[i]], criterion = "waic")
+    noLogPop[[i]]      <- brms::add_criterion(noLogPop[[i]], criterion = "waic")
+    onlyIntercept[[i]] <- brms::add_criterion(onlyIntercept[[i]], criterion = "waic")
 
 
-    w <- brms::loo_compare(modelOutput[[i]], noInt[[i]], noContact[[i]], noLogPop[[i]], onlyInt[[i]], criterion = "waic")
+    w <- brms::loo_compare(modelOutput[[i]], noInteraction[[i]], noContact[[i]], noLogPop[[i]], onlyIntercept[[i]], criterion = "waic")
 
     cbind(waic_diff = w[, 1] * -2, se= w[, 2] *  2) %>% 
     round(digits = 2)
+
+    gg.list[[i]] <- w %>% data.frame() %>% 
+          tibble::rownames_to_column(var = "model") %>%
+ 
+          ggplot(aes(x = reorder(model, -waic), 
+                 y    = waic,
+                 ymin = waic - se_waic,
+                 ymax = waic + se_waic
+                 #color = model)) +
+                 )) +
+          theme_bw() +
+          geom_pointrange(shape = 16, size=2, fatten=2, show.legend = F) +
+          coord_flip() +
+          labs(x = NULL, y = NULL,
+                caption = paste("WAIC\n", "i= ", i, sep="") ) +
+          theme(axis.ticks.y    = element_blank())
 
 
   }
@@ -971,17 +1018,16 @@ modelComparison <- function() {
   rm(inboundList)
   rm(modelOutput)
 
-  rm(noInt)
+  rm(noInteraction)
   rm(noContact)
   rm(noLogPop)
-  rm(onlyInt)
+  rm(onlyIntercept)
 
   detach("package:brms", unload=TRUE) 
   detach("package:rstan", unload=TRUE) 
 
-  detach("package:bayesplot", unload=TRUE) 
 
-
+  return(gg.list)
 
 }
 
@@ -1181,7 +1227,7 @@ plotTransectWeekly <- function(df) {
 
     scale_fill_manual(values = colours, 
                       breaks = c("oakMargin", "control"),
-                      labels = c("oak margin", "control")) +
+                      labels = c("SNH treatment", "control")) +
     
     theme(legend.title = element_blank(),
           legend.spacing.y = unit(0, "mm"), 
