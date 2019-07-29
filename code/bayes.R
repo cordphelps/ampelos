@@ -827,7 +827,7 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
         axis.text.y  = element_text(hjust = 0)) +
       theme_bw() +
       ggplot2::labs(
-        caption = paste("posterior distribution coefficient plot with medians and 89% intervals",
+        caption = paste("posterior distribution coefficient plot\nmedians with 50% and 89% credible intervals",
                         "\ncluster: ", likelihood.df[[1]][[i]], 
                         " ; seasonal timeframe: ", likelihood.df[[2]][[i]], 
                         "\npopulation adjustment factor: ", populationAdjustmentFactor,
@@ -925,6 +925,63 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
   
 }
 
+modelMCMCcheck <- function(path, daytime, debug) {
+
+  # ref: https://www.rensvandeschoot.com/brms-wambs/
+  # BRMS Tutorial: Applying the WAMBS – checklist
+  #
+
+  library(brms)
+  library(ggmcmc)
+  library(mcmcplots) 
+
+  # For execution on a local, multicore CPU with excess RAM we recommend calling
+  options(mc.cores = parallel::detectCores())
+
+  gg.list <- list()
+
+
+  # l2. Does the trace-plot exhibit convergence?
+
+
+  fileName <- paste(path, "list-", daytime, ".rds", sep="")
+
+  inboundList <- readRDS(fileName)
+
+  modelOutput <- inboundList[[8]]       # a list of the 9 models
+
+  for (i in 1:length(modelOutput)) { 
+
+    modeltransformed<-ggs(modelOutput[[i]]) # the ggs function transforms the BRMS output into a longformat tibble, that we can use to make different types of plots.
+
+    gg.list[[i]] <- ggplot(filter(modeltransformed, Parameter==c("b_Intercept", "b_log_pop", "b_contact_high", "b_log_pop:b_contact_high"), 
+                                  Iteration>1000), aes(x=Iteration, y=value, col=as.factor(Chain))) +
+                            geom_line() +
+                            facet_grid(Parameter ~ .,scale='free_y',switch = 'y') +
+                            labs(caption="Caterpillar Plots", col= "Chains")
+
+
+
+    if (debug) {
+      break
+    }
+
+  }
+
+  # cleanup
+    
+  rm(inboundList)
+  rm(modelOutput)
+
+  detach("package:brms", unload=TRUE) 
+  detach("package:ggmcmc", unload=TRUE) 
+  detach("package:mcmcplots", unload=TRUE) 
+
+
+  return(gg.list)
+
+
+}
 
 modelComparison <- function(path, daytime, randomSeed) {
 
@@ -936,7 +993,8 @@ modelComparison <- function(path, daytime, randomSeed) {
 
   library(brms)
   library(rstan)
-  library(Rcpp)   # avoids  Error in cpp_object_initializer(.self, .refClassDef, ...) : 
+  library(Rcpp)   # brms bug: avoids  
+                  #         Error in cpp_object_initializer(.self, .refClassDef, ...) 
                   #         could not find function "cpp_object_initializer"
                   #         failed to create the sampler; sampling not done
 
@@ -957,6 +1015,11 @@ modelComparison <- function(path, daytime, randomSeed) {
   noLogPop <- list()
   onlyIntercept <- list()
   gg.list <- list()
+
+  cl <- c("one", "two", "three")
+  st <- c("weeks 23-25", "weeks 26-31", "weeks 32-34")
+  cluster <- NULL
+  timeframe <- NULL
 
 
   fileName <- paste(path, "list-", daytime, ".rds", sep="")
@@ -993,6 +1056,28 @@ modelComparison <- function(path, daytime, randomSeed) {
     cbind(waic_diff = w[, 1] * -2, se= w[, 2] *  2) %>% 
     round(digits = 2)
 
+      # detect seasonal cluster 
+    if ((i == 1) || (i == 4) || (i == 7)) {
+      cluster <- cl[[1]]
+      color <- "red"
+    } else if ((i == 2) || (i == 5) || (i == 8)) {
+      cluster <- cl[[2]]
+      color <- "green"
+    } else {
+      cluster <- cl[[3]]
+      color <- "blue"
+    }  
+
+    # detect seasonal timeframe 
+    if ((i == 1) || (i == 2) || (i == 3)) {
+      timeframe <- st[[1]]
+    } else if ((i == 4) || (i == 5) || (i == 6)) {
+      timeframe <- st[[2]]
+    } else {
+      timeframe <- st[[3]]
+    }  
+
+
     gg.list[[i]] <- w %>% data.frame() %>% 
           tibble::rownames_to_column(var = "model") %>%
  
@@ -1003,10 +1088,10 @@ modelComparison <- function(path, daytime, randomSeed) {
                  #color = model)) +
                  )) +
           theme_bw() +
-          geom_pointrange(shape = 16, size=2, fatten=2, show.legend = F) +
+          geom_pointrange(shape = 21, size=1, fill=color, show.legend = F) + 
           coord_flip() +
           labs(x = NULL, y = NULL,
-                caption = paste("WAIC\n", "i= ", i, sep="") ) +
+                caption = paste("WAIC", "\nseasonal timeframe: ", timeframe, "\ncluster: ", cluster, "\ni= ", i, sep="") ) +
           theme(axis.ticks.y    = element_blank())
 
 

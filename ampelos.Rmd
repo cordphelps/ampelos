@@ -254,7 +254,10 @@ if (TRUE) {
 
 ```{r clusterBayes, echo=FALSE, message=TRUE, warning=TRUE}
 
+source('./code/bayes.R')
+
 ggsave.path <- "./code/output/"
+seed <- 10
 
 rl <- returnList
 
@@ -278,8 +281,8 @@ rl <- returnList
     # read data from disc with fromDisc=TRUE
     # re-build brm model and posterior distribution with fromDisc=FALSE
     
-    # compare predictions for a high contact and low contact vine with spider population of 40 spiders 
-    hypotheticalPopulation <- 40 
+    # compare predictions for a high contact and low contact vines
+    hypotheticalPopulation <- c(76,47,1)  # hypothetical population by seasonal timeframe 
     
     # populationAdjustmentFactor is used to investigate the 
     # sensitivity of likelihood to variation in population assumptions
@@ -289,7 +292,7 @@ rl <- returnList
     gg.likelihood.pm.list <- generateLikelihoodV2(df=filtered.df,
               inboundList=rl, daytime='pm', 
               fromDisc=TRUE, path= ggsave.path,
-              hp=hypotheticalPopulation,
+              randomSeed=seed, hp=hypotheticalPopulation,
               populationAdjustmentFactor= 1.0)
     
 
@@ -304,6 +307,32 @@ rl <- returnList
               scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
               units = c("in", "cm", "mm"))
     }
+
+```
+
+
+### mcmc went ok?
+
+```{r clusterMCMC, echo=TRUE, include=TRUE, message=T, warning=T}
+
+source('./code/bayes.R')
+
+ggsave.path <- "./code/output/"
+time <- "pm"
+
+# read the 9 models from disc and run diags
+gg.list <- modelMCMCcheck(path=ggsave.path, daytime=time, debug=FALSE)
+
+for (i in 1:length(gg.list)) {
+  
+  print(gg.list[[i]])
+
+  ggsave(paste("ggsave.mcmcCheck.", i, ".pdf", sep=""), plot = gg.list[[i]], 
+              device = NULL, path = ggsave.path,
+              scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+              units = c("in", "cm", "mm"))
+}
+
 
 ```
 
@@ -334,6 +363,28 @@ for (i in 1:length(gg.list)) {
 ```
 
 
+```{r clusterAltModels, echo=TRUE, include=TRUE, message=T, warning=T}
+
+source('./code/bayes.R')
+
+ggsave.path <- "./code/output/"
+daytime <- "pm"
+seed <- 10
+
+# read the 9 models from disc and run diags
+gg.list <- modelComparison(path=ggsave.path, daytime='pm', randomSeed=seed)
+
+for (i in 1:length(gg.list)) {
+  
+  print(gg.list[[i]])
+
+  ggsave(paste("ggsave.clusterAltModels.", i, ".pdf", sep=""), plot = gg.list[[i]], 
+              device = NULL, path = ggsave.path,
+              scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+              units = c("in", "cm", "mm"))
+}
+
+```
 
 
 
