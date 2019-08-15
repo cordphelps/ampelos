@@ -221,18 +221,18 @@ modelDiagsV2 <- function(daytime, hp, path) {
   modelTime[[2]] <- "seasonal timeframe: weeks 26-31"      # model #2 
   modelTime[[3]] <- "seasonal timeframe: weeks 32-34"    # model #3 
 
-  combo.df <- list()
+  #combo.df <- list()
 
   for (j in 1:9) {   
 
     # adjust hypothetical population by seasonal timeframe 
-      if ((j == 1) || (j == 4) || (j == 7)) {
-        hPop <- hp[[1]]
-      } else if ((j == 2) || (j == 5) || (j == 8)) {
-        hPop <- hp[[2]]
-      } else {
-        hPop <- hp[[3]]
-      }  
+    if ((j == 1) || (j == 4) || (j == 7)) {
+      hPop <- hp[[1]]
+    } else if ((j == 2) || (j == 5) || (j == 8)) {
+      hPop <- hp[[2]]
+    } else {
+      hPop <- hp[[3]]
+    }  
 
     post.df.list[[j]] <- post.df.list[[j]] %>%   
           mutate(trappedSpiders_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log(hPop) ),
@@ -240,13 +240,13 @@ modelDiagsV2 <- function(daytime, hp, path) {
           mutate(diff        = (trappedSpiders_high - trappedSpiders_low) / trappedSpiders_low )
 
      # add a cluster indicator for the graphics
-      if ((j == 1) || (j == 4) || (j == 7)) {
-        post.df.list[[j]] <- post.df.list[[j]] %>% mutate(cluster = '1')
-      } else if ((j == 2) || (j == 5) || (j == 8)) {
-        post.df.list[[j]] <- post.df.list[[j]] %>% mutate(cluster = '2')
-      } else {
-        post.df.list[[j]] <- post.df.list[[j]] %>% mutate(cluster = '3')
-      }
+    if ((j == 1) || (j == 4) || (j == 7)) {
+      post.df.list[[j]] <- post.df.list[[j]] %>% mutate(cluster = '1')
+    } else if ((j == 2) || (j == 5) || (j == 8)) {
+      post.df.list[[j]] <- post.df.list[[j]] %>% mutate(cluster = '2')
+    } else {
+      post.df.list[[j]] <- post.df.list[[j]] %>% mutate(cluster = '3')
+    }
 
       names(post.df.list[[j]])[names(post.df.list[[j]])=='b_contact_high'] <- 'bc'
       names(post.df.list[[j]])[names(post.df.list[[j]])=='b_log_pop:contact_high'] <- 'bpc'
@@ -263,19 +263,19 @@ modelDiagsV2 <- function(daytime, hp, path) {
     df3=post.df.list[[9]], mt = modelTime[[3]])
 
 
-  gg.tmp.list <- plotPosteriorJitter(df1= post.df.list[[1]], df2= post.df.list[[2]], df3=post.df.list[[3]], mt = modelTime[[1]])
+  gg.tmp.list <- plotPosteriorJitterV2(df1= post.df.list[[1]], df2= post.df.list[[2]], df3=post.df.list[[3]], mt = modelTime[[1]])
 
   gg.list[[4]] <- gg.tmp.list[[1]]
   gg.list[[5]] <- gg.tmp.list[[2]]
   gg.list[[6]] <- gg.tmp.list[[3]]
 
-  gg.tmp.list <- plotPosteriorJitter(df1= post.df.list[[4]], df2= post.df.list[[5]], df3=post.df.list[[6]], mt = modelTime[[2]])
+  gg.tmp.list <- plotPosteriorJitterV2(df1= post.df.list[[4]], df2= post.df.list[[5]], df3=post.df.list[[6]], mt = modelTime[[2]])
 
   gg.list[[7]] <- gg.tmp.list[[1]]
   gg.list[[8]] <- gg.tmp.list[[2]]
   gg.list[[9]] <- gg.tmp.list[[3]]
 
-  gg.tmp.list <- plotPosteriorJitter(df1= post.df.list[[7]], df2= post.df.list[[8]], df3=post.df.list[[9]], mt = modelTime[[3]])
+  gg.tmp.list <- plotPosteriorJitterV2(df1= post.df.list[[7]], df2= post.df.list[[8]], df3=post.df.list[[9]], mt = modelTime[[3]])
 
   gg.list[[10]] <- gg.tmp.list[[1]]
   gg.list[[11]] <- gg.tmp.list[[2]]
@@ -286,112 +286,62 @@ modelDiagsV2 <- function(daytime, hp, path) {
 
 }
 
+plotPosteriorJitterV2 <- function(df1, df2, df3, mt) {
 
-plotPosteriorJitter <- function(df1, df2, df3, mt) {
+  colours = c("1" = "red", "2" = "green", "3" = "blue")
 
+  gg.list <- list()
 
-    colours = c("1" = "red", "2" = "green", "3" = "blue")
+  gg.list[[1]] <- justJitterPlot(df1, mt)
+  gg.list[[2]] <- justJitterPlot(df2, mt)
+  gg.list[[3]] <- justJitterPlot(df3, mt)
 
-    gg.list <- list()
-
-    gg.list[[1]] <- ggplot() + 
-
-    geom_jitter(data=df1, aes(x=bc, y=bpc, fill = cluster), shape=21, size=2, alpha=.3, 
-      show.legend=TRUE) +
-      # ggplot2 issue # 3460 
-      # https://github.com/tidyverse/ggplot2/issues/3460
-      # show.legend=TRUE, key_glyph = draw_key_dotplot(data=data.frame(), size=5)) +
-    
-    scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
-    scale_x_continuous(breaks=seq(-15,5,5)) + 
-    
-    labs(y="bpc", 
-         x="bc", 
-         caption = paste("the joint posterior distribution of bc and bpc\n", mt, sep="") ) +
-    
-    theme_bw() +
-
-    scale_fill_manual(values = colours, 
-                      breaks = c("1", "2", "3"),
-                      labels = c("cluster 1", "cluster 2", "cluster 3")) +
-    scale_shape_manual(
-                      values = 21) +
-    
-    theme(legend.title = element_blank(),
-          legend.spacing.y = unit(0, "mm"), 
-          legend.justification=c(1,0),
-          panel.border = element_rect(colour = "black", fill=NA),
-          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
-          legend.background = element_blank(),
-          legend.box.background = element_rect(colour = "black")) 
-
-    gg.list[[2]] <- ggplot() + 
-
-    geom_jitter(data=df2, aes(x=bc, y=bpc, fill = cluster), shape=21, size=1, alpha=.3, show.legend=TRUE) +
-    
-    scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
-    scale_x_continuous(breaks=seq(-15,5,5)) + 
-    
-    #labs(title=paste("the joint posterior distribution of bc and bpc", sep=""),
-         #subtitle=paste(mt, sep=""),
-    labs(y="bpc", 
-         x="bc", 
-         caption = paste("the joint posterior distribution of bc and bpc\n", mt, sep="") ) +
-    
-    theme_bw() +
-
-    scale_fill_manual(values = colours, 
-                      breaks = c("1", "2", "3"),
-                      labels = c("cluster 1", "cluster 2", "cluster 3")) +
-    scale_shape_manual(
-                      values = 21) +
-    
-    theme(legend.title = element_blank(),
-          legend.spacing.y = unit(0, "mm"), 
-          legend.justification=c(1,0),
-          panel.border = element_rect(colour = "black", fill=NA),
-          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
-          legend.background = element_blank(),
-          legend.box.background = element_rect(colour = "black")) 
-
-    gg.list[[3]] <- ggplot() + 
-
-    geom_jitter(data=df3, aes(x=bc, y=bpc, fill = cluster), shape=21, size=1, alpha=.3, show.legend=TRUE) +
-    
-    scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
-    scale_x_continuous(breaks=seq(-15,5,5)) + 
-    
-    #labs(title=paste("the joint posterior distribution of bc and bpc", sep=""),
-         #subtitle=paste(mt, sep=""), 
-    labs(y="bpc", 
-         x="bc", 
-         caption = paste("the joint posterior distribution of bc and bpc\n", mt, sep="") ) +
-    
-    theme_bw() +
-
-    scale_fill_manual(values = colours, 
-                      breaks = c("1", "2", "3"),
-                      labels = c("cluster 1", "cluster 2", "cluster 3")) +
-    scale_shape_manual(
-                      values = 21) +
-    
-    theme(legend.title = element_blank(),
-          legend.spacing.y = unit(0, "mm"), 
-          legend.justification=c(1,0),
-          panel.border = element_rect(colour = "black", fill=NA),
-          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
-          legend.background = element_blank(),
-          legend.box.background = element_rect(colour = "black")) 
-
-
-
-    return(gg.list)
-
+  return(gg.list)
 
 }
 
-plotPosteriorDensity <- function(df1, df2, df3, mt) {
+justJitterPlot <- function(df, mt) {
 
+    gg <- ggplot() + 
+
+    geom_jitter(data=df, aes(x=bc, y=bpc, fill = cluster), shape=21, size=2, alpha=.3, 
+      show.legend=TRUE) +
+
+      # ggplot2 issue # 3460 
+      # https://github.com/tidyverse/ggplot2/issues/3460
+      # show.legend=TRUE, key_glyph = draw_key_dotplot(data=data.frame(), size=5)) +
+
+    guides(fill = guide_legend(override.aes = list(size = 5, alpha = 1))) + 
+    
+    scale_y_continuous(breaks = seq(min(0), max(2), by = 1)) +
+    scale_x_continuous(breaks=seq(-15,5,5)) + 
+    
+    labs(y="bpc", 
+         x="bc", 
+         caption = paste("the joint posterior distribution of bc and bpc\n", mt, sep="") ) +
+    
+    theme_bw() +
+
+    scale_fill_manual(values = c("1" = "red", "2" = "green", "3" = "blue"), 
+                      breaks = c("1", "2", "3"),
+                      labels = c("cluster 1", "cluster 2", "cluster 3")) +
+
+    scale_shape_manual(values = 21) +
+    
+    theme(legend.title = element_blank(),
+          legend.spacing.y = unit(0, "mm"), 
+          legend.justification=c(1,0),
+          panel.border = element_rect(colour = "black", fill=NA),
+          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black")) 
+
+    return(gg)
+
+}
+
+
+plotPosteriorDensity <- function(df1, df2, df3, mt) {
 
     colours = c("1" = "red", "2" = "green", "3" = "blue")
 
@@ -952,7 +902,8 @@ modelMCMCcheck <- function(path, daytime, debug) {
 
   for (i in 1:length(modelOutput)) { 
 
-    modeltransformed<-ggs(modelOutput[[i]]) # the ggs function transforms the BRMS output into a longformat tibble, that we can use to make different types of plots.
+    modeltransformed<-ggs(modelOutput[[i]]) # the ggs function transforms the BRMS output into a longformat tibble, 
+                                            # that we can use to make different types of plots.
 
     gg.list[[i]] <- ggplot(filter(modeltransformed, Parameter==c("b_Intercept", "b_log_pop", "b_contact_high", "b_log_pop:b_contact_high"), 
                                   Iteration>1000), aes(x=Iteration, y=value, col=as.factor(Chain))) +
