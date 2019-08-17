@@ -273,7 +273,7 @@ for (i in 1:length(gg.list)) {
 
 ### compare variations of the basic model to determine which parameters are most meaningful. 
 
-#### (none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap)
+#### (none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap) .
 
 ```{r clusterAltModels, echo=FALSE, include=TRUE, message=F, warning=T}
 
