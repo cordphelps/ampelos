@@ -4,7 +4,7 @@
 # objective: classify (determine clusters of) the trap locations containing crab spiders 
 # for a week/transect
 
-kmReduce <- function(df, ft, fw, fs, intWeek) {
+kmReduce <- function(df, ft, fw, fs, intWeek, daytime) {
 
 # filter data based on transect, week, and species presence
 
@@ -27,11 +27,12 @@ kmReduce <- function(df, ft, fw, fs, intWeek) {
 
 
 	data <- df %>%
-      #dplyr::filter(transect == !! t, week == !! w) %>%    # get all traps with spiders for transect/week
-	  dplyr::filter_(ft) %>%
-	  dplyr::filter_(fw) %>%
-      dplyr::filter_(fs) %>%  # https://stackoverflow.com/questions/36647468/creating-a-function-with-an-argument-passed-to-dplyrfilter-what-is-the-best-wa
-      dplyr::select(row, position, week, transect) 
+		dplyr::filter(time==daytime) %>%
+      	#dplyr::filter(transect == !! t, week == !! w) %>%    # get all traps with spiders for transect/week
+	  	dplyr::filter_(ft) %>%
+	  	dplyr::filter_(fw) %>%
+      	dplyr::filter_(fs) %>%  # https://stackoverflow.com/questions/36647468/creating-a-function-with-an-argument-passed-to-dplyrfilter-what-is-the-best-wa
+      	dplyr::select(row, position, week, transect) 
 
       		#  !! transect
 			# The bang bang says we want the expression that item is referring to, not item itself.
@@ -146,7 +147,7 @@ getClusters <- function(data) {
 
 }
 
-kmPlot <- function(list, transectText) {
+kmPlot <- function(list, transectText, time) {
 
 	#list <- datalist
   
@@ -204,8 +205,8 @@ kmPlot <- function(list, transectText) {
         #subtitle=paste("transect: ", transectText, sep=""),
       	labs(x="week number", 
           y="trap position", 
-          caption = paste("crab spider clusters: ", "transect: ", transectText, 
-          					" (data for weeks 33-34 is too sparse)", sep="") ) +
+          caption = paste("crab spider clusters\n", "transect: ", transectText, ", daytime: ", time,  
+          					"\n(data for weeks 33-34 is too sparse)", sep="") ) +
     
     # https://en.wikipedia.org/wiki/K-means_clustering
 
@@ -227,7 +228,7 @@ kmPlot <- function(list, transectText) {
 
 }
 
-buildClustersByWeek <- function(df, t, species, cn) {
+buildClustersByWeek <- function(df, t, species, cn, time) {
 
 	#df <- bugs.df
 	#i <- 1
@@ -262,7 +263,7 @@ buildClustersByWeek <- function(df, t, species, cn) {
 			#weekExp <- parse(text = weekString)                    # filter by week
 																	 # http://adv-r.had.co.nz/Expressions.html#parsing-and-deparsing
 
-			dataList[[i]] <- kmReduce(df, ft=formula.t, fw=formula.w, fs=formula.s, intWeek=w)
+			dataList[[i]] <- kmReduce(df, ft=formula.t, fw=formula.w, fs=formula.s, intWeek=w, daytime=time)
 
 			clusterList <- dataList[[i]]
 

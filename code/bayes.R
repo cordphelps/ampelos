@@ -908,6 +908,7 @@ modelMCMCcheck <- function(path, daytime, debug) {
     gg.list[[i]] <- ggplot(filter(modeltransformed, Parameter==c("b_Intercept", "b_log_pop", "b_contact_high", "b_log_pop:b_contact_high"), 
                                   Iteration>1000), aes(x=Iteration, y=value, col=as.factor(Chain))) +
                             geom_line() +
+                            theme_bw() +
                             facet_grid(Parameter ~ .,scale='free_y',switch = 'y') +
                             labs(caption="caterpillar plots", col= "chains")
 
@@ -1042,7 +1043,7 @@ modelComparison <- function(path, daytime, randomSeed, debug) {
           geom_pointrange(shape = 21, size=1, fill=color, show.legend = F) + 
           coord_flip() +
           labs(x = NULL, y = NULL,
-                caption = paste("WAIC", "\nseasonal timeframe: ", timeframe, "\ncluster: ", cluster, "\ni= ", i, sep="") ) +
+                caption = paste("Watanabe-Akaike Information Criterion", "\nseasonal timeframe: ", timeframe, "\ncluster: ", cluster, "\ni= ", i, sep="") ) +
           theme(axis.ticks.y    = element_blank())
 
 

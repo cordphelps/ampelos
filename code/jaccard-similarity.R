@@ -340,6 +340,7 @@ getWeeks <- function(data) {
 	# https://stackoverflow.com/questions/29832411/use-dplyr-to-get-values-of-a-column
 
 	library(dplyr)
+
 	weeks <- data %>%
    				select(week) %>%
    				unique() %>% 

@@ -5,10 +5,10 @@ output: github_document
 
 ![landscape](./photos/landscapeOak.JPG)
 
-## how does a 'natural habitat' field margin influence the population of beneficial insects in an organic vineyard?
+## how does a 'semi-natural habitat' (SNH) field margin influence the population of beneficial insects in an organic vineyard?
 
 
-```{r setup, echo=T, message=F, warning=F}
+```{r setup, echo=FALSE, message=F, warning=T}
 
 source("./code/bug-library.R")
 source("./code/similarity.R")
@@ -32,7 +32,7 @@ bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 ### weekly composition of species and individuals?
 
 
-```{r insectPop, echo=TRUE, include=TRUE, message=F, warning=F }
+```{r insectPop, echo=FALSE, include=TRUE, message=F, warning=T }
 
 ggsave.path <- "./code/output/"
 
@@ -61,137 +61,9 @@ ggsave("ggsave.insectPop.1.2.pdf", plot = gg, device = NULL, path = ggsave.path,
 
 
 
-```{r diversity, echo=TRUE, include=TRUE, message=F, warning=F}
+### 'big picture' data by time and transect
 
-# (fig.keep='none' suppresses the plots temporarily)
-
-gg.Ind.joint <- divV2(bugs.df, species=FALSE, ignoreBees=FALSE)
-
-print(gg.Ind.joint)
-
-gg.Species.joint <- divV2(bugs.df, species=TRUE, ignoreBees=FALSE)
-
-print(gg.Species.joint)
-
-```
-
-
-
-![transect layout](./images/transectLayout.jpg)
-
-
-### each of the two transects consists of 3 rows of 10 traps in each row. Is the total insect population relatively uniform among the 3 rows of a transect? Does this uniformity change over time? Compute the Jaccard Index for each week: the index *'is a statistic used for comparing the similarity and diversity of sample sets.'* 
-
-##### Note that *'... the SMC counts both mutual presences (when an attribute is present in both sets) and mutual absence (when an attribute is absent in both sets) as matches and compares it to the total number of attributes in the universe, whereas the Jaccard index only counts mutual presence as matches and compares it to the number of attributes that have been chosen by at least one of the two sets.'* (https://en.wikipedia.org/wiki/Jaccard_index)
-
-
-
-```{r similarity, echo=TRUE, include=TRUE, message=F, warning=F }
-
-library(dplyr)
-
-gOak <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
-                                  t="oakMargin",
-                                  transectText="oakMargin")
-
-gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
-                                  t="control",
-                                  transectText="control")
-
-
-```
-
-
-### the crab spider is a dominant species in the vineyard. How are they distributed along the length of the row? 
-
-#### TO-DO: develop and apply normalization method
-
-```{r ridges, echo=TRUE, include=TRUE, message=F, warning=F}
-
-new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
-
-v2.1 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="crab spider", when="pm", wk=1, caption=Sys.Date())
-
-print(v2.1)
-
-v2.2 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="crab spider", when="am", wk=1, caption=Sys.Date())
-
-print(v2.2)
-
-```
-
-
-### is there a difference in the spider populations for the two transects?
-
-
-```{r overheadCompare, echo=TRUE, include=TRUE, message=F, warning=F}
-
-ggsave.path <- "./code/output/"
-
-reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(24), species=quo(Thomisidae..crab.spider.))
-
-g24 <- plotBugDistribution(data=reducedData.df, 
-                          cap=paste("crab spider occurrences", " week 24", sep=""))
-
-ggsave("ggsave.overheadCompare.2.1.pdf", plot = g24, device = NULL, path = ggsave.path,
-       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
-       units = c("in", "cm", "mm"))
-
-reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(30), species=quo(Thomisidae..crab.spider.))
-
-g30 <- plotBugDistribution(data=reducedData.df, 
-                            cap=paste("crab spider occurrences", " week 30", sep=""))
-
-ggsave("ggsave.overheadCompare.2.2.pdf", plot = g30, device = NULL, path = ggsave.path,
-       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
-       units = c("in", "cm", "mm"))
-
-# g <- arrangeGrob(g1, g2, nrow=1)
-
-```
-
-### are clusters appearing and do they persist across multiple weeks?
-
-```{r overheadClusters, echo=TRUE, include=TRUE, results="hide", message=F, warning=F}
-
-ggsave.path <- "./code/output/"
-
-clusterNumber <- 3
-df <- bugs.df
-species <- "Thomisidae..crab.spider."
-
-dataList <- buildClustersByWeek(df, t="control", species="Thomisidae..crab.spider.", cn=clusterNumber)
-
-cl1.gg <- kmPlot(list=dataList, transectText="control")
-
-dataList <- buildClustersByWeek(df, t="oakMargin", species="Thomisidae..crab.spider.", cn=clusterNumber)
-
-cl2.gg <- kmPlot(list=dataList, transectText="oakMargin")
-
-print(cl1.gg)
-
-print(cl2.gg)
-
-ggsave("ggsave.overheadClusters.2.1.pdf", plot = cl1.gg, device = NULL, path = ggsave.path,
-       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
-       units = c("in", "cm", "mm"))
-
-ggsave("ggsave.overheadClusters.2.2.pdf", plot = cl2.gg, device = NULL, path = ggsave.path,
-       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
-       units = c("in", "cm", "mm"))
-
-
-```
-
-
-
-
-#### (control cluster #2 is slightly wider than oakMargin cluster #2)
-
-
-### 'big picture' data by cluster, time, and transect
-
-```{r bigPicture, echo=TRUE, include=TRUE, results="hide", message=F, warning=F}
+```{r bigPicture, echo=FALSE, include=TRUE, results="hide", message=F, warning=T}
 
 ggsave.path <- "./code/output/"
 
@@ -221,12 +93,13 @@ if (TRUE) {
 # returnList[[10]]  # reserved for post.df.list (posterior distributions)
 # returnList[[11]]  # reserved for mean population for 9 models
 
-  
+if (FALSE) {
   print(returnList[[1]]) # scatter plot by cluster with seasonal timeframes
   
   ggsave("ggsave.bigPicture.3.1.pdf", plot = returnList[[1]], device = NULL, path = ggsave.path,
        scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
        units = c("in", "cm", "mm"))
+}
   
   print(returnList[[2]]) # scatter plot by am/pm
   
@@ -250,14 +123,58 @@ if (TRUE) {
 ```
 
 
-### How plausible is it that a "high contact" (the "oakMargin") transect row will have more trapped spiders than a "low contact" (the control) transect row?
 
-#### create 9 models, one for each cluster and seasonal timeframe, based on the
-#### Oceanic Tool Complexity model of Kline
-#### the model predicts the rate of trapped spiders
-#### model parameters are log(population), contact rate, and the interaction of both
+### are clusters appearing and do they persist across multiple weeks?
 
-```{r clusterBayes, echo=FALSE, message=TRUE, warning=TRUE}
+#### (yes, using the kmeans() algorithm, clusters interpreted as follows: cluster 1 is rows 1-4, cluster 2 is rows 5-7, and cluster 3 is rows 8-10. this assessment is hardcoded in evaluateDailySpiderCounts() )
+
+```{r overheadClusters, echo=FALSE, include=TRUE, results="hide", message=F, warning=T}
+
+source("./code/jaccard-similarity.R")
+source("./code/k-means.R")
+
+ggsave.path <- "./code/output/"
+daytime <- "pm"
+
+clusterNumber <- 3
+df <- bugs.df
+species <- "Thomisidae..crab.spider."
+
+dataList <- buildClustersByWeek(df, t="control", species="Thomisidae..crab.spider.", cn=clusterNumber, time=daytime)
+
+cl1.gg <- kmPlot(list=dataList, transectText="control", time=daytime)
+
+dataList <- buildClustersByWeek(df, t="oakMargin", species="Thomisidae..crab.spider.", cn=clusterNumber, time=daytime)
+
+cl2.gg <- kmPlot(list=dataList, transectText="SNH", time=daytime)
+
+print(cl1.gg)
+
+print(cl2.gg)
+
+fileName <- "ggsave.overheadClusters.2.1.pdf"
+if (file.exists(fileName)) { file.remove(fileName) }
+
+ggsave(fileName, plot = cl1.gg, device = NULL, path = ggsave.path,
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+
+fileName <- "ggsave.overheadClusters.2.2.pdf"
+if (file.exists(fileName)) { file.remove(fileName) }
+
+ggsave(fileName, plot = cl2.gg, device = NULL, path = ggsave.path,
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+
+
+```
+
+
+### How plausible is it that a "high contact" ("SNH") transect row will have more trapped spiders than a "low contact" (control) transect row?
+
+#### create 9 models, one for each cluster and seasonal timeframe, based on the Oceanic Tool Complexity model of Kline. The model predicts the rate of trapped spiders, model parameters are log(population), contact rate, and the interaction of both
+
+```{r clusterBayes, echo=FALSE, message=F, warning=TRUE}
 
 source('./code/bayes.R')
 
@@ -322,7 +239,9 @@ rl <- returnList
 
 ### mcmc for the models seem reasonable?
 
-```{r clusterMCMC, echo=TRUE, include=TRUE, message=T, warning=T}
+#### yes, trace plots suggest convergence of the chains that form the model parameter posterior distributions (https://www.rensvandeschoot.com/brms-wambs/ paragraph 2)
+
+```{r clusterMCMC, echo=FALSE, include=TRUE, message=F, warning=T}
 
 source('./code/bayes.R')
 
@@ -352,9 +271,11 @@ for (i in 1:length(gg.list)) {
 ```
 
 
-### what are the estimates for parameter coefficients?
+### compare variations of the basic model to determine which parameters are most meaningful. 
 
-```{r clusterAltModels, echo=TRUE, include=TRUE, message=T, warning=T}
+#### (none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap)
+
+```{r clusterAltModels, echo=FALSE, include=TRUE, message=F, warning=T}
 
 source('./code/bayes.R')
 
@@ -365,7 +286,7 @@ seed <- 10
 # read the 9 models from disc and run diags
 # (debug = TRUE for first model (not all 9) output only)
 
-gg.list <- modelComparison(path=ggsave.path, daytime='pm', randomSeed=seed, debug=TRUE)
+gg.list <- modelComparison(path=ggsave.path, daytime='pm', randomSeed=seed, debug=FALSE)
 
 for (i in 1:length(gg.list)) {
   
@@ -385,17 +306,14 @@ for (i in 1:length(gg.list)) {
 
 
 
-### evaluate the effect of "contact rate" on model prediction for 9 models: 3 clusters across 3 seasonal timeframes. 
-### assume the median spider population per vine varies by seasonal timeframe
-### per the results above
+### evaluate the effect of "contact rate" on model prediction for 9 models: 3 clusters across 3 seasonal timeframes. assume the median spider population per vine varies by seasonal timeframe per the results above
 
-#### calculate the expected rate of trapped spiders per vine for high
-#### and low contact environments
-#### normalize the difference in these two expected rates and plot
-#### the difference as an distribution
+#### calculate the posterior distribution of the expected rate of trapped spiders per vine for high and low contact environments, normalize the difference in these two expected rates and plot the difference. Do the distributions look reasonable?
+
+#### yes, the number of mcmc iterations seem sufficient as the distributions are single peaked and smooth. (https://www.rensvandeschoot.com/brms-wambs/ paragraph 4) They also have reasonable bounds.  (https://www.rensvandeschoot.com/brms-wambs/ paragraph 6)
 
 
-```{r clusterDiags, echo=TRUE, include=TRUE, message=T, warning=T}
+```{r clusterDiags, echo=FALSE, include=TRUE, message=F, warning=T}
 
 source('./code/bayes.R')
 
@@ -428,7 +346,7 @@ for (i in 1:length(gg.list)) {
 
 
 
-```{r kable1, results='asis', echo=FALSE, message=F, warning=F}
+```{r kable1, results='asis', echo=FALSE, message=F, warning=T}
 
 # knitr::kable(returnList[[5]])
 
@@ -437,7 +355,7 @@ for (i in 1:length(gg.list)) {
 
 ### how do the clusters compare to each other across multiple weeks?
 
-```{r clusterBoxPlots, echo=TRUE, include=TRUE, message=F, warning=F }
+```{r clusterBoxPlots, echo=FALSE, include=TRUE, message=F, warning=T }
 
 if (FALSE) {   
 ggsave.path <- "./code/output/"
@@ -526,7 +444,7 @@ if (FALSE) {
 ```
 
 
-```{r kableRanks, results='asis', echo=FALSE, message=F, warning=F}
+```{r kableRanks, results='asis', echo=FALSE, message=F, warning=T}
 
 # QA check of ranking dataframes
 
@@ -543,7 +461,7 @@ if (FALSE) {
 
 ### does the crab spider population appear to change over time? Is there a difference between the two transects?
 
-```{r pop-trends-am, echo=TRUE, include=TRUE, message=F, warning=F}
+```{r pop-trends-am, echo=TRUE, include=TRUE, message=F, warning=T}
 
 g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 
@@ -552,7 +470,7 @@ g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), 
 ```
 
 
-```{r pop-trends-pm, echo=TRUE, include=TRUE, message=F, warning=F}
+```{r pop-trends-pm, echo=FALSE, include=TRUE, message=F, warning=T}
 
 g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 
@@ -562,7 +480,26 @@ g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), 
 ```
 
 
-```{r population-trends-both, echo=TRUE, include=TRUE, message=F, warning=F}
+### the crab spider is a dominant species in the vineyard. How are they distributed along the length of the row? 
+
+
+```{r ridges, echo=FALSE, include=TRUE, message=F, warning=T}
+
+new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
+
+v2.1 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="crab spider", when="pm", wk=1, caption=Sys.Date())
+
+print(v2.1)
+
+v2.2 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="crab spider", when="am", wk=1, caption=Sys.Date())
+
+print(v2.2)
+
+```
+
+
+
+```{r population-trends-both, echo=FALSE, include=TRUE, message=F, warning=T}
 
 ggsave.path <- "./code/output/"
 
@@ -583,10 +520,82 @@ ggsave("ggsave.pop.trends.right.1.1.pdf", plot = g.gg.pm, device = NULL,
 ```
 
 
+![transect layout](./images/transectLayout.jpg)
+
+
+### each of the two transects consists of 3 rows of 10 traps in each row. Is the total insect population relatively uniform among the 3 rows of a transect? Does this uniformity change over time? Compute the Jaccard Index for each week: the index *'is a statistic used for comparing the similarity and diversity of sample sets.'* 
+
+##### Note that *'... the SMC counts both mutual presences (when an attribute is present in both sets) and mutual absence (when an attribute is absent in both sets) as matches and compares it to the total number of attributes in the universe, whereas the Jaccard index only counts mutual presence as matches and compares it to the number of attributes that have been chosen by at least one of the two sets.'* (https://en.wikipedia.org/wiki/Jaccard_index)
+
+
+
+```{r similarity, echo=FALSE, include=TRUE, message=F, warning=T }
+
+library(dplyr)
+
+gOak <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
+                                  t="oakMargin",
+                                  transectText="oakMargin")
+
+gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
+                                  t="control",
+                                  transectText="control")
+
+
+```
+
+
+### is there a difference in the spider populations for the two transects?
+
+
+```{r overheadCompare, echo=FALSE, include=TRUE, message=F, warning=T}
+
+ggsave.path <- "./code/output/"
+
+reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(24), species=quo(Thomisidae..crab.spider.))
+
+g24 <- plotBugDistribution(data=reducedData.df, 
+                          cap=paste("crab spider occurrences", " week 24", sep=""))
+
+ggsave("ggsave.overheadCompare.2.1.pdf", plot = g24, device = NULL, path = ggsave.path,
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+
+reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(30), species=quo(Thomisidae..crab.spider.))
+
+g30 <- plotBugDistribution(data=reducedData.df, 
+                            cap=paste("crab spider occurrences", " week 30", sep=""))
+
+ggsave("ggsave.overheadCompare.2.2.pdf", plot = g30, device = NULL, path = ggsave.path,
+       scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+       units = c("in", "cm", "mm"))
+
+# g <- arrangeGrob(g1, g2, nrow=1)
+
+```
+
+
+
+```{r diversity, echo=FALSE, include=TRUE, message=F, warning=T}
+
+# (fig.keep='none' suppresses the plots temporarily)
+
+gg.Ind.joint <- divV2(bugs.df, species=FALSE, ignoreBees=FALSE)
+
+print(gg.Ind.joint)
+
+gg.Species.joint <- divV2(bugs.df, species=TRUE, ignoreBees=FALSE)
+
+print(gg.Species.joint)
+
+```
+
+
+
 ### and the species counts?
 
 
-```{r kable2, results='asis', echo=FALSE, message=F, warning=F}
+```{r kable2, results='asis', echo=FALSE, message=F, warning=T}
 
 bugList <- colnames(bugs.df[,5:22])
 trim.tbl <- bugs.df %>% select(5:22) %>% colSums() %>% t()
@@ -604,7 +613,7 @@ knitr::kable(trim.tbl)
 
 ### how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
 
-```{r speciesMatrixOak, out.width = "100%", echo=TRUE, include=TRUE, message=F, warning=F }
+```{r speciesMatrixOak, out.width = "100%", echo=FALSE, include=TRUE, message=F, warning=T }
 
 m1 <- simMatrixV3(data=bugs.df, transect=quo("oakMargin"),
                                 transectText="oakMargin")
@@ -615,7 +624,7 @@ m1 <- simMatrixV3(data=bugs.df, transect=quo("oakMargin"),
 
 
 
-```{r speciesMatrixControl, out.width = "100%", echo=TRUE, include=TRUE, message=F, warning=F }
+```{r speciesMatrixControl, out.width = "100%", echo=FALSE, include=TRUE, message=F, warning=T }
 
 
 m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
