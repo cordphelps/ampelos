@@ -909,7 +909,7 @@ modelMCMCcheck <- function(path, daytime, debug) {
                                   Iteration>1000), aes(x=Iteration, y=value, col=as.factor(Chain))) +
                             geom_line() +
                             facet_grid(Parameter ~ .,scale='free_y',switch = 'y') +
-                            labs(caption="Caterpillar Plots", col= "Chains")
+                            labs(caption="caterpillar plots", col= "chains")
 
 
 
@@ -934,7 +934,7 @@ modelMCMCcheck <- function(path, daytime, debug) {
 
 }
 
-modelComparison <- function(path, daytime, randomSeed) {
+modelComparison <- function(path, daytime, randomSeed, debug) {
 
   # Statistical Rethinking, code 10.45 and Statistical Rethinking Recoded
 
@@ -1044,6 +1044,11 @@ modelComparison <- function(path, daytime, randomSeed) {
           labs(x = NULL, y = NULL,
                 caption = paste("WAIC", "\nseasonal timeframe: ", timeframe, "\ncluster: ", cluster, "\ni= ", i, sep="") ) +
           theme(axis.ticks.y    = element_blank())
+
+
+    if (debug) {
+      break
+    }
 
 
   }

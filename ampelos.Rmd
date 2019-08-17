@@ -250,7 +250,12 @@ if (TRUE) {
 ```
 
 
-### How plausible is it that an oakMargin transect row will have more spiders than a control transect row?
+### How plausible is it that a "high contact" (the "oakMargin") transect row will have more trapped spiders than a "low contact" (the control) transect row?
+
+#### create 9 models, one for each cluster and seasonal timeframe, based on the
+#### Oceanic Tool Complexity model of Kline
+#### the model predicts the rate of trapped spiders
+#### model parameters are log(population), contact rate, and the interaction of both
 
 ```{r clusterBayes, echo=FALSE, message=TRUE, warning=TRUE}
 
@@ -296,12 +301,16 @@ rl <- returnList
               populationAdjustmentFactor= 1.0)
     
 
-    for (i in 1:10) {
+    for (i in 1:length(gg.likelihood.pm.list)) {
       
       # plot the likelihood graph and 9 coefficient graphs
       print(gg.likelihood.pm.list[[i]])
       
-      ggsave(paste("ggsave.clusterBayes.", i, ".4.1.pdf", sep=""), 
+      fileName <- paste("ggsave.clusterBayes.", i, ".4.1.pdf", sep="")
+  
+      if (file.exists(fileName)) { file.remove(fileName) }
+      
+      ggsave(fileName, 
               plot = gg.likelihood.pm.list[[i]], 
               device = NULL, path = ggsave.path,
               scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
@@ -311,7 +320,7 @@ rl <- returnList
 ```
 
 
-### mcmc went ok?
+### mcmc for the models seem reasonable?
 
 ```{r clusterMCMC, echo=TRUE, include=TRUE, message=T, warning=T}
 
@@ -321,13 +330,19 @@ ggsave.path <- "./code/output/"
 time <- "pm"
 
 # read the 9 models from disc and run diags
-gg.list <- modelMCMCcheck(path=ggsave.path, daytime=time, debug=FALSE)
+# (debug = TRUE for first model (not all 9) output only)
+
+gg.list <- modelMCMCcheck(path=ggsave.path, daytime=time, debug=TRUE)
 
 for (i in 1:length(gg.list)) {
   
   print(gg.list[[i]])
+  
+  fileName <- paste("ggsave.mcmcCheck.", i, ".pdf", sep="")
+  
+  if (file.exists(fileName)) { file.remove(fileName) }
 
-  ggsave(paste("ggsave.mcmcCheck.", i, ".pdf", sep=""), plot = gg.list[[i]], 
+  ggsave(fileName, plot = gg.list[[i]], 
               device = NULL, path = ggsave.path,
               scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
               units = c("in", "cm", "mm"))
@@ -336,32 +351,8 @@ for (i in 1:length(gg.list)) {
 
 ```
 
-### model diagnostics?
 
-```{r clusterDiags, echo=TRUE, include=TRUE, message=T, warning=T}
-
-source('./code/bayes.R')
-
-ggsave.path <- "./code/output/"
-daytime <- "pm"
-hypotheticalPopulation <- c(76,47,1)  # hypothetical population by seasonal timeframe 
-
-# read the 9 models from disc and run diags
-gg.list <- modelDiagsV2(daytime='pm', hp=hypotheticalPopulation, path=ggsave.path)
-
-for (i in 1:length(gg.list)) {
-  
-  print(gg.list[[i]])
-
-  ggsave(paste("ggsave.clusterDiags.", i, ".4.2.pdf", sep=""), plot = gg.list[[i]], 
-              device = NULL, path = ggsave.path,
-              scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
-              units = c("in", "cm", "mm"))
-}
-
-
-```
-
+### what are the estimates for parameter coefficients?
 
 ```{r clusterAltModels, echo=TRUE, include=TRUE, message=T, warning=T}
 
@@ -372,19 +363,68 @@ daytime <- "pm"
 seed <- 10
 
 # read the 9 models from disc and run diags
-gg.list <- modelComparison(path=ggsave.path, daytime='pm', randomSeed=seed)
+# (debug = TRUE for first model (not all 9) output only)
+
+gg.list <- modelComparison(path=ggsave.path, daytime='pm', randomSeed=seed, debug=TRUE)
 
 for (i in 1:length(gg.list)) {
   
   print(gg.list[[i]])
+  
+  fileName <- paste("ggsave.clusterAltModels.", i, ".pdf", sep="")
+  
+  if (file.exists(fileName)) { file.remove(fileName) }
 
-  ggsave(paste("ggsave.clusterAltModels.", i, ".pdf", sep=""), plot = gg.list[[i]], 
+  ggsave(fileName, plot = gg.list[[i]], 
               device = NULL, path = ggsave.path,
               scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
               units = c("in", "cm", "mm"))
 }
 
 ```
+
+
+
+### evaluate the effect of "contact rate" on model prediction for 9 models: 3 clusters across 3 seasonal timeframes. 
+### assume the median spider population per vine varies by seasonal timeframe
+### per the results above
+
+#### calculate the expected rate of trapped spiders per vine for high
+#### and low contact environments
+#### normalize the difference in these two expected rates and plot
+#### the difference as an distribution
+
+
+```{r clusterDiags, echo=TRUE, include=TRUE, message=T, warning=T}
+
+source('./code/bayes.R')
+
+ggsave.path <- "./code/output/"
+daytime <- "pm"
+hypotheticalPopulation <- c(76,47,1)  # hypothetical per vine median population by seasonal timeframe 
+
+# read the 9 models from disc and run diags
+gg.list <- modelDiagsV2(daytime='pm', hp=hypotheticalPopulation, path=ggsave.path)
+
+for (i in 1:length(gg.list)) {
+  
+  print(gg.list[[i]])
+  
+  fileName <- paste("ggsave.clusterDiags.", i, ".4.2.pdf", sep="")
+  
+  if (file.exists(fileName)) { file.remove(fileName) }
+
+  ggsave(fileName, plot = gg.list[[i]], 
+              device = NULL, path = ggsave.path,
+              scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+              units = c("in", "cm", "mm"))
+}
+
+
+```
+
+
+
 
 
 
@@ -399,6 +439,7 @@ for (i in 1:length(gg.list)) {
 
 ```{r clusterBoxPlots, echo=TRUE, include=TRUE, message=F, warning=F }
 
+if (FALSE) {   
 ggsave.path <- "./code/output/"
 
 # strip out the other arthropods and misc stuff
@@ -480,7 +521,7 @@ if (FALSE) {
   bubbleClusterRanks(rankOakPM.df, "oakMargin", "am")
 
 }
-
+}
 
 ```
 

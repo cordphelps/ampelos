@@ -15,16 +15,11 @@ Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
          total post-warmup samples = 8000
 
 Population-Level Effects: 
-                     Estimate Est.Error l-89% CI u-89% CI Eff.Sample
-Intercept                1.53      5.60    -7.52    10.28       5687
-log_pop                  0.01      1.01    -1.57     1.65       5689
-contact_high            -0.00      0.99    -1.58     1.59       3541
-log_pop:contact_high     0.01      0.18    -0.28     0.30       3577
-                     Rhat
-Intercept            1.00
-log_pop              1.00
-contact_high         1.00
-log_pop:contact_high 1.00
+                     Estimate Est.Error l-89% CI u-89% CI Eff.Sample Rhat
+Intercept                1.53      5.60    -7.52    10.28       5687 1.00
+log_pop                  0.01      1.01    -1.57     1.65       5689 1.00
+contact_high            -0.00      0.99    -1.58     1.59       3541 1.00
+log_pop:contact_high     0.01      0.18    -0.28     0.30       3577 1.00
 
 Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
 is a crude measure of effective sample size, and Rhat is the potential 

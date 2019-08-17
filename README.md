@@ -3,8 +3,7 @@ ampelos
 
 ![landscape](./photos/landscapeOak.JPG)
 
-how does a 'natural habitat' field margin influence the population of beneficial insects in an organic vineyard?
-----------------------------------------------------------------------------------------------------------------
+## how does a ‘natural habitat’ field margin influence the population of beneficial insects in an organic vineyard?
 
 ``` r
 source("./code/bug-library.R")
@@ -39,7 +38,7 @@ gg <- plotBugPercentages(returnList, spidersOnly=FALSE)
 print(gg)
 ```
 
-![](ampelos_files/figure-markdown_github/insectPop-1.png)
+![](ampelos_files/figure-gfm/insectPop-1.png)<!-- -->
 
 ``` r
 ggsave("ggsave.insectPop.1.1.pdf", plot = gg, device = NULL, path = ggsave.path,
@@ -51,7 +50,7 @@ gg <- plotBugPercentages(returnList, spidersOnly=TRUE)
 print(gg)
 ```
 
-![](ampelos_files/figure-markdown_github/insectPop-2.png)
+![](ampelos_files/figure-gfm/insectPop-2.png)<!-- -->
 
 ``` r
 ggsave("ggsave.insectPop.1.2.pdf", plot = gg, device = NULL, path = ggsave.path,
@@ -67,7 +66,7 @@ gg.Ind.joint <- divV2(bugs.df, species=FALSE, ignoreBees=FALSE)
 print(gg.Ind.joint)
 ```
 
-![](ampelos_files/figure-markdown_github/diversity-1.png)
+![](ampelos_files/figure-gfm/diversity-1.png)<!-- -->
 
 ``` r
 gg.Species.joint <- divV2(bugs.df, species=TRUE, ignoreBees=FALSE)
@@ -75,13 +74,14 @@ gg.Species.joint <- divV2(bugs.df, species=TRUE, ignoreBees=FALSE)
 print(gg.Species.joint)
 ```
 
-![](ampelos_files/figure-markdown_github/diversity-2.png)
+![](ampelos_files/figure-gfm/diversity-2.png)<!-- -->
 
-![transect layout](./images/transectLayout.jpg)
+![transect
+layout](./images/transectLayout.jpg)
 
-### each of the two transects consists of 3 rows of 10 traps in each row. Is the total insect population relatively uniform among the 3 rows of a transect? Does this uniformity change over time? Compute the Jaccard Index for each week: the index *'is a statistic used for comparing the similarity and diversity of sample sets.'*
+### each of the two transects consists of 3 rows of 10 traps in each row. Is the total insect population relatively uniform among the 3 rows of a transect? Does this uniformity change over time? Compute the Jaccard Index for each week: the index *‘is a statistic used for comparing the similarity and diversity of sample sets.’*
 
-##### Note that *'... the SMC counts both mutual presences (when an attribute is present in both sets) and mutual absence (when an attribute is absent in both sets) as matches and compares it to the total number of attributes in the universe, whereas the Jaccard index only counts mutual presence as matches and compares it to the number of attributes that have been chosen by at least one of the two sets.'* (<https://en.wikipedia.org/wiki/Jaccard_index>)
+##### Note that *‘… the SMC counts both mutual presences (when an attribute is present in both sets) and mutual absence (when an attribute is absent in both sets) as matches and compares it to the total number of attributes in the universe, whereas the Jaccard index only counts mutual presence as matches and compares it to the number of attributes that have been chosen by at least one of the two sets.’* (<https://en.wikipedia.org/wiki/Jaccard_index>)
 
 ``` r
 library(dplyr)
@@ -91,7 +91,7 @@ gOak <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
                                   transectText="oakMargin")
 ```
 
-![](ampelos_files/figure-markdown_github/similarity-1.png)
+![](ampelos_files/figure-gfm/similarity-1.png)<!-- -->
 
 ``` r
 gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
@@ -99,7 +99,7 @@ gControl <- compareJaccardMultiWeekV4(data=bugs.df, ignoreBees=TRUE,
                                   transectText="control")
 ```
 
-![](ampelos_files/figure-markdown_github/similarity-2.png)
+![](ampelos_files/figure-gfm/similarity-2.png)<!-- -->
 
 ### the crab spider is a dominant species in the vineyard. How are they distributed along the length of the row?
 
@@ -113,7 +113,7 @@ v2.1 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="
 print(v2.1)
 ```
 
-![](ampelos_files/figure-markdown_github/ridges-1.png)
+![](ampelos_files/figure-gfm/ridges-1.png)<!-- -->
 
 ``` r
 v2.2 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="crab spider", when="am", wk=1, caption=Sys.Date())
@@ -121,7 +121,7 @@ v2.2 <- plotRidgesV2(data=new.df, combined=TRUE, bugs="newColumn", speciesText="
 print(v2.2)
 ```
 
-![](ampelos_files/figure-markdown_github/ridges-2.png)
+![](ampelos_files/figure-gfm/ridges-2.png)<!-- -->
 
 ### is there a difference in the spider populations for the two transects?
 
@@ -134,7 +134,7 @@ g24 <- plotBugDistribution(data=reducedData.df,
                           cap=paste("crab spider occurrences", " week 24", sep=""))
 ```
 
-![](ampelos_files/figure-markdown_github/overheadCompare-1.png)
+![](ampelos_files/figure-gfm/overheadCompare-1.png)<!-- -->
 
 ``` r
 ggsave("ggsave.overheadCompare.2.1.pdf", plot = g24, device = NULL, path = ggsave.path,
@@ -147,7 +147,7 @@ g30 <- plotBugDistribution(data=reducedData.df,
                             cap=paste("crab spider occurrences", " week 30", sep=""))
 ```
 
-![](ampelos_files/figure-markdown_github/overheadCompare-2.png)
+![](ampelos_files/figure-gfm/overheadCompare-2.png)<!-- -->
 
 ``` r
 ggsave("ggsave.overheadCompare.2.2.pdf", plot = g30, device = NULL, path = ggsave.path,
@@ -177,13 +177,13 @@ cl2.gg <- kmPlot(list=dataList, transectText="oakMargin")
 print(cl1.gg)
 ```
 
-![](ampelos_files/figure-markdown_github/overheadClusters-1.png)
+![](ampelos_files/figure-gfm/overheadClusters-1.png)<!-- -->
 
 ``` r
 print(cl2.gg)
 ```
 
-![](ampelos_files/figure-markdown_github/overheadClusters-2.png)
+![](ampelos_files/figure-gfm/overheadClusters-2.png)<!-- -->
 
 ``` r
 ggsave("ggsave.overheadClusters.2.1.pdf", plot = cl1.gg, device = NULL, path = ggsave.path,
@@ -197,7 +197,7 @@ ggsave("ggsave.overheadClusters.2.2.pdf", plot = cl2.gg, device = NULL, path = g
 
 #### (control cluster \#2 is slightly wider than oakMargin cluster \#2)
 
-### 'big picture' data by cluster, time, and transect
+### ‘big picture’ data by cluster, time, and transect
 
 ``` r
 ggsave.path <- "./code/output/"
@@ -254,20 +254,31 @@ if (TRUE) {
 }
 ```
 
-![](ampelos_files/figure-markdown_github/bigPicture-1.png)![](ampelos_files/figure-markdown_github/bigPicture-2.png)![](ampelos_files/figure-markdown_github/bigPicture-3.png)
+![](ampelos_files/figure-gfm/bigPicture-1.png)<!-- -->![](ampelos_files/figure-gfm/bigPicture-2.png)<!-- -->![](ampelos_files/figure-gfm/bigPicture-3.png)<!-- -->
 
-### How plausible is it that an oakMargin transect row will have more spiders than a control transect row?
+### How plausible is it that a “high contact” (the “oakMargin”) transect row will have more trapped spiders than a “low contact” (the control) transect row?
+
+#### create 9 models, one for each cluster and seasonal timeframe, based on the
+
+#### Oceanic Tool Complexity model of Kline
+
+#### the model predicts the rate of trapped spiders
+
+#### model parameters are log(population), contact rate, and the interaction of both
 
     ## Loading required package: Rcpp
 
-    ## Loading 'brms' package (version 2.6.0). Useful instructions
+    ## Registered S3 method overwritten by 'xts':
+    ##   method     from
+    ##   as.zoo.xts zoo
+
+    ## Loading 'brms' package (version 2.9.0). Useful instructions
     ## can be found by typing help('brms'). A more detailed introduction
     ## to the package is available through vignette('brms_overview').
-    ## Run theme_set(theme_default()) to use the default bayesplot theme.
 
     ## Loading required package: StanHeaders
 
-    ## rstan (Version 2.17.3, GitRev: 2e1f913d3ca3)
+    ## rstan (Version 2.19.2, GitRev: 2e1f913d3ca3)
 
     ## For execution on a local, multicore CPU with excess RAM we recommend calling
     ## options(mc.cores = parallel::detectCores()).
@@ -281,7 +292,7 @@ if (TRUE) {
     ## 
     ##     extract
 
-    ## This is bayesplot version 1.6.0
+    ## This is bayesplot version 1.7.0
 
     ## - Online documentation and vignettes at mc-stan.org/bayesplot
 
@@ -296,61 +307,78 @@ if (TRUE) {
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterBayes-1.png)
+![](ampelos_files/figure-gfm/clusterBayes-1.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterBayes-2.png)
+![](ampelos_files/figure-gfm/clusterBayes-2.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterBayes-3.png)
+![](ampelos_files/figure-gfm/clusterBayes-3.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterBayes-4.png)
+![](ampelos_files/figure-gfm/clusterBayes-4.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterBayes-5.png)
+![](ampelos_files/figure-gfm/clusterBayes-5.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterBayes-6.png)
+![](ampelos_files/figure-gfm/clusterBayes-6.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterBayes-7.png)
+![](ampelos_files/figure-gfm/clusterBayes-7.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterBayes-8.png)
+![](ampelos_files/figure-gfm/clusterBayes-8.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterBayes-9.png)
+![](ampelos_files/figure-gfm/clusterBayes-9.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterBayes-10.png)
+![](ampelos_files/figure-gfm/clusterBayes-10.png)<!-- -->
 
-### model diagnostics?
+### mcmc for the models seem reasonable?
 
 ``` r
 source('./code/bayes.R')
 
 ggsave.path <- "./code/output/"
-daytime <- "pm"
-hypotheticalPopulation <- c(76,47,1)  # hypothetical population by seasonal timeframe 
+time <- "pm"
 
 # read the 9 models from disc and run diags
-gg.list <- modelDiagsV2(daytime='pm', hp=hypotheticalPopulation, path=ggsave.path)
+# (debug = TRUE for first model (not all 9) output only)
 
+gg.list <- modelMCMCcheck(path=ggsave.path, daytime=time, debug=TRUE)
+```
+
+    ## Loading 'brms' package (version 2.9.0). Useful instructions
+    ## can be found by typing help('brms'). A more detailed introduction
+    ## to the package is available through vignette('brms_overview').
+
+    ## Registered S3 method overwritten by 'GGally':
+    ##   method from   
+    ##   +.gg   ggplot2
+
+    ## Loading required package: coda
+
+``` r
 for (i in 1:length(gg.list)) {
   
   print(gg.list[[i]])
+  
+  fileName <- paste("ggsave.mcmcCheck.", i, ".pdf", sep="")
+  
+  if (file.exists(fileName)) { file.remove(fileName) }
 
-  ggsave(paste("ggsave.clusterDiags.", i, ".4.2.pdf", sep=""), plot = gg.list[[i]], 
+  ggsave(fileName, plot = gg.list[[i]], 
               device = NULL, path = ggsave.path,
               scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
               units = c("in", "cm", "mm"))
@@ -359,55 +387,166 @@ for (i in 1:length(gg.list)) {
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterDiags-1.png)
+![](ampelos_files/figure-gfm/clusterMCMC-1.png)<!-- -->
+
+### what are the estimates for parameter coefficients?
+
+``` r
+source('./code/bayes.R')
+
+ggsave.path <- "./code/output/"
+daytime <- "pm"
+seed <- 10
+
+# read the 9 models from disc and run diags
+# (debug = TRUE for first model (not all 9) output only)
+
+gg.list <- modelComparison(path=ggsave.path, daytime='pm', randomSeed=seed, debug=TRUE)
+```
+
+    ## Loading 'brms' package (version 2.9.0). Useful instructions
+    ## can be found by typing help('brms'). A more detailed introduction
+    ## to the package is available through vignette('brms_overview').
+
+    ## rstan (Version 2.19.2, GitRev: 2e1f913d3ca3)
+
+    ## For execution on a local, multicore CPU with excess RAM we recommend calling
+    ## options(mc.cores = parallel::detectCores()).
+    ## To avoid recompilation of unchanged Stan programs, we recommend calling
+    ## rstan_options(auto_write = TRUE)
+
+    ## 
+    ## Attaching package: 'rstan'
+
+    ## The following object is masked from 'package:coda':
+    ## 
+    ##     traceplot
+
+    ## The following object is masked from 'package:tidyr':
+    ## 
+    ##     extract
+
+    ## Start sampling
+    ## Start sampling
+    ## Start sampling
+
+    ## The desired updates require recompiling the model
+
+    ## Compiling the C++ model
+
+    ## Start sampling
+
+``` r
+for (i in 1:length(gg.list)) {
+  
+  print(gg.list[[i]])
+  
+  fileName <- paste("ggsave.clusterAltModels.", i, ".pdf", sep="")
+  
+  if (file.exists(fileName)) { file.remove(fileName) }
+
+  ggsave(fileName, plot = gg.list[[i]], 
+              device = NULL, path = ggsave.path,
+              scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+              units = c("in", "cm", "mm"))
+}
+```
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterDiags-2.png)
+![](ampelos_files/figure-gfm/clusterAltModels-1.png)<!-- -->
+
+### evaluate the effect of “contact rate” on model prediction for 9 models: 3 clusters across 3 seasonal timeframes.
+
+### assume the median spider population per vine varies by seasonal timeframe
+
+### per the results above
+
+#### calculate the expected rate of trapped spiders per vine for high
+
+#### and low contact environments
+
+#### normalize the difference in these two expected rates and plot
+
+#### the difference as an distribution
+
+``` r
+source('./code/bayes.R')
+
+ggsave.path <- "./code/output/"
+daytime <- "pm"
+hypotheticalPopulation <- c(76,47,1)  # hypothetical per vine median population by seasonal timeframe 
+
+# read the 9 models from disc and run diags
+gg.list <- modelDiagsV2(daytime='pm', hp=hypotheticalPopulation, path=ggsave.path)
+
+for (i in 1:length(gg.list)) {
+  
+  print(gg.list[[i]])
+  
+  fileName <- paste("ggsave.clusterDiags.", i, ".4.2.pdf", sep="")
+  
+  if (file.exists(fileName)) { file.remove(fileName) }
+
+  ggsave(fileName, plot = gg.list[[i]], 
+              device = NULL, path = ggsave.path,
+              scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+              units = c("in", "cm", "mm"))
+}
+```
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterDiags-3.png)
+![](ampelos_files/figure-gfm/clusterDiags-1.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterDiags-4.png)
+![](ampelos_files/figure-gfm/clusterDiags-2.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterDiags-5.png)
+![](ampelos_files/figure-gfm/clusterDiags-3.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterDiags-6.png)
+![](ampelos_files/figure-gfm/clusterDiags-4.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterDiags-7.png)
+![](ampelos_files/figure-gfm/clusterDiags-5.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterDiags-8.png)
+![](ampelos_files/figure-gfm/clusterDiags-6.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterDiags-9.png)
+![](ampelos_files/figure-gfm/clusterDiags-7.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterDiags-10.png)
+![](ampelos_files/figure-gfm/clusterDiags-8.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterDiags-11.png)
+![](ampelos_files/figure-gfm/clusterDiags-9.png)<!-- -->
 
     ## Saving 6 x 5 in image
 
-![](ampelos_files/figure-markdown_github/clusterDiags-12.png)
+![](ampelos_files/figure-gfm/clusterDiags-10.png)<!-- -->
+
+    ## Saving 6 x 5 in image
+
+![](ampelos_files/figure-gfm/clusterDiags-11.png)<!-- -->
+
+    ## Saving 6 x 5 in image
+
+![](ampelos_files/figure-gfm/clusterDiags-12.png)<!-- -->
 
 ### how do the clusters compare to each other across multiple weeks?
 
 ``` r
+if (FALSE) {   
 ggsave.path <- "./code/output/"
 
 # strip out the other arthropods and misc stuff
@@ -435,11 +574,7 @@ cluster.df <- clusterAccumulate(df=input.df, t="control", daytime="pm")
  #4    26       1 cl1    
  #5    27       1 cl1
 clusterBoxplot(cluster.df, "control", "pm")
-```
 
-![](ampelos_files/figure-markdown_github/clusterBoxPlots-1.png)
-
-``` r
 temp.df <- clusterStats(df=input.df, t="control", daytime="pm")
 #> temp.df
 #   transect time cluster week       mean        sd normalMean  normalSD distanceTenX
@@ -460,29 +595,17 @@ rankControlPM.df <- rankByWeek(df=temp.df)
 #4    26   cl2    cl3   cl1
 #5    27   cl2    cl1   cl3
 bubbleClusterRanks(rankControlPM.df, "control", "pm")
-```
 
-![](ampelos_files/figure-markdown_github/clusterBoxPlots-2.png)
 
-``` r
 cluster.df <- clusterAccumulate(df=input.df, t="oakMargin", daytime="pm")
 clusterBoxplot(cluster.df, "oakMargin", "pm")
-```
-
-![](ampelos_files/figure-markdown_github/clusterBoxPlots-3.png)
-
-``` r
 temp.df <- clusterStats(df=input.df, t="oakMargin", daytime="pm")
 
 write.table(temp.df, file=paste(ggsave.path, "write.table.clBoxPlotOakPM.txt", sep=""), append = FALSE, sep = '\t', quote = FALSE, col.names = TRUE, dec = ".")
 
 rankOakPM.df <- rankByWeek(df=temp.df)
 bubbleClusterRanks(rankOakPM.df, "oakMargin", "pm")
-```
 
-![](ampelos_files/figure-markdown_github/clusterBoxPlots-4.png)
-
-``` r
 if (FALSE) {
   
   cluster.df <- clusterAccumulate(df=input.df, "control", "am")
@@ -505,6 +628,7 @@ if (FALSE) {
   bubbleClusterRanks(rankOakPM.df, "oakMargin", "am")
 
 }
+}
 ```
 
 ### does the crab spider population appear to change over time? Is there a difference between the two transects?
@@ -513,25 +637,25 @@ if (FALSE) {
 g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/pop-trends-am-1.png)
+![](ampelos_files/figure-gfm/pop-trends-am-1.png)<!-- -->
 
 ``` r
 g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/pop-trends-am-2.png)![](ampelos_files/figure-markdown_github/pop-trends-am-3.png)![](ampelos_files/figure-markdown_github/pop-trends-am-4.png)
+![](ampelos_files/figure-gfm/pop-trends-am-2.png)<!-- -->![](ampelos_files/figure-gfm/pop-trends-am-3.png)<!-- -->![](ampelos_files/figure-gfm/pop-trends-am-4.png)<!-- -->
 
 ``` r
 g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=TRUE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/pop-trends-pm-1.png)
+![](ampelos_files/figure-gfm/pop-trends-pm-1.png)<!-- -->
 
 ``` r
 g.gg <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/pop-trends-pm-2.png)![](ampelos_files/figure-markdown_github/pop-trends-pm-3.png)![](ampelos_files/figure-markdown_github/pop-trends-pm-4.png)
+![](ampelos_files/figure-gfm/pop-trends-pm-2.png)<!-- -->![](ampelos_files/figure-gfm/pop-trends-pm-3.png)<!-- -->![](ampelos_files/figure-gfm/pop-trends-pm-4.png)<!-- -->
 
 ``` r
 ggsave.path <- "./code/output/"
@@ -539,7 +663,7 @@ ggsave.path <- "./code/output/"
 g.gg.am <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/population-trends-both-1.png)![](ampelos_files/figure-markdown_github/population-trends-both-2.png)![](ampelos_files/figure-markdown_github/population-trends-both-3.png)
+![](ampelos_files/figure-gfm/population-trends-both-1.png)<!-- -->![](ampelos_files/figure-gfm/population-trends-both-2.png)<!-- -->![](ampelos_files/figure-gfm/population-trends-both-3.png)<!-- -->
 
 ``` r
 ggsave("ggsave.pop.trends.right.1.2.pdf", plot = g.gg.am, device = NULL, 
@@ -550,7 +674,7 @@ ggsave("ggsave.pop.trends.right.1.2.pdf", plot = g.gg.am, device = NULL,
 g.gg.pm <- plotSpeciesTrendV3(data=bugs.df, species=quo(Thomisidae..crab.spider.), period="pm", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 ```
 
-![](ampelos_files/figure-markdown_github/population-trends-both-4.png)![](ampelos_files/figure-markdown_github/population-trends-both-5.png)![](ampelos_files/figure-markdown_github/population-trends-both-6.png)
+![](ampelos_files/figure-gfm/population-trends-both-4.png)<!-- -->![](ampelos_files/figure-gfm/population-trends-both-5.png)<!-- -->![](ampelos_files/figure-gfm/population-trends-both-6.png)<!-- -->
 
 ``` r
 ggsave("ggsave.pop.trends.right.1.1.pdf", plot = g.gg.pm, device = NULL, 
@@ -562,219 +686,433 @@ ggsave("ggsave.pop.trends.right.1.1.pdf", plot = g.gg.pm, device = NULL,
 ### and the species counts?
 
 <table>
+
 <thead>
+
 <tr>
+
 <th style="text-align:left;">
+
 </th>
+
 <th style="text-align:right;">
+
 count
+
 </th>
+
 <th style="text-align:right;">
+
 percentage
+
 </th>
+
 </tr>
+
 </thead>
+
 <tbody>
+
 <tr>
+
 <td style="text-align:left;">
+
 Diptera..Agromyzidae..leafminer..
+
 </td>
+
 <td style="text-align:right;">
+
 893
+
 </td>
+
 <td style="text-align:right;">
+
 19.09
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
+
 Braconid.wasp
+
 </td>
+
 <td style="text-align:right;">
+
 73
+
 </td>
+
 <td style="text-align:right;">
+
 1.56
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
-Halictus.sp....3.part..native.bee.
+
+Halictus.sp….3.part..native.bee.
+
 </td>
+
 <td style="text-align:right;">
+
 522
+
 </td>
+
 <td style="text-align:right;">
+
 11.16
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
+
 pencilBug
+
 </td>
+
 <td style="text-align:right;">
+
 60
+
 </td>
+
 <td style="text-align:right;">
+
 1.28
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
-Agapostemon.sp....green..native.bee.
+
+Agapostemon.sp….green..native.bee.
+
 </td>
+
 <td style="text-align:right;">
+
 81
+
 </td>
+
 <td style="text-align:right;">
+
 1.73
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
-Osmia.sp...native.bee.
+
+Osmia.sp…native.bee.
+
 </td>
+
 <td style="text-align:right;">
+
 62
+
 </td>
+
 <td style="text-align:right;">
+
 1.33
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
+
 Honey.Bee
+
 </td>
+
 <td style="text-align:right;">
+
 476
+
 </td>
+
 <td style="text-align:right;">
+
 10.17
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
+
 Bombus.californicus..bumble.
+
 </td>
+
 <td style="text-align:right;">
+
 279
+
 </td>
+
 <td style="text-align:right;">
+
 5.96
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
+
 Thomisidae..crab.spider.
+
 </td>
+
 <td style="text-align:right;">
+
 680
+
 </td>
+
 <td style="text-align:right;">
+
 14.53
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
+
 spider.other
+
 </td>
+
 <td style="text-align:right;">
+
 171
+
 </td>
+
 <td style="text-align:right;">
+
 3.65
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
+
 ladyBug
+
 </td>
+
 <td style="text-align:right;">
+
 46
+
 </td>
+
 <td style="text-align:right;">
+
 0.98
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
+
 Lygus.hesperus..western.tarnished.plant.bug.
+
 </td>
+
 <td style="text-align:right;">
+
 37
+
 </td>
+
 <td style="text-align:right;">
+
 0.79
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
-pentamonidae...stinkBug.
+
+pentamonidae…stinkBug.
+
 </td>
+
 <td style="text-align:right;">
+
 15
+
 </td>
+
 <td style="text-align:right;">
+
 0.32
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
+
 other
+
 </td>
+
 <td style="text-align:right;">
+
 1213
+
 </td>
+
 <td style="text-align:right;">
+
 25.92
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
+
 checkerspot.butterfly
+
 </td>
+
 <td style="text-align:right;">
+
 27
+
 </td>
+
 <td style="text-align:right;">
+
 0.58
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
+
 Pyralidae..Snout.Moth.
+
 </td>
+
 <td style="text-align:right;">
+
 17
+
 </td>
+
 <td style="text-align:right;">
+
 0.36
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
+
 Diabrotica.undecimpunctata..Cucumber.Beetle.
+
 </td>
+
 <td style="text-align:right;">
+
 18
+
 </td>
+
 <td style="text-align:right;">
+
 0.38
+
 </td>
+
 </tr>
+
 <tr>
+
 <td style="text-align:left;">
+
 Orius..pirate.bug.
+
 </td>
+
 <td style="text-align:right;">
+
 9
+
 </td>
+
 <td style="text-align:right;">
+
 0.19
+
 </td>
+
 </tr>
+
 </tbody>
+
 </table>
+
 ### how about the insect populations themselves? Is the presence of any particular species correlated with the presence of a different species?
 
 ``` r
@@ -782,7 +1120,7 @@ m1 <- simMatrixV3(data=bugs.df, transect=quo("oakMargin"),
                                 transectText="oakMargin")
 ```
 
-<img src="ampelos_files/figure-markdown_github/speciesMatrixOak-1.png" width="100%" />
+<img src="ampelos_files/figure-gfm/speciesMatrixOak-1.png" width="100%" />
 
 ``` r
 #g <- arrangeGrob(m1, m2, nrow=2)
@@ -793,7 +1131,7 @@ m2 <- simMatrixV3(data=bugs.df, transect=quo("control"),
                                 transectText="control")
 ```
 
-<img src="ampelos_files/figure-markdown_github/speciesMatrixControl-1.png" width="100%" />
+<img src="ampelos_files/figure-gfm/speciesMatrixControl-1.png" width="100%" />
 
 ``` r
 #g <- arrangeGrob(m1, m2, nrow=2)
