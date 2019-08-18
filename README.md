@@ -53,9 +53,11 @@ ampelos
 
 #### yes, trace plots suggest convergence of the chains that form the model parameter posterior distributions (<https://www.rensvandeschoot.com/brms-wambs/> paragraph 2)
 
-![](ampelos_files/figure-gfm/clusterMCMC-1.png)<!-- -->
+![](ampelos_files/figure-gfm/clusterMCMC-1.png)<!-- -->![](ampelos_files/figure-gfm/clusterMCMC-2.png)<!-- -->![](ampelos_files/figure-gfm/clusterMCMC-3.png)<!-- -->![](ampelos_files/figure-gfm/clusterMCMC-4.png)<!-- -->![](ampelos_files/figure-gfm/clusterMCMC-5.png)<!-- -->![](ampelos_files/figure-gfm/clusterMCMC-6.png)<!-- -->![](ampelos_files/figure-gfm/clusterMCMC-7.png)<!-- -->![](ampelos_files/figure-gfm/clusterMCMC-8.png)<!-- -->![](ampelos_files/figure-gfm/clusterMCMC-9.png)<!-- -->
 
 ### compare variations of the basic model to determine which parameters are most meaningful.
+
+#### (none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap)
 
 ![](ampelos_files/figure-gfm/clusterAltModels-1.png)<!-- -->![](ampelos_files/figure-gfm/clusterAltModels-2.png)<!-- -->![](ampelos_files/figure-gfm/clusterAltModels-3.png)<!-- -->![](ampelos_files/figure-gfm/clusterAltModels-4.png)<!-- -->![](ampelos_files/figure-gfm/clusterAltModels-5.png)<!-- -->![](ampelos_files/figure-gfm/clusterAltModels-6.png)<!-- -->![](ampelos_files/figure-gfm/clusterAltModels-7.png)<!-- -->![](ampelos_files/figure-gfm/clusterAltModels-8.png)<!-- -->![](ampelos_files/figure-gfm/clusterAltModels-9.png)<!-- -->
 
@@ -65,7 +67,13 @@ ampelos
 
 #### yes, the number of mcmc iterations seem sufficient as the distributions are single peaked and smooth. (<https://www.rensvandeschoot.com/brms-wambs/> paragraph 4) They also have reasonable bounds. (<https://www.rensvandeschoot.com/brms-wambs/> paragraph 6)
 
-![](ampelos_files/figure-gfm/clusterDiags-1.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiags-2.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiags-3.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiags-4.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiags-5.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiags-6.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiags-7.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiags-8.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiags-9.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiags-10.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiags-11.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiags-12.png)<!-- -->
+![](ampelos_files/figure-gfm/clusterDiag1-1.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiag1-2.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiag1-3.png)<!-- -->
+
+### what is the impact of parameter joint uncertainty on model prediction?
+
+#### as predictors of trapped spiders, the parameter uncertainty of log(population) and contact rate are negatively correlated for clusters 1 and 2 in each seasonal timeframe. So, for smaller vine populations, SNH contact has a larger effect. These parameters are very mildly negatively correlated for cluster 3 for each timeframe.
+
+![](ampelos_files/figure-gfm/clusterDiag2-1.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiag2-2.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiag2-3.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiag2-4.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiag2-5.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiag2-6.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiag2-7.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiag2-8.png)<!-- -->![](ampelos_files/figure-gfm/clusterDiag2-9.png)<!-- -->
 
 ### how do the clusters compare to each other across multiple weeks?
 

@@ -1637,7 +1637,7 @@ plotBugPercentages <- function(list, spidersOnly) {
       geom_point(aes(x=week, y=spiderPct, fill = "spiderPct"), shape=21, size=5, show.legend=TRUE) +
       geom_point(aes(x=week, y=otherPct, fill = 'otherPct'), shape=21, size=5, show.legend=TRUE) +
 
-      scale_fill_manual(name = "", values = c("spiderPct" = "purple", "otherPct" = "violet"), labels = c("spider (other)", "crab spider")) +
+      scale_fill_manual(name = "", values = c("spiderPct" = "purple", "otherPct" = "violet"), labels = c("crab spider", "spider (other)")) +
 
       ylim(c(0, 30)) + 
       expand_limits(y=c(0,30)) + 

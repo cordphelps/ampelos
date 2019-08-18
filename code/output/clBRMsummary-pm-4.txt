@@ -10,16 +10,16 @@ NULL
  Family: poisson 
   Links: mu = log 
 Formula: totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop 
-   Data: cl.st.list[[i]] (Number of observations: 18) 
+   Data: cl.st.list[[i]] (Number of observations: 32) 
 Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
          total post-warmup samples = 8000
 
 Population-Level Effects: 
                      Estimate Est.Error l-89% CI u-89% CI Eff.Sample Rhat
-Intercept                1.76      5.52    -7.20    10.53       5911 1.00
-log_pop                  0.01      1.00    -1.57     1.62       5906 1.00
-contact_high            -0.04      0.99    -1.62     1.54       4090 1.00
-log_pop:contact_high    -0.09      0.18    -0.38     0.20       4087 1.00
+Intercept                0.12      3.81    -5.98     6.17       6818 1.00
+log_pop                 -0.01      0.99    -1.58     1.57       6784 1.00
+contact_high             0.01      0.98    -1.56     1.58       3508 1.00
+log_pop:contact_high     0.04      0.27    -0.38     0.45       3505 1.00
 
 Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
 is a crude measure of effective sample size, and Rhat is the potential 

@@ -180,10 +180,9 @@ evaluateDailySpiderCounts <- function(df) {
   
   returnList <- list()
   
-  returnList[[1]] <- plotWeekly(total.df)
+  returnList[[1]] <- plotWeekly(total.df)  # by clluster
 
-  # total spiders by week/cluster differentiated by time of day
-  returnList[[2]] <- plotRawWeekly(total.df)
+  returnList[[2]] <- plotRawWeekly(total.df) # scatter plot by am/pm
 
   returnList[[3]] <- plotTransectWeekly(total.df)
   
@@ -198,7 +197,7 @@ evaluateDailySpiderCounts <- function(df) {
   # lists used as parameters in generateLikelihoodV2() ; developed 'by hand' (above)
   #
 
-  returnList[[11]] <- list(255, 80, 8)                # mean population for 9 models
+  ###########   returnList[[11]] <- list(255, 80, 8)                # mean population for 9 models
   
 
   
@@ -226,9 +225,9 @@ modelDiagsV2 <- function(daytime, hp, path) {
   for (j in 1:9) {   
 
     # adjust hypothetical population by seasonal timeframe 
-    if ((j == 1) || (j == 4) || (j == 7)) {
+    if ((j == 1) || (j == 2) || (j == 3)) {
       hPop <- hp[[1]]
-    } else if ((j == 2) || (j == 5) || (j == 8)) {
+    } else if ((j == 4) || (j == 5) || (j == 6)) {
       hPop <- hp[[2]]
     } else {
       hPop <- hp[[3]]
@@ -570,13 +569,13 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
     #
     label.list <- list()  # remember which cluster and seasonal timeframe
     label.list[[1]] <- "cluster: one, seasonal timeframe: one"
-    label.list[[2]] <- "cluster: one, seasonal timeframe: two"
-    label.list[[3]] <- "cluster: one, seasonal timeframe: three"
-    label.list[[4]] <- "cluster: two, seasonal timeframe: one"
+    label.list[[2]] <- "cluster: two, seasonal timeframe: one"
+    label.list[[3]] <- "cluster: three, seasonal timeframe: one"
+    label.list[[4]] <- "cluster: one, seasonal timeframe: two"
     label.list[[5]] <- "cluster: two, seasonal timeframe: two"
-    label.list[[6]] <- "cluster: two, seasonal timeframe: three"
-    label.list[[7]] <- "cluster: three, seasonal timeframe: one"
-    label.list[[8]] <- "cluster: three, seasonal timeframe: two"
+    label.list[[6]] <- "cluster: three, seasonal timeframe: two"
+    label.list[[7]] <- "cluster: one, seasonal timeframe: three"
+    label.list[[8]] <- "cluster: two, seasonal timeframe: three"
     label.list[[9]] <- "cluster: three, seasonal timeframe: three"
 
     
@@ -591,47 +590,47 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
     #  
   
     cl.st.list[[1]] <- df %>% dplyr::filter(week < 26 & cluster == 'one')
-    cl.st.list[[1]]$population <- inboundList[[11]][[1]] * populationAdjustmentFactor
+    cl.st.list[[1]]$population <- hp[[1]] * populationAdjustmentFactor
     cl.st.list[[1]]$log_pop <- log(cl.st.list[[1]]$population)  # R code 10.40
     cl.st.list[[1]]$contact_high <- ifelse( cl.st.list[[1]]$transect=="oakMargin" , 1 , 0 )
     
-    cl.st.list[[2]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'one')
-    cl.st.list[[2]]$population <- inboundList[[11]][[2]] * populationAdjustmentFactor
+    cl.st.list[[2]] <- df %>% dplyr::filter(week < 26 & cluster == 'two')
+    cl.st.list[[2]]$population <- hp[[1]] * populationAdjustmentFactor
     cl.st.list[[2]]$log_pop <- log(cl.st.list[[2]]$population)  # R code 10.40
     cl.st.list[[2]]$contact_high <- ifelse( cl.st.list[[2]]$transect=="oakMargin" , 1 , 0 )
     
-    cl.st.list[[3]] <- df %>% dplyr::filter(week > 31 & cluster == 'one')
-    cl.st.list[[3]]$population <- inboundList[[11]][[3]] * populationAdjustmentFactor
+    cl.st.list[[3]] <- df %>% dplyr::filter(week < 26 & cluster == 'three')
+    cl.st.list[[3]]$population <- hp[[1]] * populationAdjustmentFactor
     cl.st.list[[3]]$log_pop <- log(cl.st.list[[3]]$population)  # R code 10.40
     cl.st.list[[3]]$contact_high <- ifelse( cl.st.list[[3]]$transect=="oakMargin" , 1 , 0 )
     
-    cl.st.list[[4]] <- df %>% dplyr::filter(week < 26 & cluster == 'two')
-    cl.st.list[[4]]$population <- inboundList[[11]][[4]] * populationAdjustmentFactor
+    cl.st.list[[4]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'one')
+    cl.st.list[[4]]$population <- hp[[2]] * populationAdjustmentFactor
     cl.st.list[[4]]$log_pop <- log(cl.st.list[[4]]$population)  # R code 10.40
     cl.st.list[[4]]$contact_high <- ifelse( cl.st.list[[4]]$transect=="oakMargin" , 1 , 0 )
     
     cl.st.list[[5]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'two')
-    cl.st.list[[5]]$population <- inboundList[[11]][[5]] * populationAdjustmentFactor
+    cl.st.list[[5]]$population <- hp[[2]] * populationAdjustmentFactor
     cl.st.list[[5]]$log_pop <- log(cl.st.list[[5]]$population)  # R code 10.40
     cl.st.list[[5]]$contact_high <- ifelse( cl.st.list[[5]]$transect=="oakMargin" , 1 , 0 )
   
-    cl.st.list[[6]] <- df %>% dplyr::filter(week > 31 & cluster == 'two')
-    cl.st.list[[6]]$population <- inboundList[[11]][[6]] * populationAdjustmentFactor
+    cl.st.list[[6]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'three')
+    cl.st.list[[6]]$population <- hp[[2]] * populationAdjustmentFactor
     cl.st.list[[6]]$log_pop <- log(cl.st.list[[6]]$population)  # R code 10.40
     cl.st.list[[6]]$contact_high <- ifelse( cl.st.list[[6]]$transect=="oakMargin" , 1 , 0 )
     
-    cl.st.list[[7]] <- df %>% dplyr::filter(week < 26 & cluster == 'three')
-    cl.st.list[[7]]$population <- inboundList[[11]][[7]] * populationAdjustmentFactor
+    cl.st.list[[7]] <- df %>% dplyr::filter(week > 31 & cluster == 'one')
+    cl.st.list[[7]]$population <- hp[[3]] * populationAdjustmentFactor
     cl.st.list[[7]]$log_pop <- log(cl.st.list[[7]]$population)  # R code 10.40
     cl.st.list[[7]]$contact_high <- ifelse( cl.st.list[[7]]$transect=="oakMargin" , 1 , 0 )
     
-    cl.st.list[[8]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'three')
-    cl.st.list[[8]]$population <- inboundList[[11]][[8]] * populationAdjustmentFactor
+    cl.st.list[[8]] <- df %>% dplyr::filter(week > 31 & cluster == 'two')
+    cl.st.list[[8]]$population <- hp[[3]] * populationAdjustmentFactor
     cl.st.list[[8]]$log_pop <- log(cl.st.list[[8]]$population)  # R code 10.40
     cl.st.list[[8]]$contact_high <- ifelse( cl.st.list[[8]]$transect=="oakMargin" , 1 , 0 )
     
     cl.st.list[[9]] <- df %>% dplyr::filter(week > 31 & cluster == 'three')
-    cl.st.list[[9]]$population <- inboundList[[11]][[9]] * populationAdjustmentFactor
+    cl.st.list[[9]]$population <- hp[[3]] * populationAdjustmentFactor
     cl.st.list[[9]]$log_pop <- log(cl.st.list[[9]]$population)  # R code 10.40
     cl.st.list[[9]]$contact_high <- ifelse( cl.st.list[[9]]$transect=="oakMargin" , 1 , 0 )
   
@@ -662,9 +661,9 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
 
 
         # adjust hypothetical population by seasonal timeframe 
-        if ((i == 1) || (i == 4) || (i == 7)) {
+        if ((i == 1) || (i == 2) || (i == 3)) {
           hPop <- hp[[1]]
-        } else if ((i == 2) || (i == 5) || (i == 8)) {
+        } else if ((i == 4) || (i == 5) || (i == 6)) {
           hPop <- hp[[2]]
         } else {
           hPop <- hp[[3]]
@@ -1174,7 +1173,8 @@ plotRawWeekly <- function(df) {
   
   gg <- ggplot(df, aes(x=week, y=totalSpiders)) + 
     
-    geom_jitter(aes(fill = time), shape=21, size=5, alpha=.7, show.legend=TRUE) +
+    # geom_jitter(aes(fill = time), shape=21, size=5, alpha=.7, show.legend=TRUE) +
+    geom_jitter(aes(fill = time), shape=21, size=5, alpha=.7, show.legend=TRUE, width = .1) +
     
     # geom_vline(xintercept=25.5) + # seasonal timeframe seperators
     # geom_vline(xintercept=31.5) + #
@@ -1191,7 +1191,7 @@ plotRawWeekly <- function(df) {
     labs(
          y="total spiders", 
          x="week", 
-         caption = paste("oakMargin and control transects, total spiders by cluster", sep="") ) +
+         caption = paste("SNH and control transects, total spiders by time of day", sep="") ) +
     
     theme_bw() +
 
@@ -1263,7 +1263,7 @@ plotTransectWeekly <- function(df) {
 
     labs(y="total spiders", 
          x="week", 
-         caption = paste("oakMargin and control transects, total spiders by transect", sep="") ) +
+         caption = paste("total spiders by transect", sep="") ) +
     
     theme_bw() +
 
