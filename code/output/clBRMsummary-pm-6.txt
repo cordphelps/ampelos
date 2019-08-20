@@ -1,11 +1,4 @@
-
-generateLikelihoodV2()               
-
-
-NULL
-i = 6
-
-
+generateLikelihoodV2()                 i= 6
 NULL
  Family: poisson 
   Links: mu = log 

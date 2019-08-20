@@ -418,161 +418,6 @@ plotRidgesV2tableOnly <- function(data, combined, bugs, speciesText, when, wk, c
   }
 
 
-plotSpeciesTrendV2 <- function(data, bugs, speciesText, where, when, caption) {
-  # bugs has to come in as a pointer
-  # speciesText is presentable text for the plot labels, 'quo_name(bugs)' gets the mashed df column label
-  
-  # https://stackoverflow.com/questions/9726705/assign-multiple-objects-to-globalenv-from-within-a-function
-  # assign("data", data, envir=.GlobalEnv)
-  # assign("bugs", bugs, envir=.GlobalEnv)
-  # assign("where", where, envir=.GlobalEnv)
-  # assign("when", when, envir=.GlobalEnv)
-  # assign("wk", wk, envir=.GlobalEnv)
-  # assign("caption", caption, envir=.GlobalEnv)
-  
-
-  
-  # https://stackoverflow.com/questions/1660124/how-to-sum-a-variable-by-group
-  # dyplr group: https://stackoverflow.com/questions/48714625/error-in-data-frame-unused-argument
-  # dyplr multiple groups: https://stackoverflow.com/questions/21653295/dplyr-issues-when-using-group-bymultiple-variables
-  
-
-  ########### stand-alone dplyr test code ##########
-  if (FALSE) {   # this is essentially a multi-line comment
-    temp.df <- bugs.df %>%
-      filter( time == "pm",  transect == "oakMargin") %>%
-      group_by( week ) %>%
-      summarise( sp_by_week = sum( Thomisidae..crab.spider. , na.rm = TRUE ) , n=n()) %>%
-      mutate(ave_per_week = sp_by_week / (n / 30))
-
-      sp_percent <- sum(temp.df$sp_by_week) / sum(temp.df$n)
-
-      new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
-
-  }
-  ########### end stand-alone dplyr test code ##########
-
-
-  temp.df <- bugs.df %>%
-    #filter( time == "pm",  transect == "oakMargin") %>%
-    filter(transect == "oakMargin") %>%
-    group_by( week ) %>%
-    summarise( sp_by_week = sum( !!bugs , na.rm = TRUE ) , n=n()) %>%
-    mutate(ave_per_week = sp_by_week / (n / 30))
-  
-  # get statistics
-  sp_percentOak <- sum(temp.df$sp_by_week) / sum(temp.df$n) * 100
-  sp_percentOak <- format(round(sp_percentOak, 2), nsmall = 2)
-
-  temp.df <- bugs.df %>%
-    filter( time == "pm",  transect == "control") %>%
-    group_by( week ) %>%
-    summarise( sp_by_week = sum( !!bugs , na.rm = TRUE ) , n=n()) %>%
-    mutate(ave_per_week = sp_by_week / (n / 30))
-  
-  # get statistics
-  sp_percentControl <- sum(temp.df$sp_by_week) / sum(temp.df$n) * 100
-  sp_percentControl <- format(round(sp_percentControl, 2), nsmall = 2)
-  
-  
-  oakPM.df <- data %>%
-    filter( time == "pm",  transect == "oakMargin") %>%
-    group_by( week ) %>%
-    summarise( oakPMtotal = sum( !!bugs , na.rm = TRUE ) ) 
-  
-  controlPM.df <- data %>%
-    filter( time == "pm",  transect == "control") %>%
-    group_by( week ) %>%
-    summarise( controlPMtotal = sum( !!bugs , na.rm = TRUE ) ) 
-  
-  # join the data frames
-  pm.df <- merge(oakPM.df, controlPM.df)
-  
-  oakAM.df <- data %>%
-    filter( time == "am",  transect == "oakMargin") %>%
-    group_by( week ) %>%
-    summarise( oakAMtotal = sum( !!bugs , na.rm = TRUE ) ) 
-  
-  controlAM.df <- data %>%
-    filter( time == "am",  transect == "control") %>%
-    group_by( week ) %>%
-    summarise( controlAMtotal = sum( !!bugs , na.rm = TRUE ) )  
-  
-  # join the data frames
-  am.df <- merge(oakAM.df, controlAM.df)
-  
-  sliced.df <- merge(am.df, pm.df)
-    
-
-  
-  ggOAK <- ggSpeciesWeekTrend(sliced.df, j="week", PM="oakPMtotal", 
-                              AM="oakAMtotal", st="Crab Spider", 
-                              t="oakMargin", spct=sp_percentOak, caption="oCaption")
-
-  ggCONTROL <- ggSpeciesWeekTrend(sliced.df, j="week", PM="controlPMtotal", 
-                                  AM="controlAMtotal", st="Crab Spider", 
-                                  t="control", spct=sp_percentControl, caption="cCaption")
-  
-    
-  #grid.arrange(ggOAK, ggCONTROL, ncol=2, nrow=1)
-  
-  print(ggOAK)
-  print(ggCONTROL)
-
-  ggCumulativeCombined <- ggCumulative()
-
-
-  ######################################################################################
-  ######################################################################################
-  ######################################################################################
-
-  ######## develop the same graphs, but by day (not week)
-
-  oakPM.df <- data %>%
-    filter( time == "pm",  transect == "oakMargin") %>%
-    group_by( julian ) %>%
-    summarise( oakPMtotal = sum( !!bugs , na.rm = TRUE ) ) 
-  
-  controlPM.df <- data %>%
-    filter( time == "pm",  transect == "control") %>%
-    group_by( julian ) %>%
-    summarise( controlPMtotal = sum( !!bugs , na.rm = TRUE ) ) 
-  
-  # join the data frames
-  pm.df <- merge(oakPM.df, controlPM.df)
-  
-  oakAM.df <- data %>%
-    filter( time == "am",  transect == "oakMargin") %>%
-    group_by( julian ) %>%
-    summarise( oakAMtotal = sum( !!bugs , na.rm = TRUE ) ) 
-  
-  controlAM.df <- data %>%
-    filter( time == "am",  transect == "control") %>%
-    group_by( julian ) %>%
-    summarise( controlAMtotal = sum( !!bugs , na.rm = TRUE ) )  
-  
-  # join the data frames
-  am.df <- merge(oakAM.df, controlAM.df)
-  
-  sliced.df <- merge(am.df, pm.df)
-
-
-  
-  ggOAK <- ggSpeciesJulianTrend(sliced.df, j="julian", PM="oakPMtotal", AM="oakAMtotal", st="Crab Spider", t="oakMargin", spct=sp_percentOak, caption="oCaption")
-
-  ggCONTROL <- ggSpeciesJulianTrend(sliced.df, j="julian", PM="controlPMtotal", AM="controlAMtotal", st="Crab Spider", t="control", spct=sp_percentControl, caption="cCaption")
-
-    
-  grid.arrange(ggOAK, ggCONTROL, ncol=2, nrow=1)
-
-
-
-
-  # ggsave("joy1.png", height=8, width=8, dpi=120, type="cairo-png")
-  
-  return()
-}
-
 
 plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
                                lowerWeekLimit, upperWeekLimit, caption) {
@@ -801,40 +646,39 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
 
   
   
-  # compare two dataframes on one graph
-  # specify cluster
-  
-  assign("oakAllDay.df", oakAllDay.df, envir=.GlobalEnv)
-  
   #lowerWeekLimit <- 23
   #upperWeekLimit <- 34
   #trend<-FALSE
   # species<-quo(Thomisidae..crab.spider.)
+
+  g.list <- list()
+
   
   if (period=="pm") {
     
     g1 <- ggTrendOrCumulative(df1=oakPM.df, df2=controlPM.df, 
                               lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                               lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
-                              t1="oakMargin", t2="control",
+                              t1="SNH", t2="control",
                               tr=trend,  st="crab spider", 
                               spct=sp_percentOak, 
                               subtitle="afternoon collection", caption=" ")
     
-    print(g1)
-    g <- g1
+    g.list[[1]] <- g1
     
     # don't run this twice
     if (trend==FALSE) {
-    clusterGraph.list <- ggTrendClusters(df1=oakPMcluster.list, df2=controlPMcluster.list, 
+
+      clusterGraph.list <- ggTrendClusters(df1=oakPMcluster.list, df2=controlPMcluster.list, 
                               lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                               lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
                               st="crab spider", 
                               spct=sp_percentOak, 
                               subtitle="afternoon collection", caption=" ")
     
-    print(clusterGraph.list[[1]])
-    print(clusterGraph.list[[2]])
+      g.list[[2]] <- clusterGraph.list[[1]]
+      g.list[[3]] <- clusterGraph.list[[2]]
+
     }
     
   } else if (period=="am") {
@@ -842,25 +686,26 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
     g2 <- ggTrendOrCumulative(df1=oakAM.df, df2=controlAM.df, 
                             lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                             lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
-                            t1="oakMargin", t2="control",
+                            t1="SNH", t2="control",
                             tr=trend,  st="crab spider", 
                             spct=sp_percentOak, 
                             subtitle="morning collection", caption=" ")
     
-    print(g2)
-    g <- g2
+    g.list[[1]] <- g2
 
     # don't run this twice
     if (trend==FALSE) {
-    clusterGraph.list <- ggTrendClusters(df1=oakAMcluster.list, df2=controlAMcluster.list, 
+
+      clusterGraph.list <- ggTrendClusters(df1=oakAMcluster.list, df2=controlAMcluster.list, 
                               lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                               lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
                               st="crab spider", 
                               spct=sp_percentOak, 
                               subtitle="morning collection", caption=" ")
     
-    print(clusterGraph.list[[1]])
-    print(clusterGraph.list[[2]])
+      g.list[[2]] <- clusterGraph.list[[1]]
+      g.list[[3]] <- clusterGraph.list[[2]]
+
     }
 
     
@@ -869,25 +714,26 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
     g3 <- ggTrendOrCumulative(df1=oakAllDay.df, df2=controlAllDay.df, 
                               lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                               lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
-                              t1="oakMargin", t2="control",
+                              t1="SNH", t2="control",
                               tr=trend,  st="crab spider", 
                               spct=sp_percentOak, 
                               subtitle="24 hour collection", caption=" ") 
     
-    print(g3)
-    g <- g3
+    g.list[[1]] <- g3
 
     # don't run this twice
     if (trend==FALSE) {
-    clusterGraph.list <- ggTrendClusters(df1=oakAllDayCluster.list, df2=controlAllDayCluster.list, 
+
+      clusterGraph.list <- ggTrendClusters(df1=oakAllDayCluster.list, df2=controlAllDayCluster.list, 
                               lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                               lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
                               st="crab spider", 
                               spct=sp_percentOak, 
                               subtitle="24 hour collection", caption=" ")
     
-    print(clusterGraph.list[[1]])
-    print(clusterGraph.list[[2]])
+      g.list[[2]] <- clusterGraph.list[[1]]
+      g.list[[3]] <- clusterGraph.list[[2]]
+
     }
 
 
@@ -895,7 +741,7 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
   }
   
   
-  return(g)
+  return(g.list)
   
 }
 
@@ -1008,8 +854,6 @@ ggTrendOrCumulative <- function(df1, df2,
       
       ylim(0,150) +
     
-      #labs(title= paste(st, " weekly population counts", sep=""), 
-         #subtitle = subtitle,
       labs(x="week", y= "daily total",
          caption=paste(st, " weekly population counts, ", subtitle,  sep=""))
     
@@ -1022,11 +866,9 @@ ggTrendOrCumulative <- function(df1, df2,
       geom_line(data=df2, aes(x=week, y=cumulativeBugs, color="c2")) +
       
       ylim(0,450) +
-   
-      #labs(title= paste(st, " cumulative population counts", sep=""), 
-           #subtitle = subtitle,   
+    
       labs(x="week", y= "cumulative count",
-           caption=paste(st, " cumulative population counts, ", subtitle,  sep="")) 
+           caption=paste(st, " cumulative population counts\n", subtitle,  sep="")) 
   }
     
   gg <- gg + 
@@ -1039,11 +881,11 @@ ggTrendOrCumulative <- function(df1, df2,
     scale_shape_manual(name = "transect", 
                        breaks = c("s1", "s2"),
                        values = shape,
-                       labels = c("oakMargin", "control")) + 
+                       labels = c("SNH", "control")) + 
     scale_color_manual(name = "transect", 
                        breaks = c("c1", "c2"), 
                        values = color,
-                       labels = c("oakMargin", "control")) +
+                       labels = c("SNH", "control")) +
     
     theme_bw() + 
     theme(axis.title.y = element_text(angle = 90, vjust=.5)) +
@@ -1084,12 +926,9 @@ ggTrendClusters <- function(df1, df2,
       
       ylim(0,60) +
       expand_limits(y=c(0,60)) +
-      
-      #labs(title= paste("weekly population counts by cluster", sep=""), 
-           #subtitle = paste("oakMargin transect, ", subtitle, sep=""),
 
       labs(x="week", y= "daily total",
-           caption=paste("weekly population counts by cluster\n", "oakMargin transect, ", subtitle, sep="")) +
+           caption=paste("weekly population counts by cluster\n", "SNH transect, ", subtitle, sep="")) +
       
       expand_limits(x=c(23,34)) +
       scale_x_continuous(breaks = seq(24, 34, 2)) +
@@ -1452,7 +1291,7 @@ plotBugDistribution <- function (data, cap) {
     annotate("rect", xmin=4, xmax=210, ymin=78,ymax=90, alpha=0.2, fill="blue") +
     annotate("rect", xmin=-12, xmax=5, ymin=78,ymax=90, alpha=0.2, fill="red") +
 
-    annotate("text", x = 95, y = 76, label = "oak transect", colour="black") +
+    annotate("text", x = 95, y = 76, label = "SNH transect", colour="black") +
     annotate("text", x = 95, y = 40, label = "control transect", colour="black") + # fill="white", 
     theme_bw() +
     theme() + 

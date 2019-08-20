@@ -175,165 +175,6 @@ simplifyJaccardSimilarityResults <- function(results) {
 }
 
 
-compareJaccardMultiWeek <- function() {
-
-	# > unique(bugs.df$week)
-	# [1] 23 24 25 26 27 28
-	#
-
-	if (!exists("output.df")) {
-
-		output.df <- bugRowsJaccardSimilarity(df=bugs.df, t="oakMargin", w=23)
-
-		# output.df is a simplified similarity table
-   		#
-   		# > output.df
-		#        mean         sd
-		# 1 0.8516484 0.06884596
-
-    	accumulated.df <- tibble(week = 23, JSim = output.df$mean, JSimSD = output.df$sd)  # initialize the df
-
-    } 
-
-    output.df <- bugRowsJaccardSimilarity(bugs.df, t=quo("oakMargin"), w=quo(24))
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 24, JSim = output.df$mean, JSimSD = output.df$sd)
-    output.df <- bugRowsJaccardSimilarity(bugs.df, t=quo("oakMargin"), w=quo(25))
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 25, JSim = output.df$mean, JSimSD = output.df$sd)
-    output.df <- bugRowsJaccardSimilarity(bugs.df, t=quo("oakMargin"), w=quo(26))
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 26, JSim = output.df$mean, JSimSD = output.df$sd)
-    output.df <- bugRowsJaccardSimilarity(bugs.df, t=quo("oakMargin"), w=quo(27))
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 27, JSim = output.df$mean, JSimSD = output.df$sd)
-    output.df <- bugRowsJaccardSimilarity(bugs.df, t=quo("oakMargin"), w=quo(28))
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 28, JSim = output.df$mean, JSimSD = output.df$sd)
-    output.df <- bugRowsJaccardSimilarity(bugs.df, t=quo("oakMargin"), w=quo(29))
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 29, JSim = output.df$mean, JSimSD = output.df$sd)
-
-
-	ggOak <- ggplot(accumulated.df, aes(x=week, y=JSim)) + 
-  		geom_point(aes(col=JSimSD, size=JSimSD*2)) + 
-  		geom_smooth(method="loess", se=F) + 
-  		geom_hline(yintercept=.8) +
-  		ylim(c(0, 1)) + 
-  		scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +
-  		expand_limits(y=c(0,1)) + 
-  		labs(title="row triad similarity of oakMargin populations", 
-  			subtitle=paste("dot size/color represents 2X standard deviation", sep=""), 
-       		y="jaccard index", 
-       		x="week", 
-       		caption = "https://en.wikipedia.org/wiki/Jaccard_index") +
-  		theme(legend.position="none") +
-  		coord_fixed() # control the aspect ratio of the output
-  		# https://stackoverflow.com/questions/20581400/how-to-control-ggplots-plotting-area-proportions-instead-of-fitting-them-to-dev
-
-
-	rm("output.df")
-
-############################################################################################################
-
-	if (!exists("output.df")) {
-
-		output.df <- bugRowsJaccardSimilarity(df=bugs.df, t="control", w=23)
-
-		# output.df is a simplified similarity table
-   		#
-   		# > output.df
-		#        mean         sd
-		# 1 0.8516484 0.06884596
-
-    	accumulated.df <- tibble(week = 23, JSim = output.df$mean, JSimSD = output.df$sd)  # initialize the df
-
-    } 
-
-    output.df <- bugRowsJaccardSimilarity(bugs.df, t=quo("control"), w=24)
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 24, JSim = output.df$mean, JSimSD = output.df$sd)
-    output.df <- bugRowsJaccardSimilarity(bugs.df, t=quo("control"), w=25)
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 25, JSim = output.df$mean, JSimSD = output.df$sd)
-    output.df <- bugRowsJaccardSimilarity(bugs.df, t=quo("control"), w=26)
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 26, JSim = output.df$mean, JSimSD = output.df$sd)
-    output.df <- bugRowsJaccardSimilarity(bugs.df, t=quo("control"), w=27)
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 27, JSim = output.df$mean, JSimSD = output.df$sd)
-    output.df <- bugRowsJaccardSimilarity(bugs.df, t=quo("control"), w=28)
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 28, JSim = output.df$mean, JSimSD = output.df$sd)
-
-
-	ggControl <- ggplot(accumulated.df, aes(x=week, y=JSim)) + 
-  		geom_point(aes(col=JSimSD, size=JSimSD*2)) + 
-  		geom_smooth(method="loess", se=F) + 
-  		geom_hline(yintercept=.8) +
-  		ylim(c(0, 1)) + 
-  		scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +
-  		expand_limits(y=c(0,1)) + 
-  		labs(title="row triad similarity of control populations", 
-  			subtitle=paste("dot size/color represents 2X standard deviation", sep=""), 
-       		y="jaccard index", 
-       		x="week", 
-       		caption = "https://en.wikipedia.org/wiki/Jaccard_index") +
-  		theme(legend.position="none") +
-  		coord_fixed() # control the aspect ratio of the output
-  		# https://stackoverflow.com/questions/20581400/how-to-control-ggplots-plotting-area-proportions-instead-of-fitting-them-to-dev
-
-	rm("output.df")
-
-
-
-
-
-
-	return( arrangeGrob(ggOak, ggControl, ncol=1, nrow=2) )
-
-
-}
-
-compareJaccardMultiWeekV2 <- function(data, transect, transectText) {
-
-	if (!exists("output.df")) {
-
-		output.df <- bugRowsJaccardSimilarity(df=data, t=transect, w=23)
-
-		# output.df is a simplified similarity table
-   		#
-   		# > output.df
-		#        mean         sd
-		# 1 0.8516484 0.06884596
-
-    	accumulated.df <- tibble(week = 23, JSim = output.df$mean, JSimSD = output.df$sd)  # initialize the df
-
-    } 
-
-    output.df <- bugRowsJaccardSimilarity(data, t=transect, w=24)
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 24, JSim = output.df$mean, JSimSD = output.df$sd)
-    output.df <- bugRowsJaccardSimilarity(data, t=transect, w=25)
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 25, JSim = output.df$mean, JSimSD = output.df$sd)
-    output.df <- bugRowsJaccardSimilarity(data, t=transect, w=26)
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 26, JSim = output.df$mean, JSimSD = output.df$sd)
-    output.df <- bugRowsJaccardSimilarity(data, t=transect, w=27)
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 27, JSim = output.df$mean, JSimSD = output.df$sd)
-    output.df <- bugRowsJaccardSimilarity(data, t=transect, w=28)
-	accumulated.df <- accumulated.df %>% tibble::add_row(week = 28, JSim = output.df$mean, JSimSD = output.df$sd)
-
-
-	gg <- ggplot(accumulated.df, aes(x=week, y=JSim)) + 
-  		geom_point(aes(col=JSimSD, size=JSimSD*2)) + 
-  		geom_smooth(method="loess", se=F) + 
-  		geom_hline(yintercept=.8) +
-  		ylim(c(0, 1)) + 
-  		# scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +
-  		expand_limits(y=c(0,1)) + 
-  		labs(title=paste(transectText, " transect: row triad population similarity", sep=""),
-  			subtitle=paste("dot size/color represents 2X standard deviation", sep=""), 
-       		y="jaccard index", 
-       		x="week", 
-       		caption = "https://en.wikipedia.org/wiki/Jaccard_index") +
-  		theme(legend.position="none") +
-  		coord_fixed(ratio=3) # control the aspect ratio of the output
-  		# https://stackoverflow.com/questions/7056836/how-to-fix-the-aspect-ratio-in-ggplot
-
-	rm("output.df")
-
-	return(grid.arrange(gg, ncol=1, nrow=1))
-
-}
-
 getWeeks <- function(data) {
 
 	# return a list of the weeks occurring in the dataset
@@ -377,52 +218,6 @@ buildIndexByWeek <- function(data, transect) {
 	return(accumulated.df)
 
 }
-
-compareJaccardMultiWeekV3 <- function(data, transect, transectText) {
-
-	output.df <- NULL
-	accumulated.df <- NULL
-
-	weeks.vector <- getWeeks(data)
-
-	output.df <- bugRowsJaccardSimilarity(df=data, t=transect, w=weeks.vector[1])
-	accumulated.df <- tibble(week = weeks.vector[1], JSim = output.df$mean, JSimSD = output.df$sd)  # initialize the df
-	weeks.vector <- weeks.vector[-(1)]  # delete the first element as it was just used.....
-
-		# output.df is a simplified similarity table
-   		#
-   		# > output.df
-		#        mean         sd
-		# 1 0.8516484 0.06884596
-
-	for(i in weeks.vector){
-		# print(paste("week: ", i, sep=""))
-		output.df <- bugRowsJaccardSimilarity(df=bugs.df, t=transect, w=i)
-		accumulated.df <- accumulated.df %>% tibble::add_row(week = i, JSim = output.df$mean, JSimSD = output.df$sd)
-	}
-
-
-	gg <- ggplot(accumulated.df, aes(x=week, y=JSim)) + 
-  		geom_point(aes(col=JSimSD, size=JSimSD*2)) + 
-  		geom_smooth(method="loess", se=F) + 
-  		geom_hline(yintercept=.8) +
-  		ylim(c(0, 1)) + 
-  		# scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +
-  		expand_limits(y=c(0,1)) + 
-  		labs(title=paste(transectText, " transect: row triad population similarity", sep=""),
-  			subtitle=paste("dot size/color represents 2X standard deviation", sep=""), 
-       		y="jaccard index", 
-       		x="week", 
-       		caption = "https://en.wikipedia.org/wiki/Jaccard_index") +
-  		theme(legend.position="none") +
-  		coord_fixed(ratio=3) # control the aspect ratio of the output
-  		# https://stackoverflow.com/questions/7056836/how-to-fix-the-aspect-ratio-in-ggplot
-
-	rm("output.df")
-
-	return(grid.arrange(gg, ncol=1, nrow=1))
-
-	}
 
 bugRowsJaccardSimilarityV2 <- function(df, t, w) {
 
@@ -568,12 +363,10 @@ plotSimilarity <- function(df, transectText, captionComment) {
       # scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +
       expand_limits(y=c(0,1)) + 
       scale_x_continuous(breaks=seq(22,40,2)) +
-      labs(title=paste(transectText, " transect: row triad population similarity,\nJaccard and SMC", sep=""),
-        subtitle=paste("weekly mean of row-to-row indicies ", sep=""), 
+      labs(
           y="index", 
           x="week", 
-          caption = paste(captionComment, "https://en.wikipedia.org/wiki/Jaccard_index",
-            "\nhttps://en.wikipedia.org/wiki/Simple_matching_coefficient", sep="") ) +
+          caption = paste(transectText, " transect: row triad population similarity, Jaccard and SMC", "\nweekly mean of row-to-row indicies ", sep="" ) ) +
       #theme(legend.position="none") +
       theme(legend.position = "bottom", legend.direction = "horizontal") +
       theme_bw() +

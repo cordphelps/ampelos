@@ -682,22 +682,22 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
 
     
       # figure out which cluster we are referring to
-      if (i < 4) {
-        cluster <- "one" 
-      } else if (i > 6) {
-        cluster <- "three"
-      } else {
-        cluster <- "two"
-      }
-    
-      # figure out which seasonal timeframe we are referring to
       if (i == 1 | i == 4 | i == 7) {
-        seasonalTimeframe <- "one" 
+        cluster <- "one"  
       } else if (i == 2 | i == 5 | i == 8) {
-        seasonalTimeframe <- "two"
+        cluster <- "two"
       } else {
-        seasonalTimeframe <- "three"
+        cluster <- "three"
       }      
+
+       # figure out which seasonal timeframe we are referring to
+      if (i < 4) {
+        seasonalTimeframe <- "one" 
+      } else if (i > 6) {
+        seasonalTimeframe <- "three"
+      } else {
+        seasonalTimeframe <- "two"
+      }        
     
       temp2.df <- data.frame(cluster, seasonalTimeframe, like.df$sum) 
       # column names need to match for rbind() to work
@@ -740,7 +740,6 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
                                   " , population adjustment factor: ", populationAdjustmentFactor,           
                                   sep=""))
 
-    #library(ggthemes)
     library(bayesplot)
 
     for (i in 1:9) {
@@ -749,8 +748,7 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
       if (file.exists(fileName)) file.remove(fileName)
 
       sink(file=fileName, append = TRUE, type = "output")
-      print(writeLines(paste("\ngenerateLikelihoodV2()               ", "\n\n", sep="")))  # Sys.time(), 
-      print(writeLines(paste("i = ", i, "\n\n", sep="")))
+      print(writeLines(paste("generateLikelihoodV2()               ", "  i= ", i, sep="")))  # Sys.time(), 
         
       print(summary(modelOutput[[i]], prob=.89))
       sink(NULL)
@@ -759,9 +757,9 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
 
     # print the posterior graphs separately so that the color can be adjusted to math the cluster info
 
-    color_scheme_set("red")      # cluster 'one'
+    color_scheme_set("red")     # setting used by bayesplot mcmc_intervals()  
 
-    index <- c(1,2,3)
+    index <- c(1,4,7)           # cluster 'one'
 
     for (i in index) {
 
@@ -785,8 +783,8 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
     }
 
 
-    color_scheme_set("green")      # cluster 'two'
-    index <- c(4,5,6)
+    color_scheme_set("green")       # setting used by bayesplot mcmc_intervals()  
+    index <- c(2,5,8)               # cluster 'two'
 
     for (i in index) {
 
@@ -810,8 +808,8 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
     }
 
 
-    color_scheme_set("blue")      # cluster 'three'
-    index <- c(7,8,9)
+    color_scheme_set("blue")      # setting used by bayesplot mcmc_intervals() 
+    index <- c(3,6,9)             # cluster 'three'
 
     for (i in index) {
 
@@ -909,7 +907,7 @@ modelMCMCcheck <- function(path, daytime, debug) {
                             geom_line() +
                             theme_bw() +
                             facet_grid(Parameter ~ .,scale='free_y',switch = 'y') +
-                            labs(caption="caterpillar plots", col= "chains")
+                            labs(caption=paste("mcmc chains caterpillar plot\n", "i= ", i, sep=""), col= "chains")
 
 
 
