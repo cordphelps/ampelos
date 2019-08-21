@@ -67,219 +67,34 @@ ampelos
 
 #### yes, Rhat is equal to 1 form each of the 9 models. (Displaying results for i=9)
 
-<table>
-
-<thead>
-
-<tr>
-
-<th style="text-align:left;">
-
-readLines(paste(ggsave.path, “clBRMsummary-pm-”, i, “.txt”, sep = ""))
-
-</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<tr>
-
-<td style="text-align:left;">
-
-generateLikelihoodV2() i= 9
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-NULL
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-Family: poisson
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-Links: mu = log
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-Formula: totalSpiders ~ 1 + log\_pop + contact\_high +
-contact\_high:log\_pop
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-Data: cl.st.list\[\[i\]\] (Number of observations: 12)
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-total post-warmup samples = 8000
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-Population-Level Effects:
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-Estimate Est.Error l-89% CI u-89% CI Eff.Sample Rhat
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-Intercept 0.06 2.43 -3.85 3.91 6168 1.00
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-log\_pop -0.01 1.00 -1.60 1.58 6026 1.00
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-contact\_high -0.30 0.92 -1.76 1.20 5421 1.00
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-log\_<pop:contact_high> -0.68 0.53 -1.55 0.14 4431 1.00
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-is a crude measure of effective sample size, and Rhat is the potential
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-scale reduction factor on split chains (at convergence, Rhat =
+``` 
+   readLines(paste(ggsave.path, "clBRMsummary-pm-", i, ".txt", sep = ""))
+```
+
+1 generateLikelihoodV2() i= 9 2 NULL 3 Family: poisson 4 Links: mu = log
+5 Formula: totalSpiders ~ 1 + log\_pop + contact\_high +
+contact\_high:log\_pop 6 Data: cl.st.list\[\[i\]\] (Number of
+observations: 12) 7 Samples: 4 chains, each with iter = 3000; warmup =
+1000; thin = 1; 8 total post-warmup samples = 8000 9  
+10 Population-Level Effects: 11 Estimate Est.Error l-89% CI u-89% CI
+Eff.Sample Rhat 12 Intercept 0.06 2.43 -3.85 3.91 6168 1.00 13 log\_pop
+-0.01 1.00 -1.60 1.58 6026 1.00 14 contact\_high -0.30 0.92 -1.76 1.20
+5421 1.00 15 log\_<pop:contact_high> -0.68 0.53 -1.55 0.14 4431 1.00
+16  
+17 Samples were drawn using sampling(NUTS). For each parameter,
+Eff.Sample 18 is a crude measure of effective sample size, and Rhat is
+the potential 19 scale reduction factor on split chains (at convergence,
+Rhat =
 1).
-
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
 
 ### compare variations of the basic model to determine which parameters are most meaningful.
 
 #### (none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap. <https://discourse.mc-stan.org/t/brms-loo-compare-interpretation-of-waic-deltas/10318>)
+
+    ## Warning: There were 1 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
+    ## http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
+
+    ## Warning: Examine the pairs() plot to diagnose sampling problems
 
 <img src="ampelos_files/figure-gfm/clusterAltModels-1.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-2.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-3.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-4.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-5.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-6.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-7.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-8.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-9.png" width="33%" />
 
@@ -299,13 +114,13 @@ scale reduction factor on split chains (at convergence, Rhat =
 
 ### how do the clusters compare to each other across multiple weeks?
 
-### the crab spider is a dominant species in the vineyard. Over the course of the season, how are they distributed along the length of the row?
-
-<img src="ampelos_files/figure-gfm/ridges-1.png" width="50%" /><img src="ampelos_files/figure-gfm/ridges-2.png" width="50%" />
-
 ### Is there a difference in the number of crab spiders trapped in the morning compared to the number trapped in the evening?
 
 #### yes, spiders seem more active in the daylight hours (afternoon collection). Cumulative counts also reveal more crab spiders in the control transect for afternoon collection.
+
+### the crab spider is a dominant species in the vineyard. Over the course of the season, how are they distributed along the length of the row?
+
+<img src="ampelos_files/figure-gfm/ridges-1.png" width="50%" /><img src="ampelos_files/figure-gfm/ridges-2.png" width="50%" />
 
 <img src="ampelos_files/figure-gfm/population-trends-both-1.png" width="50%" /><img src="ampelos_files/figure-gfm/population-trends-both-2.png" width="50%" /><img src="ampelos_files/figure-gfm/population-trends-both-3.png" width="50%" /><img src="ampelos_files/figure-gfm/population-trends-both-4.png" width="50%" /><img src="ampelos_files/figure-gfm/population-trends-both-5.png" width="50%" /><img src="ampelos_files/figure-gfm/population-trends-both-6.png" width="50%" />
 
