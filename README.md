@@ -5,7 +5,9 @@ ampelos
 
 ## how does a ‘semi-natural habitat’ (SNH) field margin influence the population of beneficial insects in an organic vineyard?
 
-### weekly composition of species and individuals?
+### what was the weekly composition of species and individuals?
+
+#### observation: crab spiders were the most prevalent canopy dwelling beneficial arthropods
 
     ## Warning: Transformation introduced infinite values in continuous y-axis
     
@@ -21,9 +23,11 @@ ampelos
 
 <img src="ampelos_files/figure-gfm/insectPop-1.png" width="50%" /><img src="ampelos_files/figure-gfm/insectPop-2.png" width="50%" />
 
-### describe the ‘big picture’ of the crab spider data by time and transect. Are there seasonal patterns?
+### paint the ‘big picture’ of the crab spider data by time and transect.
 
-#### yes, a visual inspection of the data suggests a seasonal break after week 25 and another break after week 31.
+#### observation: a visual inspection of the data suggests a seasonal break in crab spider populations initially after week 25 and another break after week 31.
+
+#### observation: trapped crab spiders are more numerous at the end of the day than they are at the end of the night.
 
     ## Warning: filter_() is deprecated. 
     ## Please use filter() instead
@@ -34,38 +38,42 @@ ampelos
 
 <img src="ampelos_files/figure-gfm/bigPicture-1.png" width="50%" /><img src="ampelos_files/figure-gfm/bigPicture-2.png" width="50%" />
 
-### as spiders are collected along the length of the transects, are physical clusters appearing and do they persist across multiple weeks? Clusters are partitions where each observation of spider counts is assigned to a partition with the nearest mean.
+### as spiders are collected along the length of the transects, are physical clusters apparent and do they persist across multiple weeks?
 
-#### (yes, using the kmeans() algorithm, clusters interpreted as follows: cluster 1 is rows 1-4, cluster 2 is rows 5-7, and cluster 3 is rows 8-10. this assessment is hardcoded in evaluateDailySpiderCounts() )
+#### observation: using the kmeans() algorithm, for both the SNH and control treatments, clusters designated as follows: cluster 1 is rows 1-4, cluster 2 is rows 5-7, and cluster 3 is rows 8-10.
 
 <img src="ampelos_files/figure-gfm/overheadClusters-1.png" width="50%" /><img src="ampelos_files/figure-gfm/overheadClusters-2.png" width="50%" />
 
-### create 9 models, one for each cluster and seasonal timeframe, based on the Oceanic Tool Complexity model of Kline. The model predicts the rate of trapped spiders, model parameters are log(population), contact rate, and the interaction of both.
+### create 9 models, one for each cluster and seasonal timeframe, based on the Oceanic Tool Complexity model of Kline. The model predicts the rate of trapped spiders, model parameters are log(population), contact rate, and the interaction of both. For each model, calculate the ‘likelihood’ that the interaction of population and SNH contact influences the model prediction by normalizing the difference between the prediction of a model including the interaction parameter with the prediction of a model that does not include that parameter. How plausible is it that a “high contact” (“SNH”) transect row will have more trapped spiders than a “low contact” (control) transect row?
 
-### How plausible is it that a “high contact” (“SNH”) transect row will have more trapped spiders than a “low contact” (control) transect row?
-
-#### for each model, calculate the ‘liklihood’ that the interaction of population and SNH contact influences the model prediction by normalizing the difference between the prediction of a model including the interaction parameter with the prediction of a model that does not include that paramter.
+#### observation: generally, it seems plausible that the interaction of log(population) and contact rate positively influences the number of trapped spiders for cluster one and two during seasonal timeframe one and two. This influence appears implausible in cluster three. (Further analysis suggests that the model breaks down in seasonal timeframe three.)
 
     ## Warning: 'bayesplot' namespace cannot be unloaded:
     ##   namespace 'bayesplot' is imported by 'shinystan' so cannot be unloaded
 
 ![](ampelos_files/figure-gfm/clusterBayes-1.png)<!-- -->
 
+## model evaluation
+
 ### Plot central (quantile-based) posterior interval estimates from MCMC draws. Evaluate each for ‘significance’
 
-#### (except cluster two, seasonal timeframe 3, all confidence intervals include 0, so they are not classically ‘significant’)
+#### except for cluster two, seasonal timeframe 3, all confidence intervals include 0, so they are not classically ‘significant’)
 
 <img src="ampelos_files/figure-gfm/clusterCoefficients-1.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterCoefficients-2.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterCoefficients-3.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterCoefficients-4.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterCoefficients-5.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterCoefficients-6.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterCoefficients-7.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterCoefficients-8.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterCoefficients-9.png" width="33%" />
 
-### mcmc for the models seem reasonable?
+## model evaluation (continued)
+
+### do the mcmc chains for the models seem reasonable?
 
 #### yes, trace plots suggest convergence of the chains that form the model parameter posterior distributions (<https://www.rensvandeschoot.com/brms-wambs/> paragraph 2)
 
 <img src="ampelos_files/figure-gfm/clusterMCMC-1.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterMCMC-2.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterMCMC-3.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterMCMC-4.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterMCMC-5.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterMCMC-6.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterMCMC-7.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterMCMC-8.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterMCMC-9.png" width="33%" />
 
+## model evaluation (continued)
+
 ### does Rhat from the summary() statistics confirm convergence?
 
-#### yes, Rhat is equal to 1 form each of the 9 models. (Displaying results for i=9)
+#### observation: Rhat is equal to 1 for each of the 9 models indicates convergence. (Displaying results for i=9)
 
 ``` 
    readLines(paste(ggsave.path, "clBRMsummary-pm-", i, ".txt", sep = ""))
@@ -87,9 +95,16 @@ the potential 19 scale reduction factor on split chains (at convergence,
 Rhat =
 1).
 
+## model evaluation (continued)
+
 ### compare variations of the basic model to determine which parameters are most meaningful.
 
-#### (none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap. <https://discourse.mc-stan.org/t/brms-loo-compare-interpretation-of-waic-deltas/10318>)
+#### observation: none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap. <https://discourse.mc-stan.org/t/brms-loo-compare-interpretation-of-waic-deltas/10318>)
+
+    ## Warning: There were 1 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
+    ## http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
+
+    ## Warning: Examine the pairs() plot to diagnose sampling problems
 
     ## Warning: There were 1 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
     ## http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
@@ -98,40 +113,50 @@ Rhat =
 
 <img src="ampelos_files/figure-gfm/clusterAltModels-1.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-2.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-3.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-4.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-5.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-6.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-7.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-8.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-9.png" width="33%" />
 
-### evaluate the effect of “contact rate” on model prediction for 9 models: 3 clusters across 3 seasonal timeframes. assume the median spider population per vine varies by seasonal timeframe per the results above
+## model evaluation (continued)
 
-#### calculate the posterior distribution of the expected rate of trapped spiders per vine for high and low contact environments, normalize the difference in these two expected rates and plot the difference. Do the distributions look reasonable?
+### evaluate the effect of “contact rate” on model prediction for 9 models, 3 clusters across 3 seasonal timeframes. Assume the median spider population per vine varies by seasonal timeframe according to the results above. Calculate the posterior distribution of the expected rate of trapped spiders per vine for high and low contact environments, normalize the difference in these two expected rates and plot the difference. Do the distributions look reasonable?
 
-#### for the first two seasonal timeframes, yes, the number of mcmc iterations seem sufficient as the distributions are single peaked and smooth. (<https://www.rensvandeschoot.com/brms-wambs/> paragraph 4) They also have reasonable bounds (<https://www.rensvandeschoot.com/brms-wambs/> paragraph 6). The model yields excessively broad distributions in the third seasonal timeframe.
+#### observation: for the first two seasonal timeframes, yes, the number of mcmc iterations seem sufficient as the distributions are single peaked and smooth. (<https://www.rensvandeschoot.com/brms-wambs/> paragraph 4) They also have reasonable bounds (<https://www.rensvandeschoot.com/brms-wambs/> paragraph 6). The model yields excessively broad distributions in the third seasonal timeframe suggesting that the model has broken down at this point.
 
 <img src="ampelos_files/figure-gfm/clusterDiag1-1.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag1-2.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag1-3.png" width="33%" />
 
+## model evaluation (continued)
+
 ### what is the impact of parameter joint uncertainty on model prediction?
 
-#### as predictors of trapped spiders, the parameter uncertainty of log(population) and contact rate are negatively correlated for clusters 1 and 2 in each seasonal timeframe. So, for smaller vine populations, SNH contact has a larger effect. These parameters are very mildly negatively correlated for cluster 3 for each timeframe.
+#### observation: as predictors of trapped spiders, the parameter uncertainty of log(population) and contact rate are negatively correlated for clusters 1 and 2 in each seasonal timeframe. So, for smaller vine populations, SNH contact has a larger effect. These parameters are very mildly negatively correlated for cluster 3 for each timeframe.
 
 <img src="ampelos_files/figure-gfm/clusterDiag2-1.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-2.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-3.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-4.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-5.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-6.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-7.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-8.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-9.png" width="33%" />
 
-### how do the clusters compare to each other across multiple weeks?
+## { end model evaluation }
 
-### Is there a difference in the number of crab spiders trapped in the morning compared to the number trapped in the evening?
+## model retrospective
 
-#### yes, spiders seem more active in the daylight hours (afternoon collection). Cumulative counts also reveal more crab spiders in the control transect for afternoon collection.
+### the model does not capture the effect of vineyard cultural controls. For example, the vineyard cover crop does not receive the same irrigation support as do the vines, and it is eventually removed by roughly week 28. The Ampelos vineyard management protocol also calls for the application of organic fungicides by foliar spray every 10 days. This effect is not modelled.
+
+### the model does not capture possible environmental effects including those related to the growth and decline of the vineyard canopy.
+
+## further data analysis
 
 ### the crab spider is a dominant species in the vineyard. Over the course of the season, how are they distributed along the length of the row?
 
 <img src="ampelos_files/figure-gfm/ridges-1.png" width="50%" /><img src="ampelos_files/figure-gfm/ridges-2.png" width="50%" />
 
+### Is there a difference in the number of crab spiders trapped in the morning compared to the number trapped in the evening?
+
+#### spiders seem more active in the daylight hours (afternoon collection). Cumulative counts also reveal more crab spiders in the control transect for afternoon collection.
+
 <img src="ampelos_files/figure-gfm/population-trends-both-1.png" width="50%" /><img src="ampelos_files/figure-gfm/population-trends-both-2.png" width="50%" /><img src="ampelos_files/figure-gfm/population-trends-both-3.png" width="50%" /><img src="ampelos_files/figure-gfm/population-trends-both-4.png" width="50%" /><img src="ampelos_files/figure-gfm/population-trends-both-5.png" width="50%" /><img src="ampelos_files/figure-gfm/population-trends-both-6.png" width="50%" />
+
+### each of the two transects consists of 3 rows of 10 traps in each row. Is the total insect population relatively uniform among the 3 rows of a transect? Does this uniformity change over time? Compute the Jaccard Index for each week: the index *‘is a statistic used for comparing the similarity and diversity of sample sets.’*
 
 ![transect
 layout](./images/transectLayout.jpg)
 
-### each of the two transects consists of 3 rows of 10 traps in each row. Is the total insect population relatively uniform among the 3 rows of a transect? Does this uniformity change over time? Compute the Jaccard Index for each week: the index *‘is a statistic used for comparing the similarity and diversity of sample sets.’*
-
-#### in-transect rows are not very uniform.
-
 ##### Note that *‘… the SMC counts both mutual presences (when an attribute is present in both sets) and mutual absence (when an attribute is absent in both sets) as matches and compares it to the total number of attributes in the universe, whereas the Jaccard index only counts mutual presence as matches and compares it to the number of attributes that have been chosen by at least one of the two sets.’* (<https://en.wikipedia.org/wiki/Jaccard_index>)
+
+#### observation: in-transect crab spider counts exhibit moderate uniformity.
 
     ## Warning: funs() is soft deprecated as of dplyr 0.8.0
     ## Please use a list of either functions or lambdas: 
@@ -146,19 +171,19 @@ layout](./images/transectLayout.jpg)
     ##   list(~ mean(., trim = .2), ~ median(., na.rm = TRUE))
     ## This warning is displayed once per session.
 
-    ## Warning: Removed 1 rows containing missing values (geom_point).
-
 <img src="ampelos_files/figure-gfm/similarity-1.png" width="50%" /><img src="ampelos_files/figure-gfm/similarity-2.png" width="50%" />
 
 ### are population clusters visually apparent across the length of the transects?
 
+#### observation: for example, data for week 24 and week 30
+
 <img src="ampelos_files/figure-gfm/overheadCompare-1.png" width="50%" /><img src="ampelos_files/figure-gfm/overheadCompare-2.png" width="50%" />
 
-### is there a difference in the spider abundance and diversity between the two transects?
+### is there a difference in the arthropod abundance and diversity between the two transects?
 
 <img src="ampelos_files/figure-gfm/diversity-1.png" width="50%" /><img src="ampelos_files/figure-gfm/diversity-2.png" width="50%" />
 
-### and the species counts?
+### species count table
 
 <table>
 
