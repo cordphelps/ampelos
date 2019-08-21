@@ -1294,7 +1294,7 @@ plotBugDistribution <- function (data, cap) {
     annotate("text", x = 95, y = 76, label = "SNH transect", colour="black") +
     annotate("text", x = 95, y = 40, label = "control transect", colour="black") + # fill="white", 
     theme_bw() +
-    theme() + 
+    #theme() + 
     # theme(legend.position = "bottom", legend.direction = "horizontal") +
     theme(legend.position = "none", legend.direction = "horizontal") +
     theme(legend.box = "horizontal", legend.key.size = unit(1, "cm")) +

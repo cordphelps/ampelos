@@ -247,7 +247,7 @@ bugRowsJaccardSimilarityV2 <- function(df, t, w) {
 
 }
 
-compareJaccardMultiWeekV4 <- function(data, ignoreBees, t, transectText) {
+compareJaccardMultiWeekV4 <- function(data, ignoreBees, t, transectText, daytime) {
 
   # develop the data for similarity graphs that compare the populations of adjacent rows
   #
@@ -257,11 +257,11 @@ compareJaccardMultiWeekV4 <- function(data, ignoreBees, t, transectText) {
   # this function is intended to be called from ampelos.Rmd
   #
 
+  library(dplyr)
+
   #data <- bugs.df
   #ignoreBees <- TRUE
   #t <- "control"
-
-  captionComment <- paste("(no caption comment)\n", sep="")
 
   weeks.vector <- getWeeks(data)                    # determine weeks in the dataset
   weeks.df <- dplyr::bind_cols(week = weeks.vector) # place weeks in a column
@@ -270,9 +270,11 @@ compareJaccardMultiWeekV4 <- function(data, ignoreBees, t, transectText) {
                         Lygus.hesperus = Lygus.hesperus..western.tarnished.plant.bug., 
                         cucumber.beetle = Diabrotica.undecimpunctata..Cucumber.Beetle.) 
 
+  captionComment <- paste("transect: ", transectText, "daytime: ", daytime, "\n(bees included)", sep="")
+
   if (ignoreBees == TRUE) { 
 
-    captionComment <- paste("(bees ignored)\n", sep="")
+    captionComment <- paste("transect: ", transectText, " daytime: ", daytime, "\n(bees ignored)", sep="")
 
     data <- data %>% dplyr::select( 
       -Agapostemon.sp....green..native.bee.,
@@ -287,6 +289,7 @@ compareJaccardMultiWeekV4 <- function(data, ignoreBees, t, transectText) {
 
   data <- data %>% 
     dplyr::filter(transect == t) %>% 
+    dplyr::filter(time == daytime) %>%
     dplyr::select(-position, -positionX, -transect, -julian, -time, -date) 
 
 
@@ -337,7 +340,7 @@ compareJaccardMultiWeekV4 <- function(data, ignoreBees, t, transectText) {
   plot.df <- dplyr::bind_rows(obs)
 
   #grid <- plotSimilarity(plot.df, transectText, captionComment)
-  gg <- plotSimilarity(plot.df, transectText, captionComment)
+  gg <- plotSimilarity(df=plot.df, text=captionComment)
 
   return(gg)
 
@@ -345,10 +348,13 @@ compareJaccardMultiWeekV4 <- function(data, ignoreBees, t, transectText) {
 
 
 
-plotSimilarity <- function(df, transectText, captionComment) {
+plotSimilarity <- function(df, text) {
 
 
-  gg <- ggplot(df) + 
+  library(ggplot2)
+
+
+  g <- ggplot(df) + 
       geom_jitter(aes(x=week, y=1-SME, colour = "mediumvioletred", fill = "plum1"), width = 0.1, height = 0.1, 
         show.legend = TRUE, shape = 21, size=5) + 
       geom_jitter(aes(x=week, y=1-jaccard, colour = "mediumvioletred", fill = "purple1"), width = 0.1, height = 0.1, 
@@ -363,18 +369,22 @@ plotSimilarity <- function(df, transectText, captionComment) {
       # scale_y_continuous(breaks = seq(min(0), max(1), by = 0.1)) +
       expand_limits(y=c(0,1)) + 
       scale_x_continuous(breaks=seq(22,40,2)) +
+
       labs(
           y="index", 
           x="week", 
-          caption = paste(transectText, " transect: row triad population similarity, Jaccard and SMC", "\nweekly mean of row-to-row indicies ", sep="" ) ) +
+          caption = paste("transect: row triad population similarity, Jaccard and SMC", 
+            "\nweekly mean of row-to-row indicies\n", 
+            text, sep="" ) ) +
+
       #theme(legend.position="none") +
       theme(legend.position = "bottom", legend.direction = "horizontal") +
-      theme_bw() +
-      coord_fixed(ratio=5) # control the aspect ratio of the output
+      theme_bw() 
+      #coord_fixed(ratio=5) # control the aspect ratio of the output
       # https://stackoverflow.com/questions/7056836/how-to-fix-the-aspect-ratio-in-ggplot
 
-  return(grid.arrange(gg, ncol=1, nrow=1))
-  #return(gg)
+  
+    return(g)
 
   }
 

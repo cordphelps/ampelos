@@ -1174,8 +1174,8 @@ plotRawWeekly <- function(df) {
     # geom_jitter(aes(fill = time), shape=21, size=5, alpha=.7, show.legend=TRUE) +
     geom_jitter(aes(fill = time), shape=21, size=5, alpha=.7, show.legend=TRUE, width = .1) +
     
-    # geom_vline(xintercept=25.5) + # seasonal timeframe seperators
-    # geom_vline(xintercept=31.5) + #
+    geom_vline(xintercept=25.5) + # seasonal timeframe seperators
+    geom_vline(xintercept=31.5) + #
     
     ylim(c(0, 31)) + 
     expand_limits(y=c(0,31)) + 
