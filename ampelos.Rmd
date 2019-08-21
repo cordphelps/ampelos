@@ -428,7 +428,7 @@ for (i in 1:3) {
 
 ### what is the impact of parameter joint uncertainty on model prediction?
 
-#### observation: as predictors of trapped spiders, the parameter uncertainty of log(population) and contact rate are negatively correlated for clusters 1 and 2 in each seasonal timeframe. So, for smaller vine populations, SNH contact has a larger effect. These parameters are very mildly negatively correlated for cluster 3 for each timeframe.
+#### observation: as predictors of trapped spiders, the parameter uncertainty of log(population) and contact rate are negatively correlated during seasonal timeframe 1 and 2 in each cluster. So, for smaller vine populations, SNH contact has a larger effect. These parameters are very mildly negatively correlated during seasonal timeframe 3 for each cluster.
 
 ```{r clusterDiag2, echo=FALSE, include=TRUE, message=F, warning=T, out.width=c('33%', '33%', '33%'), fig.show='hold'}
 

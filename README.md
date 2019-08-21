@@ -101,6 +101,11 @@ Rhat =
 
 #### observation: none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap. <https://discourse.mc-stan.org/t/brms-loo-compare-interpretation-of-waic-deltas/10318>)
 
+    ## Warning: There were 6 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
+    ## http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
+
+    ## Warning: Examine the pairs() plot to diagnose sampling problems
+
 <img src="ampelos_files/figure-gfm/clusterAltModels-1.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-2.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-3.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-4.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-5.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-6.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-7.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-8.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-9.png" width="33%" />
 
 ## model evaluation (continued)
@@ -115,7 +120,7 @@ Rhat =
 
 ### what is the impact of parameter joint uncertainty on model prediction?
 
-#### observation: as predictors of trapped spiders, the parameter uncertainty of log(population) and contact rate are negatively correlated for clusters 1 and 2 in each seasonal timeframe. So, for smaller vine populations, SNH contact has a larger effect. These parameters are very mildly negatively correlated for cluster 3 for each timeframe.
+#### observation: as predictors of trapped spiders, the parameter uncertainty of log(population) and contact rate are negatively correlated during seasonal timeframe 1 and 2 in each cluster. So, for smaller vine populations, SNH contact has a larger effect. These parameters are very mildly negatively correlated during seasonal timeframe 3 for each cluster.
 
 <img src="ampelos_files/figure-gfm/clusterDiag2-1.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-2.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-3.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-4.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-5.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-6.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-7.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-8.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag2-9.png" width="33%" />
 
