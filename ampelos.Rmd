@@ -320,6 +320,7 @@ for (i in 1:length(gg.list)) {
 # print the summary statistics table for each model
 
 library(knitr)
+library(kableExtra)
 
 ggsave.path <- "./code/output/"
 
@@ -331,7 +332,8 @@ for (i in 1:9) {
   
 }
 
-knitr::kable(df)
+print(df)
+
 
 ```
 
@@ -350,20 +352,24 @@ seed <- 10
 # read the 9 models from disc and run diags
 # (debug = TRUE for first model (not all 9) output only)
 
-gg.list <- modelComparison(path=ggsave.path, daytime='pm', randomSeed=seed, debug=FALSE)
+if (TRUE) {
+  
+  gg.list <- modelComparison(path=ggsave.path, daytime='pm', randomSeed=seed, debug=FALSE)
 
-for (i in 1:length(gg.list)) {
+  for (i in 1:length(gg.list)) {
   
-  print(gg.list[[i]])
+    print(gg.list[[i]])
   
-  fileName <- paste("ggsave.clusterAltModels.", i, ".pdf", sep="")
+    fileName <- paste("ggsave.clusterAltModels.", i, ".pdf", sep="")
   
-  if (file.exists(fileName)) { file.remove(fileName) }
+    if (file.exists(fileName)) { file.remove(fileName) }
 
-  ggsave(fileName, plot = gg.list[[i]], 
+    ggsave(fileName, plot = gg.list[[i]], 
               device = NULL, path = ggsave.path,
               scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
               units = c("in", "cm", "mm"))
+  }
+  
 }
 
 ```
@@ -548,6 +554,10 @@ if (FALSE) {
 
 
 
+### Is there a difference in the number of crab spiders trapped in the morning compared to the number trapped in the evening?
+
+#### yes, spiders seem more active in the daylight hours (afternoon collection). Cumulative counts also reveal more crab spiders in the control transect for afternoon collection.
+
 ### the crab spider is a dominant species in the vineyard. Over the course of the season, how are they distributed along the length of the row? 
 
 
@@ -566,9 +576,6 @@ print(v2.2)
 ```
 
 
-### Is there a difference in the number of crab spiders trapped in the morning compared to the number trapped in the evening?
-
-#### yes, spiders seem more active in the daylight hours (afternoon collection). Cumulative counts also reveal more crab spiders in the control transect for afternoon collection.
 
 ```{r population-trends-both, echo=FALSE, include=TRUE, message=F, warning=T, out.width=c('50%', '50%'), fig.show='hold'}
 
