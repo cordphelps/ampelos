@@ -360,8 +360,8 @@ plotPosteriorDensity <- function(df1, df2, df3, mt) {
     #coord_fixed(ratio=20/1) +     # control the aspect ratio of the output; "ratio" refers to the 
                                   # ratio of the axis limits themselves
     
-    coord_cartesian(ylim=c(0, 1.5), xlim=c(-3, 5))  + # clip
-    #coord_cartesian(ylim=c(0, 1), xlim=c(-25, 25))  + # clip
+    coord_cartesian(ylim=c(0, 1.5), xlim=c(-1, 2))  + # clip
+    #coord_cartesian(ylim=c(0, 1.5), xlim=c(-3, 5))  + # clip
 
     scale_y_continuous(breaks = seq(min(0), max(1.5), by = .2)) +
     #scale_x_continuous(breaks=seq(-15,5,5)) + 

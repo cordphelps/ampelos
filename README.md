@@ -97,19 +97,9 @@ Rhat =
 
 ## model evaluation (continued)
 
-### compare variations of the basic model to determine which parameters are most meaningful.
+### compare variations of the basic model to determine which parameters are most meaningful. Deconstruct the model per <https://bookdown.org/connect/#/apps/1850/access> 3 (section 10.2, search “bit by bit”) to calculate the WAIC for each variation of the model
 
 #### observation: none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap. <https://discourse.mc-stan.org/t/brms-loo-compare-interpretation-of-waic-deltas/10318>)
-
-    ## Warning: There were 1 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
-    ## http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
-
-    ## Warning: Examine the pairs() plot to diagnose sampling problems
-
-    ## Warning: There were 1 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
-    ## http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
-
-    ## Warning: Examine the pairs() plot to diagnose sampling problems
 
 <img src="ampelos_files/figure-gfm/clusterAltModels-1.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-2.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-3.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-4.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-5.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-6.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-7.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-8.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-9.png" width="33%" />
 

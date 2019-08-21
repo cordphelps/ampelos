@@ -349,9 +349,10 @@ print(df)
 
 ## model evaluation (continued)
 
-### compare variations of the basic model to determine which parameters are most meaningful. 
+### compare variations of the basic model to determine which parameters are most meaningful. Deconstruct the model per https://bookdown.org/connect/#/apps/1850/access 3 (section 10.2, search “bit by bit”) to calculate the WAIC for each variation of the model
 
 #### observation: none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap. https://discourse.mc-stan.org/t/brms-loo-compare-interpretation-of-waic-deltas/10318) 
+
 
 ```{r clusterAltModels, echo=FALSE, include=TRUE, message=F, warning=T, out.width=c('33%', '33%', '33%'), fig.show='hold'}
 
@@ -473,6 +474,9 @@ rm(gg.list)
 
 
 ```{r ridges, echo=FALSE, include=TRUE, message=F, warning=T, out.width=c('50%', '50%'), fig.show='hold'}
+
+
+source('./code/bug-library.R')
 
 new.df <- bugs.df %>% mutate(newColumn = ifelse(Thomisidae..crab.spider. > 0, 1, 0))
 
