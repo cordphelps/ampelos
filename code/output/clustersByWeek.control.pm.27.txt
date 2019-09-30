@@ -1,0 +1,1 @@
+"row"	"position"	"week"	"transect"	"cluster"	"newCluster""1"	"27"	1	27	"control"	"3"	"1""2"	"27"	6	27	"control"	"2"	"2""3"	"27"	7	27	"control"	"2"	"2""4"	"27"	8	27	"control"	"1"	"3"

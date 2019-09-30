@@ -503,6 +503,7 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
 
   
   if (period=="pm") {
+
     
     g1 <- ggTrendOrCumulative(df1=oakPM.df, df2=controlPM.df, 
                               lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
@@ -517,6 +518,10 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
     # don't run this twice
     if (trend==FALSE) {
 
+      DFtoDiscCL(df1=oakPMcluster1.df, df2=oakPMcluster2.df, df3=oakPMcluster3.df, name="spiderCountsOAKclustersPM")
+      DFtoDiscCL(df1=controlPMcluster1.df, df2=controlPMcluster2.df, df3=controlPMcluster3.df, name="spiderCountsCONTROLclustersPM")
+
+
       clusterGraph.list <- ggTrendClusters(df1=oakPMcluster.list, df2=controlPMcluster.list, 
                               lowerWeekLimit1=lowerWeekLimit, upperWeekLimit1=upperWeekLimit,
                               lowerWeekLimit2=lowerWeekLimit, upperWeekLimit2=upperWeekLimit,
@@ -524,8 +529,8 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
                               spct=sp_percentOak, 
                               subtitle="afternoon collection", caption=" ")
     
-      g.list[[2]] <- clusterGraph.list[[1]]
-      g.list[[3]] <- clusterGraph.list[[2]]
+      g.list[[2]] <- clusterGraph.list[[1]]  # SNH
+      g.list[[3]] <- clusterGraph.list[[2]]  # control
 
     }
     
@@ -551,8 +556,8 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
                               spct=sp_percentOak, 
                               subtitle="morning collection", caption=" ")
     
-      g.list[[2]] <- clusterGraph.list[[1]]
-      g.list[[3]] <- clusterGraph.list[[2]]
+      g.list[[2]] <- clusterGraph.list[[1]]  # SNH
+      g.list[[3]] <- clusterGraph.list[[2]]  # control
 
     }
 
@@ -579,8 +584,8 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
                               spct=sp_percentOak, 
                               subtitle="24 hour collection", caption=" ")
     
-      g.list[[2]] <- clusterGraph.list[[1]]
-      g.list[[3]] <- clusterGraph.list[[2]]
+      g.list[[2]] <- clusterGraph.list[[1]]   # SNH
+      g.list[[3]] <- clusterGraph.list[[2]]   # control
 
     }
 
@@ -591,6 +596,41 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
   
   return(g.list)
   
+}
+
+
+DFtoDiscCL <- function(df1, df2, df3, name) {
+
+  # write the data as a text file
+
+  path<- "./code/output/"
+
+  fileName <- paste(path, name, ".txt", sep="")
+
+  library(dplyr)
+
+  df1$cluster <- "cl-one"
+  df2$cluster <- "cl-two"
+  df3$cluster <- "cl-three"
+
+  combo.df <- full_join(df1, df2, by = "week")
+  combo.df <- full_join(combo.df, df3, by = "week")
+
+  write.table(combo.df, fileName, append=FALSE, sep="\t", eol="\r")
+
+}
+
+singleDFtoDiscCL <- function(df, transect, name) {
+
+  # write cluster data by week
+
+  path<- "./code/output/"
+
+  fileName <- paste(path, name, ".txt", sep="")
+
+  write.table(df, fileName, append=FALSE, sep="\t", eol="\r")
+
+
 }
 
 ggSpeciesJulianTrend <- function(df, j, PM, AM, st, t, spct, caption) {

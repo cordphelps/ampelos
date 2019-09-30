@@ -236,7 +236,8 @@ modelDiagsV2 <- function(daytime, hp, path) {
     post.df.list[[j]] <- post.df.list[[j]] %>%   
           mutate(trappedSpiders_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log(hPop) ),
                  trappedSpiders_low  = exp(b_Intercept + b_log_pop * log(hPop) )) %>% 
-          mutate(diff        = (trappedSpiders_high - trappedSpiders_low) / trappedSpiders_low )
+          #mutate(diff        = (trappedSpiders_high - trappedSpiders_low) / trappedSpiders_low )
+          mutate(diff        = trappedSpiders_high - trappedSpiders_low) 
 
      # add a cluster indicator for the graphics
     if ((j == 1) || (j == 4) || (j == 7)) {

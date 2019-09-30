@@ -269,7 +269,16 @@ buildClustersByWeek <- function(df, t, species, cn, time) {
 
 			dataList[[i]] <- kmAssignClusters(list=clusterList, cn=cn)
 
+			# write data to disc for transect == "control", one file for each week
+			if (t=="control") {
+
+				f <- paste("clustersByWeek.", t, ".", time, ".", weeks.vector[[i]], sep="")
+
+				singleDFtoDiscCL(df=data.frame(dataList[[i]]), transect=t, name=f)
+			}
+
 		}
+
 
 	}
 
