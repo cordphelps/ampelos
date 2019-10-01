@@ -101,7 +101,7 @@ Rhat =
 
 #### observation: none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap. <https://discourse.mc-stan.org/t/brms-loo-compare-interpretation-of-waic-deltas/10318>)
 
-    ## Warning: There were 6 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
+    ## Warning: There were 4 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
     ## http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
 
     ## Warning: Examine the pairs() plot to diagnose sampling problems

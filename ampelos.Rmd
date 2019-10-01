@@ -83,19 +83,23 @@ if (TRUE) {
 # returnList[[1]] # plotWeekly(total.df) # total spiders by week/cluster differentiated by time of day
 # returnList[[2]] <- plotRawWeekly(total.df)
 # returnList[[3]] # plotTransectWeekly(total.df)
+  
       ## total.df
       ##
       ## multiple records per week (372 rows) with columns
       ## week, transect, time, cluster, totalSpiders
       ##
 # returnList[[4]] <- total.df
+
 # returnList[[5]]   # reserved for likelihood.df
 # returnList[[7]]   # reserved for modelInput  (a list of the 9 data sources)
 # returnList[[8]]   # reserved for modelOutput (a list of the 9 models)
 # returnList[[9]]   # reserved for label.list 
 # returnList[[10]]  # reserved for post.df.list (posterior distributions)
 
-
+# get counts by week/cluster/transect and write to file
+#     tempList <- evaluateDailySpiderCounts(bugs.df)
+#     singleDFtoDiscCL(df=tempList[[4]], transect="unused")
 
 if (FALSE) {
   print(returnList[[1]]) # scatter plot by cluster with seasonal timeframes
@@ -148,6 +152,7 @@ if (FALSE) {
 
 ```{r overheadClusters, echo=FALSE, include=TRUE, results="hide", message=F, warning=T, out.width=c('50%', '50%'), fig.show='hold'}
 
+source("./code/bug-library.R")
 source("./code/jaccard-similarity.R")
 source("./code/k-means.R")
 
@@ -391,7 +396,7 @@ if (TRUE) {
 
 ### evaluate the effect of "contact rate" on model prediction for 9 models, 3 clusters across 3 seasonal timeframes. Assume the median spider population per vine varies by seasonal timeframe according to the results above. Calculate the posterior distribution of the expected rate of trapped spiders per vine for high and low contact environments, normalize the difference in these two expected rates and plot the difference. Do the distributions look reasonable?
 
-#### observation: for the first two seasonal timeframes, yes, the number of mcmc iterations seem sufficient as the distributions are single peaked and smooth. (https://www.rensvandeschoot.com/brms-wambs/ paragraph 4) They also have reasonable bounds (https://www.rensvandeschoot.com/brms-wambs/ paragraph 6). The model yields excessively broad distributions in the third seasonal timeframe suggesting that the model has broken down at this point.
+#### observation: for the first two seasonal timeframes, yes, the number of mcmc iterations seem sufficient as the distributions are single peaked and smooth. (https://www.rensvandeschoot.com/brms-wambs/ paragraph 4) They also have reasonable bounds (https://www.rensvandeschoot.com/brms-wambs/ paragraph 6). The model yields excessively broad distributions in the first seasonal timeframe suggesting that the model has broken down at this point.
 
 
 ```{r clusterDiag1, echo=FALSE, include=TRUE, message=F, warning=T, out.width=c('33%', '33%', '33%'), fig.show='hold'}
