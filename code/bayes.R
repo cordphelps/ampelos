@@ -256,26 +256,26 @@ modelDiagsV2 <- function(daytime, hp, path) {
   gg.list <- list()
 
   gg.list[[1]] <- plotPosteriorDensity(df1= post.df.list[[1]], df2= post.df.list[[2]], 
-    df3=post.df.list[[3]], mt = modelTime[[1]])
+    df3=post.df.list[[3]], mt = modelTime[[1]], pop = hp[[1]])
   gg.list[[2]] <- plotPosteriorDensity(df1= post.df.list[[4]], df2= post.df.list[[5]], 
-    df3=post.df.list[[6]], mt = modelTime[[2]])
+    df3=post.df.list[[6]], mt = modelTime[[2]], pop = hp[[2]])
   gg.list[[3]] <- plotPosteriorDensity(df1= post.df.list[[7]], df2= post.df.list[[8]], 
-    df3=post.df.list[[9]], mt = modelTime[[3]])
+    df3=post.df.list[[9]], mt = modelTime[[3]], pop = hp[[3]])
 
 
-  gg.tmp.list <- plotPosteriorJitterV2(df1= post.df.list[[1]], df2= post.df.list[[2]], df3=post.df.list[[3]], mt = modelTime[[1]])
+  gg.tmp.list <- plotPosteriorJitterV2(df1= post.df.list[[1]], df2= post.df.list[[2]], df3=post.df.list[[3]], mt = modelTime[[1]], pop = hp[[1]])
 
   gg.list[[4]] <- gg.tmp.list[[1]]
   gg.list[[5]] <- gg.tmp.list[[2]]
   gg.list[[6]] <- gg.tmp.list[[3]]
 
-  gg.tmp.list <- plotPosteriorJitterV2(df1= post.df.list[[4]], df2= post.df.list[[5]], df3=post.df.list[[6]], mt = modelTime[[2]])
+  gg.tmp.list <- plotPosteriorJitterV2(df1= post.df.list[[4]], df2= post.df.list[[5]], df3=post.df.list[[6]], mt = modelTime[[2]], pop = hp[[2]])
 
   gg.list[[7]] <- gg.tmp.list[[1]]
   gg.list[[8]] <- gg.tmp.list[[2]]
   gg.list[[9]] <- gg.tmp.list[[3]]
 
-  gg.tmp.list <- plotPosteriorJitterV2(df1= post.df.list[[7]], df2= post.df.list[[8]], df3=post.df.list[[9]], mt = modelTime[[3]])
+  gg.tmp.list <- plotPosteriorJitterV2(df1= post.df.list[[7]], df2= post.df.list[[8]], df3=post.df.list[[9]], mt = modelTime[[3]], pop = hp[[3]])
 
   gg.list[[10]] <- gg.tmp.list[[1]]
   gg.list[[11]] <- gg.tmp.list[[2]]
@@ -286,21 +286,21 @@ modelDiagsV2 <- function(daytime, hp, path) {
 
 }
 
-plotPosteriorJitterV2 <- function(df1, df2, df3, mt) {
+plotPosteriorJitterV2 <- function(df1, df2, df3, mt, pop) {
 
   colours = c("1" = "red", "2" = "green", "3" = "blue")
 
   gg.list <- list()
 
-  gg.list[[1]] <- justJitterPlot(df1, mt)
-  gg.list[[2]] <- justJitterPlot(df2, mt)
-  gg.list[[3]] <- justJitterPlot(df3, mt)
+  gg.list[[1]] <- justJitterPlot(df1, mt, pop)
+  gg.list[[2]] <- justJitterPlot(df2, mt, pop)
+  gg.list[[3]] <- justJitterPlot(df3, mt, pop)
 
   return(gg.list)
 
 }
 
-justJitterPlot <- function(df, mt) {
+justJitterPlot <- function(df, mt, pop) {
 
     gg <- ggplot() + 
 
@@ -318,7 +318,7 @@ justJitterPlot <- function(df, mt) {
     
     labs(y="bpc", 
          x="bc", 
-         caption = paste("the joint posterior distribution of bc and bpc\n", mt, sep="") ) +
+         caption = paste("the joint posterior distribution of bc and bpc\n", "spider population per vine : ", pop, "\n", mt, sep="") ) +
     
     theme_bw() +
 
@@ -341,7 +341,7 @@ justJitterPlot <- function(df, mt) {
 }
 
 
-plotPosteriorDensity <- function(df1, df2, df3, mt) {
+plotPosteriorDensity <- function(df1, df2, df3, mt, pop) {
 
     colours = c("1" = "red", "2" = "green", "3" = "blue")
 
@@ -372,7 +372,7 @@ plotPosteriorDensity <- function(df1, df2, df3, mt) {
          #subtitle=paste(mt, sep=""), 
     labs(y="density", 
          x="trapped spider rate\nSNH treatment compared to control", 
-         caption = paste("the distribution of the plausible\ndifference in average trapped spiders\n", mt, sep="") ) +
+         caption = paste("the distribution of the plausible\ndifference in average trapped spiders\n", "spider population per vine : ", pop, "\n", mt, sep="") ) +
     
     theme_bw() +
 
