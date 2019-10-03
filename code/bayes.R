@@ -1033,7 +1033,7 @@ modelComparison <- function(path, daytime, randomSeed, debug) {
  
           ggplot(aes(x = reorder(model, -waic), 
                  y    = waic,
-                 ymin = waic - se_waic,
+                 ymin = waic - se_waic,   # 4x "standard error" ~= 95% confidence interval
                  ymax = waic + se_waic
                  #color = model)) +
                  )) +
@@ -1041,7 +1041,8 @@ modelComparison <- function(path, daytime, randomSeed, debug) {
           geom_pointrange(shape = 21, size=1, fill=color, show.legend = F) + 
           coord_flip() +
           labs(x = NULL, y = NULL,
-                caption = paste("Watanabe-Akaike Information Criterion", "\nseasonal timeframe: ", timeframe, "\ncluster: ", cluster, "\ni= ", i, sep="") ) +
+                caption = paste("Watanabe-Akaike Information Criterion\n+/- the standard error\nseasonal timeframe: ", 
+                  timeframe, "\ncluster: ", cluster, " (i = ", i, ")", sep="") ) +
           theme(axis.ticks.y    = element_blank())
 
 
