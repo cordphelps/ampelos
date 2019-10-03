@@ -99,9 +99,11 @@ Rhat =
 
 ### compare variations of the basic model to determine which parameters are most meaningful. Deconstruct the model per <https://bookdown.org/connect/#/apps/1850/access> 3 (section 10.2, search “bit by bit”) to calculate the WAIC for each variation of the model
 
+##### references <https://statmodeling.stat.columbia.edu/2015/10/03/comparing-waic-or-loo-or-any-other-predictive-error-measure/> ; <http://www.stat.columbia.edu/~gelman/research/unpublished/loo_stan.pdf>
+
 #### observation: none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap. <https://discourse.mc-stan.org/t/brms-loo-compare-interpretation-of-waic-deltas/10318>)
 
-    ## Warning: There were 4 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
+    ## Warning: There were 3 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
     ## http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
 
     ## Warning: Examine the pairs() plot to diagnose sampling problems
@@ -112,7 +114,7 @@ Rhat =
 
 ### evaluate the effect of “contact rate” on model prediction for 9 models, 3 clusters across 3 seasonal timeframes. Assume the median spider population per vine varies by seasonal timeframe according to the results above. Calculate the posterior distribution of the expected rate of trapped spiders per vine for high and low contact environments, normalize the difference in these two expected rates and plot the difference. Do the distributions look reasonable?
 
-#### observation: for the first two seasonal timeframes, yes, the number of mcmc iterations seem sufficient as the distributions are single peaked and smooth. (<https://www.rensvandeschoot.com/brms-wambs/> paragraph 4) They also have reasonable bounds (<https://www.rensvandeschoot.com/brms-wambs/> paragraph 6). The model yields excessively broad distributions in the third seasonal timeframe suggesting that the model has broken down at this point.
+#### observation: for the first two seasonal timeframes, yes, the number of mcmc iterations seem sufficient as the distributions are single peaked and smooth. (<https://www.rensvandeschoot.com/brms-wambs/> paragraph 4) They also have reasonable bounds (<https://www.rensvandeschoot.com/brms-wambs/> paragraph 6). The model yields excessively broad distributions in the first seasonal timeframe suggesting that the model has broken down at this point.
 
 <img src="ampelos_files/figure-gfm/clusterDiag1-1.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag1-2.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterDiag1-3.png" width="33%" />
 
