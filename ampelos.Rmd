@@ -248,7 +248,7 @@ rl <- returnList
     
     print(gg.likelihood.pm.list[[i]])
       
-    fileName <- paste("ggsave.clusterBayes.", i, ".4.1.pdf", sep="")
+    fileName <- paste("ggsave.plausibility.", i, ".4.1.pdf", sep="")
   
     if (file.exists(fileName)) { file.remove(fileName) }
       
@@ -356,6 +356,8 @@ print(df)
 
 ### compare variations of the basic model to determine which parameters are most meaningful. Deconstruct the model per https://bookdown.org/connect/#/apps/1850/access 3 (section 10.2, search “bit by bit”) to calculate the WAIC for each variation of the model
 
+##### references https://statmodeling.stat.columbia.edu/2015/10/03/comparing-waic-or-loo-or-any-other-predictive-error-measure/ ; http://www.stat.columbia.edu/~gelman/research/unpublished/loo_stan.pdf 
+
 #### observation: none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap. https://discourse.mc-stan.org/t/brms-loo-compare-interpretation-of-waic-deltas/10318) 
 
 
@@ -414,7 +416,7 @@ for (i in 1:3) {
   
   print(gg.list[[i]])
   
-  fileName <- paste("ggsave.clusterDiags.", i, ".4.2.pdf", sep="")
+  fileName <- paste("ggsave.poisson.", i, ".4.2.pdf", sep="")
   
   if (file.exists(fileName)) { file.remove(fileName) }
 
@@ -437,11 +439,12 @@ for (i in 1:3) {
 
 ```{r clusterDiag2, echo=FALSE, include=TRUE, message=F, warning=T, out.width=c('33%', '33%', '33%'), fig.show='hold'}
 
+
 for (i in 4:length(gg.list)) {
   
   print(gg.list[[i]])
   
-  fileName <- paste("ggsave.clusterDiags.", i, ".4.2.pdf", sep="")
+  fileName <- paste("ggsave.parameters.", i, ".4.2.pdf", sep="")
   
   if (file.exists(fileName)) { file.remove(fileName) }
 
