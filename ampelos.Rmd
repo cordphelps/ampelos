@@ -12,7 +12,7 @@ output: github_document
 
 ggsave.path <- "./code/output/"
 seed <- 10
-hypotheticalPopulation <- c(36,11.07,4.95)
+hypotheticalPopulation <- c(120.6,36.9,16.2)
 
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
@@ -30,7 +30,7 @@ bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 source("./code/bug-library.R")
 source("./code/jaccard-similarity.R")  # for getWeeks()
 
-ggsave.path <- "./code/output/"
+
 
 returnList <- scanBugPercentages(bugs.df)
 
@@ -300,7 +300,6 @@ for (i in 2:length(gg.likelihood.pm.list)) {
 
 source('./code/bayes.R')
 
-ggsave.path <- "./code/output/"
 time <- "pm"
 
 # read the 9 models from disc and run diags
@@ -337,8 +336,6 @@ for (i in 1:length(gg.list)) {
 
 library(knitr)
 library(kableExtra)
-
-ggsave.path <- "./code/output/"
 
 for (i in 1:9) {
   
@@ -406,10 +403,8 @@ if (TRUE) {
 
 source('./code/bayes.R')
 
-ggsave.path <- "./code/output/"
 daytime <- "pm"
-#hypotheticalPopulation <- c(76,47,11)  # hypothetical per vine median population by seasonal timeframe
-hypotheticalPopulation <- c(40,12.2,5.6)
+
 
 # read the 9 models from disc and run diags
 gg.list <- modelDiagsV2(daytime='pm', hp=hypotheticalPopulation, path=ggsave.path)
@@ -509,8 +504,6 @@ print(v2.2)
 
 source("./code/bug-library.R")
 
-ggsave.path <- "./code/output/"
-
 g.list.am <- plotSpeciesTrendV3(data=bugs.df,
 species=quo(Thomisidae..crab.spider.), period="am", trend=FALSE, speciesText="Crab Spider", lowerWeekLimit=23, upperWeekLimit=34, caption=Sys.Date())
 
@@ -565,8 +558,6 @@ print(g.control)
 
 ```{r overheadCompare, echo=FALSE, include=TRUE, message=F, warning=T, out.width=c('50%', '50%'), fig.show='hold'}
 
-
-ggsave.path <- "./code/output/"
 
 reducedData.df <- selectDataAcrossTransects(data=bugs.df, week=quo(24), species=quo(Thomisidae..crab.spider.))
 
