@@ -85,9 +85,9 @@ contact\_high:log\_pop 6 Data: cl.st.list\[\[i\]\] (Number of
 observations: 12) 7 Samples: 4 chains, each with iter = 3000; warmup =
 1000; thin = 1; 8 total post-warmup samples = 8000 9  
 10 Population-Level Effects: 11 Estimate Est.Error l-89% CI u-89% CI
-Eff.Sample Rhat 12 Intercept 0.06 2.43 -3.85 3.91 6168 1.00 13 log\_pop
--0.01 1.00 -1.60 1.58 6026 1.00 14 contact\_high -0.30 0.92 -1.76 1.20
-5421 1.00 15 log\_<pop:contact_high> -0.68 0.53 -1.55 0.14 4431 1.00
+Eff.Sample Rhat 12 Intercept 0.01 1.67 -2.63 2.66 6394 1.00 13 log\_pop
+0.00 1.01 -1.61 1.60 6308 1.00 14 contact\_high -0.50 0.89 -1.95 0.93
+4966 1.00 15 log\_<pop:contact_high> -0.76 0.68 -1.86 0.30 3970 1.00
 16  
 17 Samples were drawn using sampling(NUTS). For each parameter,
 Eff.Sample 18 is a crude measure of effective sample size, and Rhat is
@@ -102,11 +102,6 @@ Rhat =
 ##### references <https://statmodeling.stat.columbia.edu/2015/10/03/comparing-waic-or-loo-or-any-other-predictive-error-measure/> ; <http://www.stat.columbia.edu/~gelman/research/unpublished/loo_stan.pdf>
 
 #### observation: none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap. <https://discourse.mc-stan.org/t/brms-loo-compare-interpretation-of-waic-deltas/10318>)
-
-    ## Warning: There were 3 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
-    ## http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
-
-    ## Warning: Examine the pairs() plot to diagnose sampling problems
 
 <img src="ampelos_files/figure-gfm/clusterAltModels-1.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-2.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-3.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-4.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-5.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-6.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-7.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-8.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-9.png" width="33%" />
 
@@ -666,7 +661,7 @@ sessionInfo()
     ##  [1] colorspace_1.4-1     brms_2.9.0           rsconnect_0.8.15    
     ##  [4] markdown_1.0         base64enc_0.1-3      rstudioapi_0.10     
     ##  [7] rstan_2.19.2         DT_0.7               lubridate_1.7.4     
-    ## [10] xml2_1.2.0           codetools_0.2-16     bridgesampling_0.7-2
+    ## [10] xml2_1.2.0           bridgesampling_0.7-2 codetools_0.2-16    
     ## [13] shinythemes_1.1.2    zeallot_0.1.0        bayesplot_1.7.0     
     ## [16] jsonlite_1.6         broom_0.5.2          sfsmisc_1.1-4       
     ## [19] shiny_1.3.2          compiler_3.6.1       httr_1.4.0          
@@ -680,7 +675,7 @@ sessionInfo()
     ## [43] gtools_3.8.1         MASS_7.3-51.4        zoo_1.8-6           
     ## [46] scales_1.0.0         colourpicker_1.0     hms_0.5.0           
     ## [49] promises_1.0.1       Brobdingnag_1.2-6    parallel_3.6.1      
-    ## [52] inline_0.3.15        shinystan_2.5.0      RColorBrewer_1.1-2  
+    ## [52] inline_0.3.15        RColorBrewer_1.1-2   shinystan_2.5.0     
     ## [55] yaml_2.2.0           loo_2.1.0            reshape_0.8.8       
     ## [58] stringi_1.4.3        highr_0.8            dygraphs_1.1.1.6    
     ## [61] pkgbuild_1.0.3       pkgconfig_2.0.2      matrixStats_0.54.0  

@@ -10,6 +10,11 @@ output: github_document
 
 ```{r setup, echo=FALSE, message=F, warning=T}
 
+ggsave.path <- "./code/output/"
+seed <- 10
+hypotheticalPopulation <- c(36,11.07,4.95)
+
+
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
 
@@ -69,7 +74,6 @@ ggsave(fileName, plot = gg, device = NULL, path = ggsave.path,
 
 source('./code/bayes.R')  # for evaluateDailySpiderCounts()
 
-ggsave.path <- "./code/output/"
 
 if (TRUE) {
 
@@ -158,7 +162,6 @@ source("./code/k-means.R")
 
 # cluster asssessment/definition is hardcoded in evaluateDailySpiderCounts()
 
-ggsave.path <- "./code/output/"
 daytime <- "pm"
 
 clusterNumber <- 3
@@ -204,9 +207,7 @@ ggsave(fileName, plot = cl2.gg, device = NULL, path = ggsave.path,
 
 source('./code/bayes.R')
 
-ggsave.path <- "./code/output/"
-seed <- 10
-hypotheticalPopulation <- c(76,47,11)  # hypothetical vine population by seasonal timeframe 
+
 
 rl <- returnList
 
@@ -218,7 +219,7 @@ rl <- returnList
 
     #
     #         existing models will be read from disc
-    #         with FALSE logic in generateLikelihoodV2() ......
+    #         with TRUE/FALSE logic in generateLikelihoodV2() ......
     #
     ##
     ## rl[[4]] is the 4th member of the output of evaluateDailySpiderCounts(bugs.df)
@@ -239,7 +240,7 @@ rl <- returnList
     
     gg.likelihood.pm.list <- generateLikelihoodV2(df=filtered.df,
               inboundList=rl, daytime='pm', 
-              fromDisc=TRUE, path= ggsave.path,
+              fromDisc=FALSE, path= ggsave.path,
               randomSeed=seed, hp=hypotheticalPopulation,
               populationAdjustmentFactor= 1.0)
     
@@ -365,9 +366,9 @@ print(df)
 
 source('./code/bayes.R')
 
-ggsave.path <- "./code/output/"
+
 daytime <- "pm"
-seed <- 10
+
 
 # read the 9 models from disc and run diags
 # (debug = TRUE for first model (not all 9) output only)
@@ -407,7 +408,8 @@ source('./code/bayes.R')
 
 ggsave.path <- "./code/output/"
 daytime <- "pm"
-hypotheticalPopulation <- c(76,47,11)  # hypothetical per vine median population by seasonal timeframe 
+#hypotheticalPopulation <- c(76,47,11)  # hypothetical per vine median population by seasonal timeframe
+hypotheticalPopulation <- c(40,12.2,5.6)
 
 # read the 9 models from disc and run diags
 gg.list <- modelDiagsV2(daytime='pm', hp=hypotheticalPopulation, path=ggsave.path)
