@@ -518,6 +518,7 @@ plotSpeciesTrendV3 <- function(data, species, speciesText, period, trend,
     # don't run this twice
     if (trend==FALSE) {
 
+      # write the PM counts data by cluster by week
       DFtoDiscCL(df1=oakPMcluster1.df, df2=oakPMcluster2.df, df3=oakPMcluster3.df, name="spiderCountsOAKclustersPM")
       DFtoDiscCL(df1=controlPMcluster1.df, df2=controlPMcluster2.df, df3=controlPMcluster3.df, name="spiderCountsCONTROLclustersPM")
 
