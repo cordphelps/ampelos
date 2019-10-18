@@ -12,8 +12,8 @@ output: github_document
 
 ggsave.path <- "./code/output/"
 seed <- 10
-hypotheticalPopulation <- c(120.6,36.9,16.2)
-
+hypotheticalPopulation <- c(59.4,18,9)
+#hypotheticalPopulation <- c(120.6,36.9,16.2)
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
