@@ -282,6 +282,20 @@ modelDiagsV2 <- function(daytime, hp, path) {
   gg.list[[12]] <- gg.tmp.list[[3]]
 
 
+  gg.list[[13]] <- plotPosteriorTrappedHigh(df1= post.df.list[[1]], df2= post.df.list[[2]], 
+    df3=post.df.list[[3]], mt = modelTime[[1]], pop = hp[[1]])
+  gg.list[[14]] <- plotPosteriorTrappedHigh(df1= post.df.list[[4]], df2= post.df.list[[5]], 
+    df3=post.df.list[[6]], mt = modelTime[[2]], pop = hp[[2]])
+  gg.list[[15]] <- plotPosteriorTrappedHigh(df1= post.df.list[[7]], df2= post.df.list[[8]], 
+    df3=post.df.list[[9]], mt = modelTime[[3]], pop = hp[[3]])
+
+  gg.list[[16]] <- plotPosteriorTrappedLow(df1= post.df.list[[1]], df2= post.df.list[[2]], 
+    df3=post.df.list[[3]], mt = modelTime[[1]], pop = hp[[1]])
+  gg.list[[17]] <- plotPosteriorTrappedLow(df1= post.df.list[[4]], df2= post.df.list[[5]], 
+    df3=post.df.list[[6]], mt = modelTime[[2]], pop = hp[[2]])
+  gg.list[[18]] <- plotPosteriorTrappedLow(df1= post.df.list[[7]], df2= post.df.list[[8]], 
+    df3=post.df.list[[9]], mt = modelTime[[3]], pop = hp[[3]])
+
   return(gg.list)
 
 }
@@ -373,6 +387,101 @@ plotPosteriorDensity <- function(df1, df2, df3, mt, pop) {
     labs(y="density", 
          x="trapped spider rate\nSNH treatment compared to control", 
          caption = paste("the distribution of the plausible\ndifference in average trapped spiders\n", "spider population per vine : ", pop, "\n", mt, sep="") ) +
+    
+    theme_bw() +
+
+    scale_fill_manual(values = colours, 
+                      breaks = c("1", "2", "3"),
+                      labels = c("cluster 1", "cluster 2", "cluster 3")) +
+    guides(shape = guide_legend(override.aes = list(shape = 21))) +  # define the shape presented in the legend
+
+    
+    theme(legend.title = element_blank(),
+          legend.spacing.y = unit(0, "mm"), 
+          legend.justification=c(1,0),
+          panel.border = element_rect(colour = "black", fill=NA),
+          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black")) 
+
+    return(gg)
+
+}
+
+plotPosteriorTrappedHigh <- function(df1, df2, df3, mt, pop) {
+
+    colours = c("1" = "red", "2" = "green", "3" = "blue")
+
+    gg <- ggplot() + 
+    
+    geom_density(data=df1, aes(x=trappedSpiders_high, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=df2, aes(x=trappedSpiders_high, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=df3, aes(x=trappedSpiders_high, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+
+    # stat_density(aes(x=diff), geom="point") +   # there is some magic here to adjust legend shapes
+    # https://stackoverflow.com/questions/46597079/change-the-shape-of-the-legend-in-density-plots-with-ggplot2
+    
+    geom_vline(xintercept=0) + #
+    
+    coord_cartesian(ylim=c(0, 1.5), xlim=c(0, 6))  + # clip
+
+    scale_y_continuous(breaks = seq(min(0), max(1.5), by = .2)) +
+    #scale_x_continuous(breaks=seq(-15,5,5)) + 
+    
+    
+    #labs(title=paste("the distribution of the plausible difference\nin average trapped spiders", sep=""),
+         #subtitle=paste(mt, sep=""), 
+    labs(y="density", 
+         x="SNH effects modelled: trapped spider rate\n(spiders per daylight sampling period)", 
+         caption = paste("spider population per vine : ", pop, "\n", mt, sep="") ) +
+    
+    theme_bw() +
+
+    scale_fill_manual(values = colours, 
+                      breaks = c("1", "2", "3"),
+                      labels = c("cluster 1", "cluster 2", "cluster 3")) +
+    guides(shape = guide_legend(override.aes = list(shape = 21))) +  # define the shape presented in the legend
+
+    
+    theme(legend.title = element_blank(),
+          legend.spacing.y = unit(0, "mm"), 
+          legend.justification=c(1,0),
+          panel.border = element_rect(colour = "black", fill=NA),
+          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
+          legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black")) 
+
+    return(gg)
+
+}
+
+
+plotPosteriorTrappedLow <- function(df1, df2, df3, mt, pop) {
+
+    colours = c("1" = "red", "2" = "green", "3" = "blue")
+
+    gg <- ggplot() + 
+    
+    geom_density(data=df1, aes(x=trappedSpiders_low, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=df2, aes(x=trappedSpiders_low, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=df3, aes(x=trappedSpiders_low, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+
+    # stat_density(aes(x=diff), geom="point") +   # there is some magic here to adjust legend shapes
+    # https://stackoverflow.com/questions/46597079/change-the-shape-of-the-legend-in-density-plots-with-ggplot2
+    
+    geom_vline(xintercept=0) + #
+    
+    coord_cartesian(ylim=c(0, 1.5), xlim=c(0, 6))  + # clip
+
+    scale_y_continuous(breaks = seq(min(0), max(1.5), by = .2)) +
+    #scale_x_continuous(breaks=seq(-15,5,5)) + 
+    
+    
+    #labs(title=paste("the distribution of the plausible difference\nin average trapped spiders", sep=""),
+         #subtitle=paste(mt, sep=""), 
+    labs(y="density", 
+         x="SNH effect not modelled: trapped spider rate\n(spiders per daylight sampling period)", 
+         caption = paste("spider population per vine : ", pop, "\n", mt, sep="") ) +
     
     theme_bw() +
 
