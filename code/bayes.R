@@ -361,9 +361,9 @@ plotPosteriorDensity <- function(df1, df2, df3, mt, pop) {
 
     gg <- ggplot() + 
     
-    geom_density(data=df1, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
-    geom_density(data=df2, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
-    geom_density(data=df3, aes(x=diff, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=df1, aes(x=diff, y=..scaled.., fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=df2, aes(x=diff, y=..scaled.., fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=df3, aes(x=diff, y=..scaled.., fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
 
     # stat_density(aes(x=diff), geom="point") +   # there is some magic here to adjust legend shapes
     # https://stackoverflow.com/questions/46597079/change-the-shape-of-the-legend-in-density-plots-with-ggplot2
@@ -375,7 +375,7 @@ plotPosteriorDensity <- function(df1, df2, df3, mt, pop) {
     #coord_fixed(ratio=20/1) +     # control the aspect ratio of the output; "ratio" refers to the 
                                   # ratio of the axis limits themselves
     
-    coord_cartesian(ylim=c(0, 1.5), xlim=c(-1, 2))  + # clip
+    coord_cartesian(ylim=c(0, 1.1), xlim=c(-1, 2))  + # clip
     #coord_cartesian(ylim=c(0, 1.5), xlim=c(-3, 5))  + # clip
 
     scale_y_continuous(breaks = seq(min(0), max(1.5), by = .2)) +
@@ -414,16 +414,16 @@ plotPosteriorTrappedHigh <- function(df1, df2, df3, mt, pop) {
 
     gg <- ggplot() + 
     
-    geom_density(data=df1, aes(x=trappedSpiders_high, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
-    geom_density(data=df2, aes(x=trappedSpiders_high, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
-    geom_density(data=df3, aes(x=trappedSpiders_high, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=df1, aes(x=trappedSpiders_high, y=..scaled.., fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=df2, aes(x=trappedSpiders_high, y=..scaled.., fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=df3, aes(x=trappedSpiders_high, y=..scaled.., fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
 
     # stat_density(aes(x=diff), geom="point") +   # there is some magic here to adjust legend shapes
     # https://stackoverflow.com/questions/46597079/change-the-shape-of-the-legend-in-density-plots-with-ggplot2
     
     geom_vline(xintercept=0) + #
     
-    coord_cartesian(ylim=c(0, 1.5), xlim=c(0, 6))  + # clip
+    coord_cartesian(ylim=c(0, 1.1), xlim=c(0, 6))  + # clip
 
     scale_y_continuous(breaks = seq(min(0), max(1.5), by = .2)) +
     #scale_x_continuous(breaks=seq(-15,5,5)) + 
@@ -462,16 +462,16 @@ plotPosteriorTrappedLow <- function(df1, df2, df3, mt, pop) {
 
     gg <- ggplot() + 
     
-    geom_density(data=df1, aes(x=trappedSpiders_low, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
-    geom_density(data=df2, aes(x=trappedSpiders_low, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
-    geom_density(data=df3, aes(x=trappedSpiders_low, fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=df1, aes(x=trappedSpiders_low, y=..scaled.., fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=df2, aes(x=trappedSpiders_low, y=..scaled.., fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=df3, aes(x=trappedSpiders_low, y=..scaled.., fill = cluster), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
 
     # stat_density(aes(x=diff), geom="point") +   # there is some magic here to adjust legend shapes
     # https://stackoverflow.com/questions/46597079/change-the-shape-of-the-legend-in-density-plots-with-ggplot2
     
     geom_vline(xintercept=0) + #
     
-    coord_cartesian(ylim=c(0, 1.5), xlim=c(0, 6))  + # clip
+    coord_cartesian(ylim=c(0, 1.1), xlim=c(0, 6))  + # clip
 
     scale_y_continuous(breaks = seq(min(0), max(1.5), by = .2)) +
     #scale_x_continuous(breaks=seq(-15,5,5)) + 
@@ -597,7 +597,7 @@ plotLikelihood <- function(df, hypoPop, cap) {
 
 
 
-generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, randomSeed,  hp, populationAdjustmentFactor) {
+generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, randomSeed,  hp) {
 
 
   ##
@@ -700,47 +700,47 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
     #  
   
     cl.st.list[[1]] <- df %>% dplyr::filter(week < 26 & cluster == 'one')
-    cl.st.list[[1]]$population <- hp[[1]] * populationAdjustmentFactor
+    cl.st.list[[1]]$population <- hp[[1]]  
     cl.st.list[[1]]$log_pop <- log(cl.st.list[[1]]$population)  # R code 10.40
     cl.st.list[[1]]$contact_high <- ifelse( cl.st.list[[1]]$transect=="oakMargin" , 1 , 0 )
     
     cl.st.list[[2]] <- df %>% dplyr::filter(week < 26 & cluster == 'two')
-    cl.st.list[[2]]$population <- hp[[1]] * populationAdjustmentFactor
+    cl.st.list[[2]]$population <- hp[[1]]  
     cl.st.list[[2]]$log_pop <- log(cl.st.list[[2]]$population)  # R code 10.40
     cl.st.list[[2]]$contact_high <- ifelse( cl.st.list[[2]]$transect=="oakMargin" , 1 , 0 )
     
     cl.st.list[[3]] <- df %>% dplyr::filter(week < 26 & cluster == 'three')
-    cl.st.list[[3]]$population <- hp[[1]] * populationAdjustmentFactor
+    cl.st.list[[3]]$population <- hp[[1]]  
     cl.st.list[[3]]$log_pop <- log(cl.st.list[[3]]$population)  # R code 10.40
     cl.st.list[[3]]$contact_high <- ifelse( cl.st.list[[3]]$transect=="oakMargin" , 1 , 0 )
     
     cl.st.list[[4]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'one')
-    cl.st.list[[4]]$population <- hp[[2]] * populationAdjustmentFactor
+    cl.st.list[[4]]$population <- hp[[2]]  
     cl.st.list[[4]]$log_pop <- log(cl.st.list[[4]]$population)  # R code 10.40
     cl.st.list[[4]]$contact_high <- ifelse( cl.st.list[[4]]$transect=="oakMargin" , 1 , 0 )
     
     cl.st.list[[5]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'two')
-    cl.st.list[[5]]$population <- hp[[2]] * populationAdjustmentFactor
+    cl.st.list[[5]]$population <- hp[[2]]  
     cl.st.list[[5]]$log_pop <- log(cl.st.list[[5]]$population)  # R code 10.40
     cl.st.list[[5]]$contact_high <- ifelse( cl.st.list[[5]]$transect=="oakMargin" , 1 , 0 )
   
     cl.st.list[[6]] <- df %>% dplyr::filter(week > 25 & week < 32 & cluster == 'three')
-    cl.st.list[[6]]$population <- hp[[2]] * populationAdjustmentFactor
+    cl.st.list[[6]]$population <- hp[[2]]  
     cl.st.list[[6]]$log_pop <- log(cl.st.list[[6]]$population)  # R code 10.40
     cl.st.list[[6]]$contact_high <- ifelse( cl.st.list[[6]]$transect=="oakMargin" , 1 , 0 )
     
     cl.st.list[[7]] <- df %>% dplyr::filter(week > 31 & cluster == 'one')
-    cl.st.list[[7]]$population <- hp[[3]] * populationAdjustmentFactor
+    cl.st.list[[7]]$population <- hp[[3]]  
     cl.st.list[[7]]$log_pop <- log(cl.st.list[[7]]$population)  # R code 10.40
     cl.st.list[[7]]$contact_high <- ifelse( cl.st.list[[7]]$transect=="oakMargin" , 1 , 0 )
     
     cl.st.list[[8]] <- df %>% dplyr::filter(week > 31 & cluster == 'two')
-    cl.st.list[[8]]$population <- hp[[3]] * populationAdjustmentFactor
+    cl.st.list[[8]]$population <- hp[[3]]  
     cl.st.list[[8]]$log_pop <- log(cl.st.list[[8]]$population)  # R code 10.40
     cl.st.list[[8]]$contact_high <- ifelse( cl.st.list[[8]]$transect=="oakMargin" , 1 , 0 )
     
     cl.st.list[[9]] <- df %>% dplyr::filter(week > 31 & cluster == 'three')
-    cl.st.list[[9]]$population <- hp[[3]] * populationAdjustmentFactor
+    cl.st.list[[9]]$population <- hp[[3]]  
     cl.st.list[[9]]$log_pop <- log(cl.st.list[[9]]$population)  # R code 10.40
     cl.st.list[[9]]$contact_high <- ifelse( cl.st.list[[9]]$transect=="oakMargin" , 1 , 0 )
   
@@ -846,8 +846,7 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
 
     # plot the likelihood for the 9 models
     ggList[[1]] <- plotLikelihood(df=inboundList[[5]],  hypoPop=hp,
-                                  cap=paste("daytime: ", daytime,
-                                  " , population adjustment factor: ", populationAdjustmentFactor,           
+                                  cap=paste("daytime: ", daytime,           
                                   sep=""))
 
     library(bayesplot)
@@ -887,7 +886,6 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
         caption = paste("posterior distribution coefficient plot\nmedians with 50% and 89% credible intervals",
                         "\ncluster: ", likelihood.df[[1]][[i]], 
                         " ; seasonal timeframe: ", likelihood.df[[2]][[i]], 
-                        "\npopulation adjustment factor: ", populationAdjustmentFactor,
                         "\ninteraction plausibility: ", round(likelihood.df[[3]][[i]],2), sep="")
                     )
     }
@@ -912,7 +910,6 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
         caption = paste("posterior distribution coefficient plot with medians and 89% intervals",
                         "\ncluster: ", likelihood.df[[1]][[i]], 
                         " ; seasonal timeframe: ", likelihood.df[[2]][[i]], 
-                        "\npopulation adjustment factor: ", populationAdjustmentFactor,
                         "\ninteraction plausibility: ", round(likelihood.df[[3]][[i]],2), sep="")
                     )
     }
@@ -937,7 +934,6 @@ generateLikelihoodV2 <- function(df, inboundList, daytime, fromDisc, path, rando
         caption = paste("posterior distribution coefficient plot with medians and 89% intervals",
                         "\ncluster: ", likelihood.df[[1]][[i]], 
                         " ; seasonal timeframe: ", likelihood.df[[2]][[i]], 
-                        "\npopulation adjustment factor: ", populationAdjustmentFactor,
                         "\ninteraction plausibility: ", round(likelihood.df[[3]][[i]],2), sep="")
                     )
 
