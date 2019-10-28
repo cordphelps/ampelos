@@ -103,6 +103,11 @@ Rhat =
 
 #### observation: none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap. <https://discourse.mc-stan.org/t/brms-loo-compare-interpretation-of-waic-deltas/10318>)
 
+    ## Warning: There were 1 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
+    ## http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
+
+    ## Warning: Examine the pairs() plot to diagnose sampling problems
+
 <img src="ampelos_files/figure-gfm/clusterAltModels-1.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-2.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-3.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-4.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-5.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-6.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-7.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-8.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-9.png" width="33%" />
 
 ## model evaluation (continued)
@@ -116,40 +121,70 @@ Rhat =
 ## spiders predicted with SNH effects in the model
 
 ``` r
-print(gg.list[[13]])
+# print SNH trapped spider predictions
+
+#print(gg.list[[13]])
+#print(gg.list[[14]])
+#print(gg.list[[15]])
+
+for (i in 13:15) {
+  
+  print(gg.list[[i]])
+  
+  fileName <- paste("ggsave.predict.withSNH", i, ".pdf", sep="")
+  
+  if (file.exists(fileName)) { file.remove(fileName) }
+
+  ggsave(fileName, plot = gg.list[[i]], 
+              device = NULL, path = ggsave.path,
+              scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+              units = c("in", "cm", "mm"))
+}
 ```
+
+    ## Saving 6 x 5 in image
 
 ![](ampelos_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
-``` r
-print(gg.list[[14]])
-```
+    ## Saving 6 x 5 in image
 
 ![](ampelos_files/figure-gfm/unnamed-chunk-1-2.png)<!-- -->
 
-``` r
-print(gg.list[[15]])
-```
+    ## Saving 6 x 5 in image
 
 ![](ampelos_files/figure-gfm/unnamed-chunk-1-3.png)<!-- -->
 
 ## spiders predicted without SNH effects in the model
 
 ``` r
-print(gg.list[[16]])
+#print(gg.list[[16]])
+#print(gg.list[[17]])
+#print(gg.list[[18]])
+
+for (i in 16:18) {
+  
+  print(gg.list[[i]])
+  
+  fileName <- paste("ggsave.predict.noSNH", i, ".pdf", sep="")
+  
+  if (file.exists(fileName)) { file.remove(fileName) }
+
+  ggsave(fileName, plot = gg.list[[i]], 
+              device = NULL, path = ggsave.path,
+              scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+              units = c("in", "cm", "mm"))
+}
 ```
+
+    ## Saving 6 x 5 in image
 
 ![](ampelos_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
-``` r
-print(gg.list[[17]])
-```
+    ## Saving 6 x 5 in image
 
 ![](ampelos_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
 
-``` r
-print(gg.list[[18]])
-```
+    ## Saving 6 x 5 in image
 
 ![](ampelos_files/figure-gfm/unnamed-chunk-2-3.png)<!-- -->
 
