@@ -9,10 +9,10 @@ Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
 
 Population-Level Effects: 
                      Estimate Est.Error l-89% CI u-89% CI Eff.Sample Rhat
-Intercept                0.03      2.19    -3.45     3.57       5721 1.00
-log_pop                 -0.00      0.98    -1.58     1.57       5750 1.00
-contact_high            -0.34      0.92    -1.79     1.14       5241 1.00
-log_pop:contact_high    -0.71      0.56    -1.64     0.16       4611 1.00
+Intercept                0.02      1.94    -3.05     3.12       6354 1.00
+log_pop                  0.00      1.00    -1.61     1.59       6409 1.00
+contact_high            -0.40      0.91    -1.88     1.02       5472 1.00
+log_pop:contact_high    -0.75      0.61    -1.71     0.21       4460 1.00
 
 Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
 is a crude measure of effective sample size, and Rhat is the potential 

@@ -85,9 +85,9 @@ contact\_high:log\_pop 6 Data: cl.st.list\[\[i\]\] (Number of
 observations: 12) 7 Samples: 4 chains, each with iter = 3000; warmup =
 1000; thin = 1; 8 total post-warmup samples = 8000 9  
 10 Population-Level Effects: 11 Estimate Est.Error l-89% CI u-89% CI
-Eff.Sample Rhat 12 Intercept 0.03 2.19 -3.45 3.57 5721 1.00 13 log\_pop
--0.00 0.98 -1.58 1.57 5750 1.00 14 contact\_high -0.34 0.92 -1.79 1.14
-5241 1.00 15 log\_<pop:contact_high> -0.71 0.56 -1.64 0.16 4611 1.00
+Eff.Sample Rhat 12 Intercept 0.02 1.94 -3.05 3.12 6354 1.00 13 log\_pop
+0.00 1.00 -1.61 1.59 6409 1.00 14 contact\_high -0.40 0.91 -1.88 1.02
+5472 1.00 15 log\_<pop:contact_high> -0.75 0.61 -1.71 0.21 4460 1.00
 16  
 17 Samples were drawn using sampling(NUTS). For each parameter,
 Eff.Sample 18 is a crude measure of effective sample size, and Rhat is
@@ -102,11 +102,6 @@ Rhat =
 ##### references <https://statmodeling.stat.columbia.edu/2015/10/03/comparing-waic-or-loo-or-any-other-predictive-error-measure/> ; <http://www.stat.columbia.edu/~gelman/research/unpublished/loo_stan.pdf>
 
 #### observation: none of the model variations reveal meaningful contributions by any particular parameter as all confidence intervals almost fully overlap. <https://discourse.mc-stan.org/t/brms-loo-compare-interpretation-of-waic-deltas/10318>)
-
-    ## Warning: There were 1 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
-    ## http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
-
-    ## Warning: Examine the pairs() plot to diagnose sampling problems
 
 <img src="ampelos_files/figure-gfm/clusterAltModels-1.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-2.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-3.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-4.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-5.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-6.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-7.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-8.png" width="33%" /><img src="ampelos_files/figure-gfm/clusterAltModels-9.png" width="33%" />
 

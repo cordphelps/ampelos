@@ -13,7 +13,7 @@ output: github_document
 ggsave.path <- "./code/output/"
 seed <- 10
 
-hypotheticalPopulation <- c(59.4,18,9)
+hypotheticalPopulation <- c(58.13,15.93,6.67)
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 bugs.df <- read.csv(source.url, header=TRUE, row.names=NULL)
