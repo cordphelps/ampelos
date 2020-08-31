@@ -1,10 +1,12 @@
 ---
 title: "ampelos tables"
-output: html_document
+output: github_document
 ---
 
 
 ```{r setup, echo=FALSE, include=FALSE, message=F, warning=F}
+
+setwd('/Users/rcphelps/code/thesis/ampelos')
 
 source("./code/bug-library.R")
 source("./code/similarity.R")

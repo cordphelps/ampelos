@@ -82,7 +82,7 @@ if (TRUE) {
   #
   # plot the weekly raw data : plotWeekly()
 
-  returnList <- evaluateDailySpiderCounts(bugs.df)
+  returnList <- evaluateDailySpiderCounts(df=bugs.df, yesCluster=FALSE)
   
 # returnList[[1]] # plotWeekly(total.df) # total spiders by week/cluster differentiated by time of day
 # returnList[[2]] <- plotRawWeekly(total.df)

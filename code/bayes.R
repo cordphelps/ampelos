@@ -1,6 +1,14 @@
 
 
-evaluateDailySpiderCounts <- function(df) {
+evaluateDailySpiderCounts <- function(df, yesCluster) {
+
+  # yesCluster is a flag that determines if models will be created at the boundaries of each cluster
+  # this is no really consistent with the idea of a poisson distribution because the leading edge of the
+  # population counts is not always zero.
+  #
+  # yesCluster=FALSE creates 3 clusters that each begin at position=1 and end at the position proposed by
+  # the kmeans() analysis
+  #
   
   if (FALSE) {
     print(returnList[[1]])  # ggplot() spiders per day per position by week
@@ -39,10 +47,20 @@ evaluateDailySpiderCounts <- function(df) {
   species <- "Thomisidae..crab.spider."
   speciesString <- paste("~", species, ">0", sep="")
   formula.s <- as.formula(speciesString)
+
+  if (yesCluster==TRUE) {
   
-  formula.cluster1 <- paste("~ position==1 | position==2 | position==3 | position==4", sep="")
-  formula.cluster2 <- paste("~ position==5 | position==6 | position==7", sep="")
-  formula.cluster3 <- paste("~ position==8 | position==9 | position==10", sep="")
+    formula.cluster1 <- paste("~ position==1 | position==2 | position==3 | position==4", sep="")
+    formula.cluster2 <- paste("~ position==5 | position==6 | position==7", sep="")
+    formula.cluster3 <- paste("~ position==8 | position==9 | position==10", sep="")
+
+    } else {
+
+    formula.cluster1 <- paste("~ position==1 | position==2 | position==3 | position==4", sep="")
+    formula.cluster2 <- paste("~ position==1 | position==2 | position==3 | position==4 | position==5 | position==6 | position==7", sep="")
+    formula.cluster3 <- paste("~ position==1 | position==2 | position==3 | position==4 | position==5 | position==6 | position==7 | position==8 | position==9 | position==10", sep="")
+
+    }
   
   weeks.vector <- getWeeks(bugs.df)
   transectList <- c('oakMargin', 'control')
