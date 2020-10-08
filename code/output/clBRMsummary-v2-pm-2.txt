@@ -1,0 +1,24 @@
+generateLikelihoodV3()                 i= 2
+NULL
+ Family: poisson 
+  Links: mu = log 
+Formula: totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop 
+   Data: cl.st.list[[i]] (Number of observations: 780) 
+Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
+         total post-warmup samples = 8000
+
+Population-Level Effects: 
+                     Estimate Est.Error l-89% CI u-89% CI Rhat Bulk_ESS
+Intercept               -1.85      2.75    -6.24     2.56 1.00     5547
+log_pop                 -0.01      0.99    -1.60     1.56 1.00     5545
+contact_high            -0.01      0.93    -1.53     1.47 1.00     3372
+log_pop:contact_high    -0.00      0.34    -0.55     0.55 1.00     3432
+                     Tail_ESS
+Intercept                4514
+log_pop                  4559
+contact_high             3586
+log_pop:contact_high     3594
+
+Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).
