@@ -1,5 +1,91 @@
 
 
+densityFacets <- function(tibble, periodString) {
+  
+  gg <- ggplot(data = tibble, # add the data
+       aes(x = positionX / 3.281, y = Thomisidae..crab.spider.,
+           color = transect)) +   
+    geom_jitter() +
+    facet_grid(~transect) +
+    #scale_x_continuous(breaks = seq(0, 200, 1)) +
+    
+    labs(title = paste("thomisidae observations seasonal ",
+                        periodString, sep=""),
+       x = "trap distance from field edge (m)", 
+       y = "count") +
+  
+    scale_y_continuous(breaks = seq(0, 4, 1)) +
+    theme_bw() +
+  
+    theme(legend.position="none") +
+  
+    scale_colour_hue(name="transect",    # Legend label, use darker colors
+                  breaks=c("SNH", "control"),
+                  labels=c("SNH", "control"),
+                  l=40)             # Use darker colors, lightness=40
+  
+  return(gg)
+  
+}
+
+densityNoFacets <- function(tibble, periodString) {
+  
+  gg <- ggplot(data = tibble, # add the data
+       aes(x = transect, y = Thomisidae..crab.spider., # set x, y coordinates
+           color = transect)) +    # color by treatment
+    geom_jitter() +
+    
+    labs(title = paste("thomisidae observations seasonal ",
+                        periodString, sep=""),
+       x = "transect", 
+       y = "counts") +
+    
+    scale_y_continuous(breaks = seq(0, 4, 1)) +
+  
+    theme_bw() +
+  
+    theme(legend.position="none") 
+  
+  return(gg)
+}
+
+
+errorBars <- function(tibble, periodString, observations) {
+  
+  # http://www.cookbook-r.com/Graphs/Plotting_means_and_error_bars_(ggplot2)/
+
+  # The errorbars overlapped, so use position_dodge to move them horizontally
+  pd <- position_dodge(1.5) # move them .05 to the left and right
+
+  gg <- ggplot(tibble, aes(x=positionX / 3.281, y=mean, colour=transect, group=transect)) + 
+    geom_errorbar(aes(ymin=mean-se, ymax=mean+se), colour="black", width=.1, position=pd) +
+    geom_line(position=pd) +
+    geom_point(position=pd, size=3, shape=21, fill="white") + # 21 is filled circle
+  
+    labs(title = paste("mean thomisidae collection rate: seasonal ",
+                        periodString, sep=""),
+       subtitle = "(daylight)",
+       caption = paste(observations, 
+                       " observations\n at each trap position", sep=""),
+       x = "trap distance from field edge (m)", 
+       y = "mean rate +/- SE (count / 8 hrs)") +
+  
+    scale_colour_hue(name="transect",    # Legend label, use darker colors
+                     breaks=c("oakMargin", "control"),
+                     labels=c("SNH", "control"),
+                     l=40) +            # Use darker colors, lightness=40
+
+    expand_limits(y=0) +                        # Expand y range
+    scale_y_continuous() +
+    scale_x_continuous(breaks = seq(0, 60, 20)) +
+  
+    theme_bw() 
+  
+  return(gg)
+  
+}
+
+
 generateLikelihoodV3 <- function(df, daytime, fromDisc, path, randomSeed,  hp) {
 
 
@@ -81,10 +167,10 @@ generateLikelihoodV3 <- function(df, daytime, fromDisc, path, randomSeed,  hp) {
     # build list of dataframes represting the seasonal population 
     # plus a variable log-population
     #
-    label.list <- list()  # remember which cluster and seasonal timeframe
-    label.list[[1]] <- "seasonal timeframe: one"
-    label.list[[2]] <- "seasonal timeframe: two"
-    label.list[[3]] <- "seasonal timeframe: three"
+    weekLabel.lst <- list()  # remember which cluster and seasonal timeframe
+    weekLabel.lst[[1]] <- "week 23-25"
+    weekLabel.lst[[2]] <- "week 26-30"
+    weekLabel.lst[[3]] <- "week 31-34"
 
 
     #
@@ -96,6 +182,8 @@ generateLikelihoodV3 <- function(df, daytime, fromDisc, path, randomSeed,  hp) {
     #
     # mean population for 9 models     :  inboundList[[11]]            
     #  
+
+    cl.st.list <- list()
   
     cl.st.list[[1]] <- df %>% dplyr::filter(week < 26)
     cl.st.list[[1]]$population <- hp[[1]]  
@@ -121,14 +209,12 @@ generateLikelihoodV3 <- function(df, daytime, fromDisc, path, randomSeed,  hp) {
 
       # ref: Oceanic Tool Complexity Model
       # https://bookdown.org/connect/#/apps/1850/access 
-    
-        
-        b10.10 <-
-          brm(data = cl.st.list[[i]], family = poisson,
-              totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop,  # yes, + contact_high:log_pop
-              prior = c(prior(normal(0, 100), class = Intercept),
+         
+        b10.10 <- brm(data = cl.st.list[[i]], family = poisson,
+              			totalSpiders ~ 1 + log_pop + contact_high + contact_high:log_pop,  # yes, + contact_high:log_pop
+              			prior = c(prior(normal(0, 100), class = Intercept),
                         prior(normal(0, 1), class = b)),
-             iter = 3000, warmup = 1000, chains = 4, cores = 4, seed = randomSeed)
+             			iter = 3000, warmup = 1000, chains = 4, cores = 4, seed = randomSeed)
 
         #print(b10.10)
 
@@ -163,17 +249,17 @@ generateLikelihoodV3 <- function(df, daytime, fromDisc, path, randomSeed,  hp) {
         
        
     
-      temp2.df <- data.frame(seasonalTimeframe, like.df$sum) 
-      # column names need to match for rbind() to work
-      names(temp2.df) <- c("seasonalTimeframe", "plausibility")
+      	temp2.df <- data.frame(seasonalTimeframe, like.df$sum) 
+      	# column names need to match for rbind() to work
+      	names(temp2.df) <- c("seasonalTimeframe", "plausibility")
     
-      # tack it on
-      if (!exists('likelihood.df')) {
-        likelihood.df <- temp2.df
-        # (so, on the first pass the column names are cool)
-      } else {
-        likelihood.df <- rbind(likelihood.df, temp2.df)
-      }
+     	 # tack it on
+      	if (!exists('likelihood.df')) {
+        	likelihood.df <- temp2.df
+        	# (so, on the first pass the column names are cool)
+      	} else {
+        	likelihood.df <- rbind(likelihood.df, temp2.df)
+      	}
     
     }  
     #### end model building ####
@@ -187,7 +273,7 @@ generateLikelihoodV3 <- function(df, daytime, fromDisc, path, randomSeed,  hp) {
     inboundList[[5]] <- likelihood.df
     inboundList[[7]] <- modelInput  # that is a list of the 9 data sources
     inboundList[[8]] <- modelOutput  # that is a list of the 9 models
-    inboundList[[9]] <- label.list  # 
+    inboundList[[9]] <- weekLabel.lst  # 
     inboundList[[10]] <- post.df.list
 
     saveRDS(inboundList, fileName.rds)
@@ -195,12 +281,10 @@ generateLikelihoodV3 <- function(df, daytime, fromDisc, path, randomSeed,  hp) {
     } 
 
 
-
-    # print(inboundList[[5]])
     ggList <- list()
     # plot the likelihood for the 9 models
     ggList[[1]] <- plotLikelihoodV2(tibble=as_tibble(likelihood.df),  hypoPop=hp,
-                                  	cap=paste("daytime: ", daytime, sep=""))
+                                  	cap=paste("(daylight hours)", sep=""))
 
     library(bayesplot)
 
@@ -217,13 +301,19 @@ generateLikelihoodV3 <- function(df, daytime, fromDisc, path, randomSeed,  hp) {
 
     }
 
-    # print the posterior graphs separately so that the color can be adjusted to math the cluster info
 
-    color_scheme_set("red")     # setting used by bayesplot mcmc_intervals()  
 
-    index <- c(1,2,3)           # cluster 'one'
+    # print the posterior graphs separately so that the color can be adjusted to match the cluster info
 
-    for (i in index) {
+    for (i in 1:3) {
+
+    	if (i == 1)  {
+          color_scheme_set("red") # setting used by bayesplot mcmc_intervals()  
+        } else if (i == 2) {
+          color_scheme_set("green") 
+        } else {
+          color_scheme_set("blue") 
+        }  
 
       # plot the posterior distributions
       ggList[[i+1]] <- post.df.list[[i]] %>%
@@ -232,14 +322,12 @@ generateLikelihoodV3 <- function(df, daytime, fromDisc, path, randomSeed,  hp) {
       rename(b_interaction = `b_log_pop:contact_high`) %>%
 
       bayesplot::mcmc_intervals(prob = .5, prob_outer = .89) +
-      theme(axis.ticks.y = element_blank(),
-        axis.text.y  = element_text(hjust = 0)) +
-      theme_bw() +
-      ggplot2::labs(
-        caption = paste("posterior distribution coefficient plot\nmedians with 50% and 89% credible intervals",
-                        " ; seasonal timeframe: ", "one?", 
-                        "\ninteraction plausibility: ", "round(likelihood.df[[3]][[1]],2)", sep="")
-                    )
+      				theme(axis.ticks.y = element_blank(), axis.text.y  = element_text(hjust = 0)) +
+      				theme_bw() +
+      				ggplot2::labs(
+        				caption = paste("posterior distribution coefficient plot\nmedians with 50% and 89% credible intervals",
+                        " ; seasonal timeframe: ", weekLabel.lst[[i]], 
+                        "\ninteraction plausibility: ", round(likelihood.df[[2]][[i]], 2), sep="") )
     }
 
 
@@ -268,12 +356,12 @@ generateLikelihoodV3 <- function(df, daytime, fromDisc, path, randomSeed,  hp) {
     rm(likelihood.df)
     rm(modelInput)
     rm(modelOutput)
-    rm(label.list)
+    rm(label.lst)
     rm(post.df.list)
 
-    detach("package:rstan", unload=TRUE)  
-    detach("package:bayesplot", unload=TRUE)
-    detach("package:brms", unload=TRUE) 
+    #detach("package:rstan", unload=TRUE)  
+    #detach("package:bayesplot", unload=TRUE)
+    #detach("package:brms", unload=TRUE) 
 
   
     return(ggList)
@@ -286,7 +374,7 @@ generateLikelihoodV3 <- function(df, daytime, fromDisc, path, randomSeed,  hp) {
 plotLikelihoodV2 <- function(tibble, hypoPop, cap) {
   
   # input df :
-  # cluster{one, two, three}, seasonalTimeframe{one, two, three}, plausibility(decimal)
+  # seasonalTimeframe{one, two, three}, plausibility(decimal)
   #
 
   
@@ -294,16 +382,15 @@ plotLikelihoodV2 <- function(tibble, hypoPop, cap) {
   
   gg <- ggplot(tibble, aes(x=seasonalTimeframe, y=plausibility)) +
     
-        geom_jitter(aes(fill = "green"), shape = 21, size=5, show.legend=TRUE, width=0.05) +
+        #geom_point(aes(fill = "green"), shape = 21, size=5, show.legend=TRUE, width=0.05) +
+        geom_point(aes(fill=colours), shape = 21, size=5, show.legend=TRUE, width=0.05) +
     
     	ylim(c(0, 1)) + 
     	expand_limits(y=c(0,1)) + 
  
     	labs(y="plausibility", 
          x="seasonal timeframe", 
-         caption = paste("the 'plausibility' of an SNH effect on the crab spider population\n", 
-                          "for a hypothetical vine population of ", 
-                          hypoPop[[1]], " / ", hypoPop[[2]], " / ", hypoPop[[3]] , " spiders\n",
+         caption = paste("the plausibility of a positive SNH effect\non the crab spider population\n", 
                           cap, sep="") ) +
     
     	scale_x_discrete(labels=c("one" = "weeks\n23-25", "two" = "weeks\n26-31", "three" = "weeks\n32-34"),
@@ -370,7 +457,8 @@ modelDiagsV3 <- function(daytime, hp, rds) {
   modelOutput.lst <- list()
   modelOutput.lst <- prev.lst[[8]]       # a list of the 3 models
 
-
+  label.lst <- list()
+  label.lst <- prev.lst[[9]]
 
 
   for (j in 1:3) {   
@@ -404,9 +492,9 @@ modelDiagsV3 <- function(daytime, hp, rds) {
   										t3 = as_tibble(post.df.lst[[3]] %>% mutate(period="3"))
     									)
 
-  gg.lst[[2]] <- justJitterPlotV2(t1 = as_tibble(post.df.lst[[1]] %>% mutate(period="1")))
-  gg.lst[[3]] <- justJitterPlotV2(t1 = as_tibble(post.df.lst[[2]] %>% mutate(period="2")))
-  gg.lst[[4]] <- justJitterPlotV2(t1 = as_tibble(post.df.lst[[3]] %>% mutate(period="3")))
+  gg.lst[[2]] <- justJitterPlotV2(t1 = as_tibble(post.df.lst[[1]] %>% mutate(period="1")), weekString=label.lst[[1]])
+  gg.lst[[3]] <- justJitterPlotV2(t1 = as_tibble(post.df.lst[[2]] %>% mutate(period="2")), weekString=label.lst[[2]])
+  gg.lst[[4]] <- justJitterPlotV2(t1 = as_tibble(post.df.lst[[3]] %>% mutate(period="3")), weekString=label.lst[[3]])
 
 
   gg.models.lst <- modelComparisonV2(models=modelOutput.lst, daytime='pm', randomSeed=seed, debug=FALSE)
@@ -425,6 +513,11 @@ modelDiagsV3 <- function(daytime, hp, rds) {
 
 
 
+  rm(prev.lst)
+  rm(post.df.lst)
+  rm(modelOutput.lst)
+
+
   return(gg.lst)
 
 }
@@ -433,13 +526,15 @@ modelDiagsV3 <- function(daytime, hp, rds) {
 
 plotPosteriorDensityV2 <- function(t1, t2, t3) {
 
+	# transform weekly data to trap-daily data (divide by 10 traps * 3 or 2 measurements per week)
+
     colours = c("1" = "red", "2" = "green", "3" = "blue")
 
     gg <- ggplot() + 
    
-    geom_density(data=t1, aes(x=diff, y=..scaled.., fill = period), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
-    geom_density(data=t2, aes(x=diff, y=..scaled.., fill = period), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
-    geom_density(data=t3, aes(x=diff, y=..scaled.., fill = period), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=t1, aes(x=diff/30, y=..scaled.., fill = period), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=t2, aes(x=diff/30, y=..scaled.., fill = period), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
+    geom_density(data=t3, aes(x=diff/20, y=..scaled.., fill = period), alpha=.7, show.legend=TRUE, key_glyph = "dotplot") +
 
     # stat_density(aes(x=diff), geom="point") +   # there is some magic here to adjust legend shapes
     # https://stackoverflow.com/questions/46597079/change-the-shape-of-the-legend-in-density-plots-with-ggplot2
@@ -460,7 +555,7 @@ plotPosteriorDensityV2 <- function(t1, t2, t3) {
 
     scale_fill_manual(values = colours, 
                       breaks = c("1", "2", "3"),
-                      labels = c("week 23-25", "week 26-30", "week 31-34")) +
+                      labels = c("week 23-25", "week 26-31", "week 32-34")) +
     guides(shape = guide_legend(override.aes = list(shape = 21))) +  # define the shape presented in the legend
 
     
@@ -477,7 +572,7 @@ plotPosteriorDensityV2 <- function(t1, t2, t3) {
 }
 
 
-justJitterPlotV2 <- function(t1) {
+justJitterPlotV2 <- function(t1, weekString) {
 
 	colours = c("1" = "red", "2" = "green", "3" = "blue")
 
@@ -497,23 +592,17 @@ justJitterPlotV2 <- function(t1) {
     
     labs(y="bpc", 
          x="bc", 
-         caption = paste("the joint posterior distribution of bc and bpc", sep="") ) +
+         caption = paste("the joint posterior distribution of bc and bpc\n", weekString, sep="") ) +
     
     theme_bw() +
 
     scale_fill_manual(values = colours, 
                       breaks = c("1", "2", "3"),
-                      labels = c("week 23-25", "week 26-30", "week 31-34")) +
+                      labels = c("week 23-25", "week 26-31", "week 32-34")) +
 
     scale_shape_manual(values = 21) +
-    
-    theme(legend.title = element_blank(),
-          legend.spacing.y = unit(0, "mm"), 
-          legend.justification=c(1,0),
-          panel.border = element_rect(colour = "black", fill=NA),
-          aspect.ratio = 1, axis.text = element_text(colour = 1, size = 12),
-          legend.background = element_blank(),
-          legend.box.background = element_rect(colour = "black")) 
+
+    theme(legend.position="none") 
 
     return(gg)
 
@@ -523,7 +612,12 @@ justJitterPlotV2 <- function(t1) {
 
 modelComparisonV2 <- function(models, daytime, randomSeed, debug) {
 
-  # Statistical Rethinking, code 10.45 and Statistical Rethinking Recoded
+  	# Statistical Rethinking, code 10.45 and Statistical Rethinking Recoded
+
+  	# for the error 
+  	#        ## Warning: 
+	#        ## 2 (33.3%) p_waic estimates greater than 0.4. We recommend trying loo instead.
+  	# see: https://stats.stackexchange.com/questions/304958/warnings-during-waic-computation-how-to-proceed
 
   library(brms)
   library(rstan)
@@ -625,8 +719,8 @@ modelComparisonV2 <- function(models, daytime, randomSeed, debug) {
   rm(noLogPop)
   rm(onlyIntercept)
 
-  detach("package:brms", unload=TRUE) 
-  detach("package:rstan", unload=TRUE) 
+  #detach("package:brms", unload=TRUE) 
+  #detach("package:rstan", unload=TRUE) 
 
 
   return(gg.lst)
@@ -673,9 +767,9 @@ modelMCMCcheckV2 <- function(models, daytime, debug) {
 
   # cleanup
 
-  detach("package:brms", unload=TRUE) 
-  detach("package:ggmcmc", unload=TRUE) 
-  detach("package:mcmcplots", unload=TRUE) 
+  #detach("package:brms", unload=TRUE) 
+  #detach("package:ggmcmc", unload=TRUE) 
+  #detach("package:mcmcplots", unload=TRUE) 
 
 
   return(gg.lst)

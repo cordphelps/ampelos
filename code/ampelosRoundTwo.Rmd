@@ -7,92 +7,9 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r localCode, include=FALSE}
 
-densityFacets <- function(tibble, periodString) {
-  
-  gg <- ggplot(data = tibble, # add the data
-       aes(x = positionX / 3.281, y = Thomisidae..crab.spider.,
-           color = transect)) +   
-    geom_jitter() +
-    facet_grid(~transect) +
-    #scale_x_continuous(breaks = seq(0, 200, 1)) +
-    
-    labs(title = paste("thomisidae observations seasonal ",
-                        periodString, sep=""),
-       x = "trap distance from field edge (m)", 
-       y = "count") +
-  
-    scale_y_continuous(breaks = seq(0, 4, 1)) +
-    theme_bw() +
-  
-    theme(legend.position="none") +
-  
-    scale_colour_hue(name="transect",    # Legend label, use darker colors
-                  breaks=c("SNH", "control"),
-                  labels=c("SNH", "control"),
-                  l=40)             # Use darker colors, lightness=40
-  
-  return(gg)
-  
-}
-
-densityNoFacets <- function(tibble, periodString) {
-  
-  gg <- ggplot(data = tibble, # add the data
-       aes(x = transect, y = Thomisidae..crab.spider., # set x, y coordinates
-           color = transect)) +    # color by treatment
-    geom_jitter() +
-    
-    labs(title = paste("thomisidae observations seasonal ",
-                        periodString, sep=""),
-       x = "transect", 
-       y = "counts") +
-    
-    scale_y_continuous(breaks = seq(0, 4, 1)) +
-  
-    theme_bw() +
-  
-    theme(legend.position="none") 
-  
-  return(gg)
-}
-
-
-errorBars <- function(tibble, periodString, observations) {
-  
-  # http://www.cookbook-r.com/Graphs/Plotting_means_and_error_bars_(ggplot2)/
-
-  # The errorbars overlapped, so use position_dodge to move them horizontally
-  pd <- position_dodge(1.5) # move them .05 to the left and right
-
-  gg <- ggplot(tibble, aes(x=positionX / 3.281, y=mean, colour=transect, group=transect)) + 
-    geom_errorbar(aes(ymin=mean-se, ymax=mean+se), colour="black", width=.1, position=pd) +
-    geom_line(position=pd) +
-    geom_point(position=pd, size=3, shape=21, fill="white") + # 21 is filled circle
-  
-    labs(title = paste("mean thomisidae collection rate: seasonal ",
-                        periodString, sep=""),
-       subtitle = "(daylight)",
-       caption = paste(observations, 
-                       " observations\n at each trap position", sep=""),
-       x = "trap distance from field edge (m)", 
-       y = "mean rate +/- SE (count / 8 hrs)") +
-  
-    scale_colour_hue(name="transect",    # Legend label, use darker colors
-                     breaks=c("oakMargin", "control"),
-                     labels=c("SNH", "control"),
-                     l=40) +            # Use darker colors, lightness=40
-
-    expand_limits(y=0) +                        # Expand y range
-    scale_y_continuous() +
-    scale_x_continuous(breaks = seq(0, 60, 20)) +
-  
-    theme_bw() 
-  
-  return(gg)
-  
-}
+source('/Users/rcphelps/code/thesis/ampelos/code/bayesNoClusters.R')
 
 ```
 
@@ -104,7 +21,7 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 
-# "weeks 23-25",  "weeks 26-30", "weeks 31-34"
+# "weeks 23-25",  "weeks 26-31", "weeks 32-34"
 
 source.url <- c("https://raw.githubusercontent.com/cordphelps/ampelos/master/data/bugs.csv")
 
@@ -129,30 +46,43 @@ thomisidae.period1.control.tibl <- bugs.tibl %>%
 thomisidae.period2.oakMargin.tibl <- bugs.tibl %>% 
   filter(time != 'am') %>%
   filter(transect == 'oakMargin') %>%
-  filter(week > 25 & week < 31) %>%
+  filter(week > 25 & week < 32) %>%
   group_by(position) %>%
     summarize(mean = mean(Thomisidae..crab.spider., na.rm=TRUE))
 
 thomisidae.period2.control.tibl <- bugs.tibl %>% 
   filter(time != 'am') %>%
   filter(transect == 'control') %>%
-  filter(week > 25 & week < 31) %>%
+  filter(week > 25 & week < 32) %>%
   group_by(position) %>%
     summarize(mean = mean(Thomisidae..crab.spider., na.rm=TRUE))
 
 thomisidae.period3.oakMargin.tibl <- bugs.tibl %>% 
   filter(time != 'am') %>%
   filter(transect == 'oakMargin') %>%
-  filter(week > 30) %>%
+  filter(week > 31) %>%
   group_by(position) %>%
     summarize(mean = mean(Thomisidae..crab.spider., na.rm=TRUE))
 
 thomisidae.period3.control.tibl <- bugs.tibl %>% 
   filter(time != 'am') %>%
   filter(transect == 'control') %>%
-  filter(week > 30) %>%
+  filter(week > 31) %>%
   group_by(position) %>%
     summarize(mean = mean(Thomisidae..crab.spider., na.rm=TRUE))
+
+combo.period1.tibl <- bugs.tibl %>% 
+  filter(time != 'am') %>%
+  filter(week < 26)
+
+combo.period2.tibl <- bugs.tibl %>% 
+  filter(time != 'am') %>%
+  filter(week > 25 & week < 32)
+
+combo.period3.tibl <- bugs.tibl %>% 
+  filter(time != 'am') %>%
+  filter(week > 31)
+
 
 library(JGmisc)
 
@@ -182,40 +112,26 @@ pwr::pwr.2p.test(h=0.757, sig.level=0.05, power=0.8)
 ```{r densityPlots, echo=FALSE, include=TRUE, results="hide", message=F, warning=T, out.width=c('50%', '50%'), fig.show='hold' }
 
 
-combo.period1.tibl <- bugs.tibl %>% 
-  filter(time != 'am') %>%
-  filter(week < 26)
-
-combo.period2.tibl <- bugs.tibl %>% 
-  filter(time != 'am') %>%
-  filter(week > 25 & week < 31)
-
-combo.period3.tibl <- bugs.tibl %>% 
-  filter(time != 'am') %>%
-  filter(week > 30)
-
-
-
 input.tibl <- combo.period1.tibl %>% mutate(transect=replace(as.character(transect), transect=='oakMargin', 'SNH')) %>% as_tibble()
 
-densityNoFacets(tibble=input.tibl, periodString="period 1")
-densityFacets(tibble=input.tibl, periodString="period 1")
+densityNoFacets(tibble=input.tibl, periodString="weeks 23-25")
+densityFacets(tibble=input.tibl, periodString="weeks 23-25")
 
 input.tibl <- combo.period2.tibl %>% mutate(transect=replace(as.character(transect), transect=='oakMargin', 'SNH')) %>% as_tibble()
 
-densityNoFacets(tibble=input.tibl, periodString="period 2")
-densityFacets(tibble=input.tibl, periodString="period 2")
+densityNoFacets(tibble=input.tibl, periodString="weeks 26-31")
+densityFacets(tibble=input.tibl, periodString="weeks 26-31")
 
 input.tibl <- combo.period3.tibl %>% mutate(transect=replace(as.character(transect), transect=='oakMargin', 'SNH')) %>% as_tibble()
 
-print( densityNoFacets(tibble=input.tibl, periodString="period 3") )
-print( densityFacets(tibble=input.tibl, periodString="period 3") )
+print( densityNoFacets(tibble=input.tibl, periodString="weeks 32-34") )
+print( densityFacets(tibble=input.tibl, periodString="weeks 32-34") )
 
 
 ```
 
 
-```{r errorBars, echo=FALSE, include=TRUE, results="hide", message=F, warning=T, out.width=c('50%', '50%'), fig.show='hold'}
+```{r errorBars, echo=FALSE, include=TRUE, results="hide", message=F, warning=T, out.width=c('33%', '33%', '33%'), fig.show='hold'}
 
 # calculate the mean and SE of traps (like Altieri)
 # https://stackoverflow.com/questions/2676554/in-r-how-to-find-the-standard-error-of-the-mean
@@ -306,10 +222,13 @@ library("dplyr")
     ##
     #filtered.df <- rl[[4]] %>% dplyr::filter(time == 'pm')
     
-    
+  
     filtered.df <- bugs.tibl %>% 
       filter(time != 'am') %>% 
-      rename(totalSpiders = Thomisidae..crab.spider.)
+      group_by(week, transect) %>%
+      summarize(totalSpiders = sum(Thomisidae..crab.spider.))
+      
+      # rename(totalSpiders = Thomisidae..crab.spider.)
     
     
     # read data from disc with fromDisc=TRUE
@@ -339,7 +258,7 @@ library("dplyr")
 
 ```
 
-```{r posteriorGraphs, echo=FALSE, include=TRUE, results="hide", message=F, warning=T, out.width=c('50%', '50%'), fig.show='hold'}
+```{r posteriorGraphs, echo=FALSE, include=TRUE, results="hide", message=F, warning=T, out.width=c('33%', '33%', '33%'), fig.show='hold'}
 
 # display the posterior graphs 
 
@@ -363,36 +282,69 @@ library("dplyr")
 ```
 
 
-```{r modelDiags, echo=FALSE, include=TRUE, results="hide", message=F, warning=T, out.width=c('50%', '50%'), fig.show='hold'}
+```{r modelDiags, echo=FALSE, include=FALSE, results="hide", message=F, warning=T, out.width=c('33%', '33%', '33%'), fig.show='hold'}
 
-  source('/Users/rcphelps/code/thesis/ampelos/code/bayesNoCLusters.R')
 
-  daytime <- "pm"
-  path <- "/Users/rcphelps/code/thesis/ampelos/code/output/"
+
+if (TRUE) {
+  
+    source('/Users/rcphelps/code/thesis/ampelos/code/bayesNoCLusters.R')
+
+    daytime <- "pm"
+    path <- "/Users/rcphelps/code/thesis/ampelos/code/output/"
   
 
-	fullPath.rds <- paste(path, "listV2-", daytime, ".rds", sep="")
+	  fullPath.rds <- paste(path, "listV2-", daytime, ".rds", sep="")
 
-  # read the 3 models from disc and run diags
-	gg.lst <- list()
-  gg.lst <- modelDiagsV3(daytime='pm', hp=hypotheticalPopulation, rds=fullPath.rds)
+    # read the 3 models from disc and run diags
+	  gg.lst <- list()
+    gg.lst <- modelDiagsV3(daytime='pm', hp=hypotheticalPopulation, rds=fullPath.rds)
 
-  for (i in 1:length(gg.lst)) {
-  
-    print(gg.lst[[i]])
-  
-    fileName <- paste("ggsave.poisson.", i, ".4.2.V2.pdf", sep="")
-    ggsave.path <- "/Users/rcphelps/code/thesis/ampelos/code/output/"
-    fullPath <- paste(ggsave.path, fileName, sep="")
-  
-    if (file.exists(fullPath)) { file.remove(fullPath) }
-
-    ggsave(fileName, plot = gg.lst[[i]], 
-              device = NULL, path = ggsave.path,
-              scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
-              units = c("in", "cm", "mm"))
   }
 
 
+```
+
+
+```{r printDiags1, echo=FALSE, include=TRUE, results="hide", message=F, warning=T, out.width=c('50%', '50%'), fig.show='hold'}
+
+
+      i <- 1
+
+      print(gg.lst[[1]])
+  
+      fileName <- paste("ggsave.poisson.", i, ".4.2.V2.pdf", sep="")
+      ggsave.path <- "/Users/rcphelps/code/thesis/ampelos/code/output/"
+      fullPath <- paste(ggsave.path, fileName, sep="")
+  
+      if (file.exists(fullPath)) { file.remove(fullPath) }
+
+      ggsave(fileName, plot = gg.lst[[i]], 
+              device = NULL, path = ggsave.path,
+              scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+              units = c("in", "cm", "mm"))
+      
+    
+```
+
+
+```{r printDiags2, echo=FALSE, include=TRUE, results="hide", message=F, warning=T, out.width=c('33%', '33%', '33%'), fig.show='hold'}
+
+    for (i in 2:length(gg.lst)) {
+  
+      print(gg.lst[[i]])
+  
+      fileName <- paste("ggsave.poisson.", i, ".4.2.V2.pdf", sep="")
+      ggsave.path <- "/Users/rcphelps/code/thesis/ampelos/code/output/"
+      fullPath <- paste(ggsave.path, fileName, sep="")
+  
+      if (file.exists(fullPath)) { file.remove(fullPath) }
+
+      ggsave(fileName, plot = gg.lst[[i]], 
+              device = NULL, path = ggsave.path,
+              scale = 1, width = 6, height = NA, dpi = 300, limitsize = TRUE,
+              units = c("in", "cm", "mm"))
+      
+    }
 ```
 
