@@ -1,49 +1,52 @@
 
 
 densityFacets <- function(tibble, periodString) {
+
+	color = c("SNH" = "lightgreen", "control" = "lightblue")
   
-  gg <- ggplot(data = tibble, # add the data
-       aes(x = positionX / 3.281, y = Thomisidae..crab.spider.,
-           color = transect)) +   
-    geom_jitter() +
+  gg <- ggplot(data = tibble, aes(x = positionX / 3.281, y = Thomisidae..crab.spider.)) + 
+
+    geom_jitter(aes(fill=transect), shape = 21, size=3) +
+
     facet_grid(~transect) +
     #scale_x_continuous(breaks = seq(0, 200, 1)) +
     
     labs(title = paste("thomisidae observations seasonal ",
                         periodString, sep=""),
        x = "trap distance from field edge (m)", 
-       y = "count") +
-  
-    scale_y_continuous(breaks = seq(0, 4, 1)) +
+       y = "count per trap") +
+
     theme_bw() +
   
-    theme(legend.position="none") +
-  
-    scale_colour_hue(name="transect",    # Legend label, use darker colors
-                  breaks=c("SNH", "control"),
-                  labels=c("SNH", "control"),
-                  l=40)             # Use darker colors, lightness=40
+    scale_y_continuous(breaks = seq(0, 4, 1)) +
+
+    scale_fill_manual(values = color, breaks = c("SNH", "control"), labels = c("SNH", "control")) +
+
+    theme(legend.position="none") 
   
   return(gg)
   
 }
 
 densityNoFacets <- function(tibble, periodString) {
+
+	color = c("SNH" = "lightgreen", "control" = "lightblue")
   
-  gg <- ggplot(data = tibble, # add the data
-       aes(x = transect, y = Thomisidae..crab.spider., # set x, y coordinates
-           color = transect)) +    # color by treatment
-    geom_jitter() +
+  gg <- ggplot(data = tibble, aes(x = transect, y = Thomisidae..crab.spider.)) +  
+
+    geom_jitter(aes(fill=transect), shape = 21, size=3) +
     
     labs(title = paste("thomisidae observations seasonal ",
                         periodString, sep=""),
        x = "transect", 
-       y = "counts") +
+       y = "count per trap") +
+
+    theme_bw() +
     
     scale_y_continuous(breaks = seq(0, 4, 1)) +
   
-    theme_bw() +
-  
+    scale_fill_manual(values = color, breaks = c("SNH", "control"), labels = c("SNH", "control")) +
+
     theme(legend.position="none") 
   
   return(gg)
@@ -383,8 +386,8 @@ plotLikelihoodV2 <- function(tibble, hypoPop, cap) {
   gg <- ggplot(tibble, aes(x=seasonalTimeframe, y=plausibility)) +
     
         #geom_point(aes(fill = "green"), shape = 21, size=5, show.legend=TRUE, width=0.05) +
-        geom_point(aes(fill=colours), shape = 21, size=5, show.legend=TRUE, width=0.05) +
-    
+        geom_point(aes(fill=colours), shape = 21, size=5, show.legend=TRUE) +
+        # geom_point(aes(fill=colours), shape = 21, size=5, show.legend=TRUE, width=0.05) +
     	ylim(c(0, 1)) + 
     	expand_limits(y=c(0,1)) + 
  
@@ -804,12 +807,12 @@ plotRawWeeklyV2 <- function(day, night, where) {
   #assign("plotWeekly.df", df, envir=.GlobalEnv)
   #assign("dfX", df, envir=.GlobalEnv)
   
-  colours = c("pm" = "violet", "am" = "purple")
+  colours = c("pm" = "lightblue", "am" = "darkblue")
   
   gg <- ggplot() + 
     
-    geom_jitter(data=day, aes(x=week, y=totalSpiders, fill=time), size=3, shape=21, alpha=.7, show.legend=TRUE, width=.2, height=.2) +
-    geom_jitter(data=night, aes(x=week, y=totalSpiders, fill=time), size=3, shape=21, alpha=.7, show.legend=TRUE, width=.2, height=.2) +
+    geom_jitter(data=day, aes(x=week, y=totalSpiders, fill=time), size=5, shape=21, alpha=.7, show.legend=TRUE, width=.2, height=.2) +
+    geom_jitter(data=night, aes(x=week, y=totalSpiders, fill=time), size=5, shape=21, alpha=.7, show.legend=TRUE, width=.2, height=.2) +
     
     geom_vline(xintercept=25.5) + # seasonal timeframe seperators
     geom_vline(xintercept=31.5) + #
@@ -824,7 +827,7 @@ plotRawWeeklyV2 <- function(day, night, where) {
     
     # labs(title=paste("total spiders trapped by week", sep=""),
     labs(
-         y="Thomisidae, daily counts", 
+         y="Thomisidae, weekly counts", 
          x="week", 
          caption = paste(where, " transect population activity\nby collection time in three\nobserved seasonal periods", 
          				 sep="") ) +
@@ -1259,8 +1262,8 @@ wilcoxStats <- function(vector1, vector2, byTransect) {
   	#vector1 <- thomisidae.period1.SNH.tibl
   	#vector2 <- thomisidae.period1.control.tibl
 
-  	spiders.vector2 <- vector2 %>% select(-time)
-  	spiders.vector1 <- vector1 %>% select(-time)
+  	spiders.vector2 <- vector2 %>% select(-time, -week)
+  	spiders.vector1 <- vector1 %>% select(-time, -week)
   	#
   	# no pm collection on day 184
   	#spiders.vectors.wide.tbl <- dplyr::left_join(spiders.vector1, spiders.vector2,
@@ -1268,18 +1271,20 @@ wilcoxStats <- function(vector1, vector2, byTransect) {
   	# <position> <totalSpiders.x> <totalSpiders.y>
   	#
   	# stack the tibbles together
-  	spiders.vectors.stacked.df <- dplyr::bind_rows(spiders.vector1, spiders.vector2) %>% 
-  									mutate_at(vars(position), as.factor) %>% 
-  									as.data.frame()
+  	spiders.vectors.stacked <- dplyr::bind_rows(spiders.vector1, spiders.vector2) 
+
+  	#%>% 
+  	#								mutate_at(vars(position), as.character) %>% 
+  	#								as.data.frame()
   	#<position> <totalSpiders> 
   	#
 
-  	wt <- spiders.vectors.stacked.df  %>%
-    	rstatix::wilcox_test(totalSpiders ~ position, paired = TRUE) %>%
+  	wt <- spiders.vectors.stacked  %>%
+    	rstatix::wilcox_test(totalSpiders ~ transect, paired = TRUE) %>%
     	rstatix::add_significance()
 
-  	w.effect <- spiders.vectors.stacked.df  %>%
-    	rstatix::wilcox_effsize(totalSpiders ~ position, paired = TRUE) 
+  	w.effect <- spiders.vectors.stacked  %>%
+    	rstatix::wilcox_effsize(totalSpiders ~ transect, paired = TRUE) 
 
   	}
 
@@ -1293,7 +1298,7 @@ wilcoxStats <- function(vector1, vector2, byTransect) {
 }
 
 
-chiSqStats <- function(groupSNH, groupControl) {
+chiSqStats <- function(vector1, vector2) {
 
   #
   # create a tibble of SNH and control columns that are paired by position and day
@@ -1302,30 +1307,30 @@ chiSqStats <- function(groupSNH, groupControl) {
   #
   # reduce the dimensions of totalSpiders by time for each transect
   
-  #pm <- thomisidae.night.control.tbl
-  #am <- thomisidae.day.control.tbl
+  vector1 <- thomisidae.period1.SNH.tibl
+  vector2 <- thomisidae.period1.control.tibl
   
   
   #
   # no pm collection on day 184
-  spiders.groups.wide.tbl <- dplyr::left_join(groupSNH, groupControl, by='position')  
+  spiders.groups.wide.tbl <- dplyr::left_join(vector1, vector2, by='julian')  
   # <position> <mean>
   #
 
-  	countVector <- spiders.groups.wide.tbl$mean.x 
+  	countVector <- spiders.groups.wide.tbl$totalSpiders.x 
 	dispersionIndex.x <- var(countVector) / mean(countVector)
 
 	degreesFreedom.x <- length(countVector) - 1
 	chiSquare.x <- dispersionIndex.x * degreesFreedom.x
 
-	countVector <- spiders.groups.wide.tbl$mean.y 
+	countVector <- spiders.groups.wide.tbl$totalSpiders.y 
 	dispersionIndex.y <- var(countVector) / mean(countVector)
 
 	degreesFreedom.y <- length(countVector) - 1
 	chiSquare.y <- dispersionIndex.y * degreesFreedom.y
 
 	# Pearson's Chi-squared test
-	pearson <- chisq.test(groupSNH$mean, groupControl$mean)
+	pearson <- chisq.test(vector1$totalSpiders, vector2$totalSpiders)
 
 
 

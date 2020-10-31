@@ -80,47 +80,65 @@ thomisidae.night.SNH.tbl <- bugs.tibl %>%
 
 # **************************************************** #
 
-thomisidae.period1.oakMargin.tibl <- bugs.tibl %>% 
-  dplyr::filter(time != 'am') %>%
-  dplyr::filter(transect == 'oakMargin') %>%
+thomisidae.period1.SNH.tibl <- bugs.tibl %>% 
+  dplyr::filter(time == 'pm', transect=='oakMargin')  %>%
   dplyr::filter(week < 26) %>%
-  dplyr::group_by(position) %>%
-    dplyr::summarize(mean = mean(Thomisidae..crab.spider., na.rm=TRUE))
+  dplyr::group_by(julian, transect) %>%
+  dplyr::summarize(totalSpiders = sum(Thomisidae..crab.spider.),
+            time = time,
+            week=week, transect=transect,
+            .groups = 'drop') %>%
+  dplyr::distinct()
 
 thomisidae.period1.control.tibl <- bugs.tibl %>% 
-  dplyr::filter(time != 'am') %>%
-  dplyr::filter(transect == 'control') %>%
+  dplyr::filter(time == 'pm', transect == 'control') %>%
   dplyr::filter(week < 26) %>%
-  dplyr::group_by(position) %>%
-    dplyr::summarize(mean = mean(Thomisidae..crab.spider., na.rm=TRUE))
+  dplyr::group_by(julian, transect) %>%
+  dplyr::summarize(totalSpiders = sum(Thomisidae..crab.spider.),
+            time = time,
+            week=week, transect=transect,
+            .groups = 'drop') %>%
+  dplyr::distinct()
 
-thomisidae.period2.oakMargin.tibl <- bugs.tibl %>% 
-  dplyr::filter(time != 'am') %>%
-  dplyr::filter(transect == 'oakMargin') %>%
+thomisidae.period2.SNH.tibl <- bugs.tibl %>% 
+  dplyr::filter(time == 'pm', transect=='oakMargin')  %>%
   dplyr::filter(week > 25 & week < 32) %>%
-  dplyr::group_by(position) %>%
-    dplyr::summarize(mean = mean(Thomisidae..crab.spider., na.rm=TRUE))
+    dplyr::group_by(julian, transect) %>%
+  dplyr::summarize(totalSpiders = sum(Thomisidae..crab.spider.),
+            time = time,
+            week=week, transect=transect,
+            .groups = 'drop') %>%
+  dplyr::distinct()
 
 thomisidae.period2.control.tibl <- bugs.tibl %>% 
-  dplyr::filter(time != 'am') %>%
-  dplyr::filter(transect == 'control') %>%
+  dplyr::filter(time == 'pm', transect == 'control') %>%
   dplyr::filter(week > 25 & week < 32) %>%
-  dplyr::group_by(position) %>%
-    dplyr::summarize(mean = mean(Thomisidae..crab.spider., na.rm=TRUE))
+  dplyr::group_by(julian, transect) %>%
+  dplyr::summarize(totalSpiders = sum(Thomisidae..crab.spider.),
+            time = time,
+            week=week, transect=transect,
+            .groups = 'drop') %>%
+  dplyr::distinct()
 
-thomisidae.period3.oakMargin.tibl <- bugs.tibl %>% 
-  dplyr::filter(time != 'am') %>%
-  dplyr::filter(transect == 'oakMargin') %>%
+thomisidae.period3.SNH.tibl <- bugs.tibl %>% 
+  dplyr::filter(time == 'pm', transect=='oakMargin')  %>%
   dplyr::filter(week > 31) %>%
-  dplyr::group_by(position) %>%
-    dplyr::summarize(mean = mean(Thomisidae..crab.spider., na.rm=TRUE))
+  dplyr::group_by(julian, transect) %>%
+  dplyr::summarize(totalSpiders = sum(Thomisidae..crab.spider.),
+            time = time,
+            week=week, transect=transect,
+            .groups = 'drop') %>%
+  dplyr::distinct()
 
 thomisidae.period3.control.tibl <- bugs.tibl %>% 
-  dplyr::filter(time != 'am') %>%
-  dplyr::filter(transect == 'control') %>%
+  dplyr::filter(time == 'pm', transect == 'control') %>%
   dplyr::filter(week > 31) %>%
-  dplyr::group_by(position) %>%
-    dplyr::summarize(mean = mean(Thomisidae..crab.spider., na.rm=TRUE))
+  dplyr::group_by(julian, transect) %>%
+  dplyr::summarize(totalSpiders = sum(Thomisidae..crab.spider.),
+            time = time,
+            week=week, transect=transect,
+            .groups = 'drop') %>%
+  dplyr::distinct()
 
 combo.period1.tibl <- bugs.tibl %>% 
   dplyr::filter(time != 'am') %>%
@@ -170,11 +188,11 @@ ggsave(fileName, plot = gg, device = NULL, path = ggsave.path,
 
 ```
 
+```{r cohensCalc, echo=FALSE, include=FALSE, results='asis', message=F, warning=T}
+
+# include=FALSE : unable to supress JGmisc::cohens.d output
 
 
-```{r stats, echo=FALSE, include=FALSE, results='asis', message=F, warning=T}
-
-#
 # summary of estimators, standardizers, and recommended use
 # table 1, "pooled SD" 
 # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3840331/
@@ -183,11 +201,46 @@ ggsave(fileName, plot = gg, device = NULL, path = ggsave.path,
 
 library(JGmisc)
 
-cohens.d.period1 <- JGmisc::cohens.d(thomisidae.period1.oakMargin.tibl$mean, thomisidae.period1.control.tibl$mean)
+period1.stats <- JGmisc::cohens.d(thomisidae.period1.SNH.tibl$totalSpiders, thomisidae.period1.control.tibl$totalSpiders)
 
-cohens.d.period2 <- JGmisc::cohens.d(thomisidae.period2.oakMargin.tibl$mean, thomisidae.period2.control.tibl$mean)
+period2.stats <- JGmisc::cohens.d(thomisidae.period2.SNH.tibl$totalSpiders, thomisidae.period2.control.tibl$totalSpiders)
 
-cohens.d.period3 <- JGmisc::cohens.d(thomisidae.period3.oakMargin.tibl$mean, thomisidae.period3.control.tibl$mean)
+period3.stats <- JGmisc::cohens.d(thomisidae.period3.SNH.tibl$totalSpiders, thomisidae.period3.control.tibl$totalSpiders)
+
+################# for the hypothetical population
+################# values used in the bayes analysis
+
+period1.mean <- period1.stats$m1
+period2.mean <- period2.stats$m1
+period3.mean <- period3.stats$m1
+
+#################
+#################
+
+```
+
+
+```{r cohensStats, echo=FALSE, include=TRUE, results='asis', message=F, warning=T}
+
+stats.tbl <- tribble(~period, ~cohens.d, ~SNHmean, ~controlMean,
+                     "weeks 23-25", 
+                     round(period1.stats$d,2), 
+                     round(period1.stats$m1,2), 
+                     round(period1.stats$m2,2),
+                     "weeks 26-31", 
+                     round(period2.stats$d,2), 
+                     round(period2.stats$m1,2), 
+                     round(period2.stats$m2,2),
+                     "weeks 32-34", 
+                     round(period3.stats$d,2), 
+                     round(period3.stats$m1,2), 
+                     round(period3.stats$m2,2)
+                      )
+
+# https://bookdown.org/yihui/rmarkdown-cookbook/kable.html#specify-column-alignment
+knitr::kable(stats.tbl, caption="Comparison of SNH and control weekly daytime trapped\ncrab spider counts (Wilcoxon signed-rank test)",
+             col.names = c("seasonal period", "Cohen's d effect size", "SNH transect mean spiders per week", "control transect mean spiders per week"),
+             align = "lccc")
 
 # New Effect Size Rules of Thumb
 # Sawilowsky 2009
@@ -210,30 +263,52 @@ cohens.d.period3 <- JGmisc::cohens.d(thomisidae.period3.oakMargin.tibl$mean, tho
 #
 #
 
-
-power.period1 <- pwr::pwr.2p.test(h=cohens.d.period1$d, sig.level=0.05, power=0.8)
-power.period2 <- pwr::pwr.2p.test(h=cohens.d.period2$d, sig.level=0.05, power=0.8)
-power.period3 <- pwr::pwr.2p.test(h=cohens.d.period3$d, sig.level=0.05, power=0.8)
-
 observations.daytime.period1 <- combo.period1.tibl %>% dplyr::group_by(julian) %>% count()
 observations.daytime.period2 <- combo.period2.tibl %>% dplyr::group_by(julian) %>% count()
 observations.daytime.period3 <- combo.period3.tibl %>% dplyr::group_by(julian) %>% count()
 
-# to get observations in the period, multiply observations per day times days in the period
-# ( pm observations per day should always be '60' )
-total.obs.daytime.period1 <- observations.daytime.period1$n[[1]] * nrow(observations.daytime.period1)
-total.obs.daytime.period2 <- observations.daytime.period2$n[[1]] * nrow(observations.daytime.period2)
-total.obs.daytime.period3 <- observations.daytime.period3$n[[1]] * nrow(observations.daytime.period3)
+obs.period1 <- sum(observations.daytime.period1$n)
+obs.period2 <- sum(observations.daytime.period2$n)
+obs.period3 <- sum(observations.daytime.period3$n)
 
 
-stats.tbl <- tribble(~period, ~cohens.d, ~sig.level, ~power, ~impliedSampleSize,  ~actualSampleSize,
-                     "weeks 23-25", round(cohens.d.period1$d,2), 0.05, 0.80, round(power.period1$n,0),
-                     total.obs.daytime.period1,
-                     "weeks 26-31", round(cohens.d.period2$d,2), 0.05, 0.80, round(power.period2$n,0),
-                     total.obs.daytime.period2,
-                     "weeks 32-34", round(cohens.d.period3$d,2), 0.05, 0.80, round(power.period3$n,0),
-                     total.obs.daytime.period3
+power.period1 <- pwr::pwr.t2n.test(n1 = obs.period1 / 2, 
+                                   n2= obs.period1 / 2, 
+                                   d = period1.stats$d, sig.level = 0.05, power = NULL)
+
+power.period2 <- pwr::pwr.t2n.test(n1 = obs.period2 / 2, 
+                                   n2= obs.period2 / 2, 
+                                   d = period2.stats$d, sig.level = 0.05, power = NULL)
+
+power.period3 <- pwr::pwr.t2n.test(n1 = obs.period3 / 2, 
+                                   n2= obs.period3 / 2, 
+                                   d = period3.stats$d, sig.level = 0.05, power = NULL)
+
+
+stats.tbl <- tribble(~period, ~cohens.d, ~sig.level, ~power,  ~actualSampleSize,
+                     "weeks 23-25", 
+                     round(period1.stats$d,2), 
+                     0.05, 
+                     round(power.period1$power, 2),
+                     power.period1$n1,
+                     
+                     "weeks 26-31", 
+                     round(period2.stats$d,2), 
+                     0.05, 
+                     round(power.period2$power, 2),
+                     power.period2$n1,
+                     
+                     "weeks 32-34", 
+                     round(period3.stats$d,2), 
+                     0.05, 
+                     round(power.period3$power, 2),
+                     power.period3$n1
                       )
+
+knitr::kable(stats.tbl, caption="power analysis by seasonal period: two sample t test",
+             col.names = c("seasonal period", "Cohen's d effect size (calculated)", "alpha (proposed)", "power (calculated)", 
+                           "actual sample size"),
+             align = "lcccc")
 
 ```
 
@@ -241,15 +316,19 @@ stats.tbl <- tribble(~period, ~cohens.d, ~sig.level, ~power, ~impliedSampleSize,
 
 ```{r rawDistributions, echo=FALSE, include=TRUE, results="hide", message=F, warning=T, out.width=c('50%', '50%'), fig.show='hold' }
 
-plotRawWeeklyV2(day=thomisidae.day.control.tbl, night=thomisidae.night.control.tbl, where="control")
-
 plotRawWeeklyV2(day=thomisidae.day.SNH.tbl, night=thomisidae.night.SNH.tbl, where="SNH")
+
+plotRawWeeklyV2(day=thomisidae.day.control.tbl, night=thomisidae.night.control.tbl, where="control")
 
 
 ```
 
 
-```{r chi-squared, echo=FALSE, include=TRUE, results='asis', message=F, warning=T}
+```{r chi-squared, echo=FALSE, include=FALSE, results='asis', message=F, warning=T}
+
+################ ignore: INSUFFICIENT SAMPLES and count magnitude (many zeros) FOR CHI_SQ
+################
+################
 
 # The Coefficient of Variation is the ratio of the standard deviation to the mean. It is always dimensionless (i.e. it is a plain number without a unit) and is scale invariant (in other words, you can make changes to the length, height or other scale factors without it affecting the result).
 # The Index of Dispersion is the ratio of the variance to the mean (hence the alternate name variance to mean ratio). I usually has a dimension (unless being applied to dimensionless counts) and it is not scale invariant.
@@ -270,14 +349,14 @@ plotRawWeeklyV2(day=thomisidae.day.SNH.tbl, night=thomisidae.night.SNH.tbl, wher
 # homogeneously, then a count difference of this magnitude would occur randomly 
 # in fewer than 1% of equivalent surveys.
 
-stats <- chiSqStats(thomisidae.period1.oakMargin.tibl, thomisidae.period1.control.tibl)
+stats <- chiSqStats(thomisidae.period1.SNH.tibl, thomisidae.period1.control.tibl)
 
 stats.tbl <- tribble(~transect, ~dispersionIndex, ~degreesFreedom, ~chiSq,
             "SNH", round(stats[[1]],3), round(stats[[2]],3), round(stats[[3]],3),
             "control", round(stats[[4]],3), round(stats[[5]],3), round(stats[[6]],3)
                       )
 
-knitr::kable(stats.tbl, caption="Comparison of SNH and Control trapped\nspider means by position (Chi Squared test)",
+knitr::kable(stats.tbl, caption="INSUFFICIENT SAMPLES FOR CHI_SQ\nComparison of SNH and Control trapped\nspider totals by position (Chi Squared test)",
              col.names = c("transect", "dispersion index", "degrees of freedom", "chi squared"),
              align = "lccc")
 
@@ -289,10 +368,13 @@ knitr::kable(stats.tbl, caption="Comparison of SNH and Control trapped\nspider m
 
 # compare day/night distributions for each transect
 
-snh.stats <- wilcoxStats(thomisidae.day.SNH.tbl, thomisidae.night.SNH.tbl)
-control.stats <- wilcoxStats(thomisidae.day.control.tbl, thomisidae.night.control.tbl)
+snh.stats <- wilcoxStats(vector1 = thomisidae.day.SNH.tbl, 
+                         vector2 = thomisidae.night.SNH.tbl,
+                         byTransect=FALSE)
 
-
+control.stats <- wilcoxStats(vector1 = thomisidae.day.control.tbl,
+                             vector2 = thomisidae.night.control.tbl,
+                             byTransect=FALSE)
 
 stats.tbl <- tribble(~transect, ~wilcox.p, ~effectSize, ~comment,
                      "SNH", round(snh.stats[[1]],3), 
@@ -304,7 +386,7 @@ stats.tbl <- tribble(~transect, ~wilcox.p, ~effectSize, ~comment,
                       )
 
 # https://bookdown.org/yihui/rmarkdown-cookbook/kable.html#specify-column-alignment
-knitr::kable(stats.tbl, caption="Comparison of daylight and nighttime trapped\nspider counts (Wilcoxon signed-rank test)",
+knitr::kable(stats.tbl, caption="Comparison of daylight and night-time weekly trapped\nspider counts by transect (Wilcoxon signed-rank test)",
              col.names = c("transect", "p value", "effect metric", "effect magnitude"),
              align = "lccc")
 
@@ -319,17 +401,33 @@ knitr::kable(stats.tbl, caption="Comparison of daylight and nighttime trapped\ns
 
 # compare day/night distributions for each transect
 
-snh.stats <- wilcoxStats(thomisidae.day.SNH.tbl, thomisidae.day.control.tbl)
+period1.stats <- wilcoxStats(vector1 = thomisidae.period1.SNH.tibl, 
+                         vector2 = thomisidae.period1.control.tibl, 
+                         byTransect=TRUE)
+
+period2.stats <- wilcoxStats(vector1 = thomisidae.period2.SNH.tibl, 
+                         vector2 = thomisidae.period2.control.tibl, 
+                         byTransect=TRUE)
+
+period3.stats <- wilcoxStats(vector1 = thomisidae.period3.SNH.tibl, 
+                         vector2 = thomisidae.period3.control.tibl, 
+                         byTransect=TRUE)
 
 stats.tbl <- tribble(~transect, ~wilcox.p, ~effectSize, ~comment,
-                     "SNH", round(snh.stats[[1]],3), 
-                     round(snh.stats[[2]],3), 
-                     snh.stats[[3]]
+                     "weeks 23-25", round(period1.stats[[1]],3), 
+                     round(period1.stats[[2]],3), 
+                     period1.stats[[3]],
+                     "weeks 26-31", round(period2.stats[[1]],3), 
+                     round(period2.stats[[2]],3), 
+                     period2.stats[[3]],
+                     "weeks 31-34", round(period3.stats[[1]],3), 
+                     round(period3.stats[[2]],3), 
+                     period3.stats[[3]]
                       )
 
 # https://bookdown.org/yihui/rmarkdown-cookbook/kable.html#specify-column-alignment
-knitr::kable(stats.tbl, caption="Comparison of SNH and control daytime trapped\nspider counts (Wilcoxon signed-rank test)",
-             col.names = c("transect", "p value", "effect metric", "effect magnitude"),
+knitr::kable(stats.tbl, caption="Comparison of SNH and control weekly daytime trapped\nspider counts by seasonal period (Wilcoxon signed-rank test)",
+             col.names = c("seasonal period", "p value", "effect metric", "effect magnitude"),
              align = "lccc")
 
 
@@ -359,12 +457,6 @@ print( densityFacets(tibble=input.tibl, periodString="weeks 32-34") )
 
 ```
 
-
-```{r statsPrint, echo=FALSE, include=TRUE, results='asis', message=F, warning=T}
-
-knitr::kable(stats.tbl)
-
-```
 
 
 ```{r errorBars, echo=FALSE, include=TRUE, results="asis", message=F, warning=F, out.width=c('33%', '33%', '33%'), fig.show='hold'}
@@ -414,49 +506,37 @@ combo3.means.tibl <- combo.period3.tibl %>%
 # http://www.sthda.com/english/wiki/kruskal-wallis-test-in-r
 
 
-errorBars(tibble=combo1.means.tibl, periodString = "period 1", observations = 27)
+errorBars(tibble=combo1.means.tibl, periodString = "weeks 23-25", observations = 27)
 
-errorBars(tibble=combo2.means.tibl, periodString = "period 2", observations = 39)
+errorBars(tibble=combo2.means.tibl, periodString = "weeks 26-31", observations = 39)
 
-errorBars(tibble=combo3.means.tibl, periodString = "period 3", observations = 27)
+errorBars(tibble=combo3.means.tibl, periodString = "weeks 32-34", observations = 27)
 
 
 
 ```
 
 
-
 ```{r bayes, echo=FALSE, include=TRUE, results="hide", message=F, warning=T, out.width=c('50%', '50%'), fig.show='hold'}
 
 
-library(dplyr)
-
 seed <- 101
-hypotheticalPopulation <- c(58.13,15.93,6.67)
 
-#library("dplyr")
+# for each seasonal period
+hypotheticalPopulation <- c(period1.mean, period2.mean, period3.mean)
+# hypotheticalPopulation <- c(58.13,15.93,6.67)
 
 
-    # rl <- returnList
 
     # organize data into
     #       "week", "transect", "time", "cluster", "totalSpiders"
     # ( already done by evaluateDailySpiderCounts() )
     #
-    # create txt files saving the status output of 9 brm() cycles
 
-    #
     #         existing models will be read from disc
     #         with TRUE/FALSE logic in generateLikelihoodV2() ......
-    #
-    ##
-    ## rl[[4]] is the 4th member of the output of evaluateDailySpiderCounts(bugs.df)
-    ## multiple records per week with columns
-    ## week, transect, time, cluster, totalSpiders
-    ##
-    #filtered.df <- rl[[4]] %>% dplyr::dplyr::filter(time == 'pm')
     
-  
+    
     filtered.df <- bugs.tibl %>% 
       dplyr::filter(time != 'am') %>% 
       dplyr::group_by(week, transect) %>%

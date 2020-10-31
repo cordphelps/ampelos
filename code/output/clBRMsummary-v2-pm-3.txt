@@ -9,15 +9,15 @@ Samples: 4 chains, each with iter = 3000; warmup = 1000; thin = 1;
 
 Population-Level Effects: 
                      Estimate Est.Error l-89% CI u-89% CI Rhat Bulk_ESS
-Intercept                1.43      1.95    -1.64     4.52 1.00     5761
-log_pop                  0.00      1.01    -1.60     1.61 1.00     5709
-contact_high             0.07      0.90    -1.38     1.50 1.00     4080
-log_pop:contact_high     0.11      0.50    -0.70     0.89 1.00     4039
+Intercept                1.45      0.57     0.53     2.36 1.00     7062
+log_pop                 -0.00      1.00    -1.61     1.60 1.00     6872
+contact_high             0.19      0.54    -0.67     1.05 1.00     4712
+log_pop:contact_high     0.11      0.92    -1.36     1.55 1.00     4649
                      Tail_ESS
-Intercept                4771
-log_pop                  4831
-contact_high             3987
-log_pop:contact_high     3997
+Intercept                5734
+log_pop                  4960
+contact_high             4824
+log_pop:contact_high     4913
 
 Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
