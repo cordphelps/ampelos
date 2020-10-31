@@ -12,13 +12,31 @@ ampelos V2
 
 <img src="ampelosRoundTwo_files/figure-gfm/rawDistributions-1.png" width="50%" /><img src="ampelosRoundTwo_files/figure-gfm/rawDistributions-2.png" width="50%" />
 
+    ## Warning in chisq.test(groupSNH$mean, groupControl$mean): Chi-squared
+    ## approximation may be incorrect
+
+| transect | dispersion index | degrees of freedom | chi squared |
+| :------- | :--------------: | :----------------: | :---------: |
+| SNH      |      0.043       |         9          |    0.387    |
+| control  |      0.047       |         9          |   60.000    |
+
+Comparison of SNH and Control trapped spider means by position (Chi
+Squared test)
+
+| transect | p value | effect metric | effect magnitude |
+| :------- | :-----: | :-----------: | :--------------: |
+| SNH      |  0.012  |     0.469     |     moderate     |
+| control  |  0.011  |     0.436     |     moderate     |
+
+Comparison of daylight and nighttime trapped spider counts (Wilcoxon
+signed-rank test)
+
 <img src="ampelosRoundTwo_files/figure-gfm/densityPlots-1.png" width="50%" /><img src="ampelosRoundTwo_files/figure-gfm/densityPlots-2.png" width="50%" /><img src="ampelosRoundTwo_files/figure-gfm/densityPlots-3.png" width="50%" /><img src="ampelosRoundTwo_files/figure-gfm/densityPlots-4.png" width="50%" /><img src="ampelosRoundTwo_files/figure-gfm/densityPlots-5.png" width="50%" /><img src="ampelosRoundTwo_files/figure-gfm/densityPlots-6.png" width="50%" />
 
-| period  | cohens.d | sig.level | power | impliedSampleSize | actualSampleSize |
-| :------ | -------: | --------: | ----: | ----------------: | ---------------: |
-| period1 |     0.76 |      0.05 |   0.8 |                27 |              540 |
-| period2 |     0.06 |      0.05 |   0.8 |              3942 |              960 |
-| period3 |     0.09 |      0.05 |   0.8 |              2172 |              360 |
+| transect | wilcox.p | effectSize | comment  |
+| :------- | -------: | ---------: | :------- |
+| SNH      |    0.012 |      0.469 | moderate |
+| control  |    0.011 |      0.436 | moderate |
 
 <img src="ampelosRoundTwo_files/figure-gfm/errorBars-1.png" width="33%" /><img src="ampelosRoundTwo_files/figure-gfm/errorBars-2.png" width="33%" /><img src="ampelosRoundTwo_files/figure-gfm/errorBars-3.png" width="33%" />
 

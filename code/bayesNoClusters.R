@@ -940,7 +940,7 @@ createFamilyPercentages <- function(list) {
   dfCrab <- dfBase %>% dplyr::filter(bugNames == 'Thomisidae..crab.spider.')  # remove all insects except spiders
   dfOther <- dfBase %>% dplyr::filter(bugNames == 'spider.other') 
   dfAraneae <- dplyr::union(dfCrab, dfOther)  # one row for each spider; columns are percent for each week
-  dfAraneae <- squashFlip(df=dfAraneae, weekList=list[[3]], columnList=c('otherPct', 'spiderPct', 'week'))
+  dfAraneae <- squashFlip(df=dfAraneae, weekList=list[[3]], columnList=c('crabSpiderPct', 'otherSpiderPct', 'week'))
   dfAraneae$family <- 'Araneae'
 
   dfDiptera <- dfBase %>% dplyr::filter(bugNames == 'Diptera..Agromyzidae..leafminer..') 
@@ -1033,10 +1033,11 @@ plotBugPercentages <- function(list, spidersOnly) {
 
     gg <- ggplot(dfAraneae) + 
     
-      geom_point(aes(x=week, y=spiderPct, fill = "spiderPct"), shape=21, size=5, show.legend=TRUE) +
-      geom_point(aes(x=week, y=otherPct, fill = 'otherPct'), shape=21, size=5, show.legend=TRUE) +
+      geom_point(aes(x=week, y=crabSpiderPct, fill = "crabPct"), shape=21, size=5, show.legend=TRUE) +
+      geom_point(aes(x=week, y=otherSpiderPct, fill = 'otherPct'), shape=21, size=5, show.legend=TRUE) +
 
-      scale_fill_manual(name = "", values = c("spiderPct" = "purple", "otherPct" = "violet"), labels = c("Thomisidae", "Araneae (other)")) +
+      #scale_fill_manual(name = "", values = c("spiderPct" = "purple", "otherPct" = "violet"), labels = c("Thomisidae", "Araneae (other)")) +
+      scale_fill_manual(name = "", values = c("crabPct" = "green", "otherPct" = "darkgreen"), labels = c("Thomisidae", "Araneae (other)")) +
 
       ylim(c(0, 30)) + 
       expand_limits(y=c(0,30)) + 
@@ -1049,7 +1050,7 @@ plotBugPercentages <- function(list, spidersOnly) {
     
       #labs(title=paste("spider abundance", sep=""),
       #subtitle=paste("percent of total insects by week", sep=""), 
-      labs(y="spider percentage", 
+      labs(y="percent of total insects", 
           x="week", 
           caption = paste("spider abundance\n", "percent of total insects by week", sep="") ) +
     
@@ -1098,7 +1099,7 @@ plotBugPercentages <- function(list, spidersOnly) {
     
         #labs(title=paste("insect abundance by taxonometric Order", sep=""),
         # subtitle=paste("percent of total population by week", sep=""),
-        labs(y="percent", x="week", 
+        labs(y="percent of insect population", x="week", 
           caption = paste("insect abundance by taxonometric Order\n", "percent of total population by week", sep="") ) +
     
         theme_bw() +
@@ -1178,3 +1179,172 @@ squashFlip <- function(df, weekList, columnList) {
 }
 
 
+wilcoxStats <- function(vector1, vector2, byTransect) {
+
+  # https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test
+  # the Mann-Whitney U-test is equivalent to the Wilcoxon rank-sum test
+  # used by Nichols 2001
+
+  # https://stat.ethz.ch/R-manual/R-devel/library/stats/html/wilcox.test.html
+  # If only x is given, or if both x and y are given and paired is TRUE, a Wilcoxon 
+  # signed   rank test of the null that the distribution of x (in the one sample 
+  # case) or of x - y (in the paired two sample case) is symmetric about mu is performed.
+
+  # Otherwise, if both x and y are given and paired is FALSE, a Wilcoxon rank sum 
+  # test (equivalent to the Mann-Whitney test: see the Note) is carried out. In this 
+  # case, the null hypothesis is that the distributions of x and y differ by a 
+  # location shift of mu and the alternative is that they differ by some other 
+  # location shift (and the one-sided alternative "greater" is that x is shifted to 
+  # the right of y).
+
+  # The Wilcoxon signed-rank test is a non-parametric statistical hypothesis test 
+  # used to compare two related samples, matched samples, or repeated measurements 
+  # on a single sample to assess whether their population mean ranks differ. Wikipedia
+
+  # We show that in this case Poisson distribution is a good approximation for the 
+  # negative binomial distribution and use this fact in establishing a statistical 
+  # test to examine these hypotheses. 
+  # http://www.m-hikari.com/ijcms/ijcms-2017/5-8-2017/p/nijimbereIJCMS5-8-2017.pdf
+  #
+  # is there a difference between day and night population collections?
+  # https://www.datanovia.com/en/lessons/wilcoxon-test-in-r/#assumptions-and-preliminary-tests-1
+  # Wilcoxon signed rank test on paired samples
+  # A Wilcoxon signed-rank test is a nonparametric test that can be used to determine 
+  # whether two dependent samples were selected from populations having the 
+  # same distribution.
+  # https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test
+  # !! when the difference between the groups is zero, the observations are discarded.!!
+  #
+  # the rstatix library provides pipe friendly versions
+  library(rstatix)
+  # coin necessary for effect size
+  library(coin)
+
+  if (byTransect==FALSE) {
+  # 
+  # create a tibble of SNH and control columns that are paired by position and day
+
+  # https://www.guru99.com/r-dplyr-tutorial.html
+  #
+  # reduce the dimensions of totalSpiders by time for each transect
+
+  	#vector1 <- thomisidae.day.SNH.tbl
+  	#vector2 <- thomisidae.night.SNH.tbl
+
+
+   	spiders.vector1 <- vector1 %>% select(-transect, -week) 
+  	spiders.vector2 <- vector2 %>% select(-transect, -week)
+
+  	#
+  	# no pm collection on day 184
+  	#spiders.amPm.wide.tbl <- dplyr::left_join(spiders.vector1, spiders.vector2,
+         #                                           by='julian')  %>% filter(julian!=184)
+  	# <julian> <totalSpiders.x> <totalSpiders.y>
+  	#
+  	# stack the tibbles together
+  	spiders.vectors.stacked <- dplyr::bind_rows(spiders.vector1, spiders.vector2)
+  	#<julian> <totalSpiders> <time>
+  	#
+
+  	wt <- spiders.vectors.stacked  %>%
+    	rstatix::wilcox_test(totalSpiders ~ time, paired = TRUE) %>%
+    	rstatix::add_significance()
+
+  	w.effect <- spiders.vectors.stacked  %>%
+    	rstatix::wilcox_effsize(totalSpiders ~ time, paired = TRUE) 
+  
+
+  } else {
+
+  	#vector1 <- thomisidae.period1.SNH.tibl
+  	#vector2 <- thomisidae.period1.control.tibl
+
+  	spiders.vector2 <- vector2 %>% select(-time)
+  	spiders.vector1 <- vector1 %>% select(-time)
+  	#
+  	# no pm collection on day 184
+  	#spiders.vectors.wide.tbl <- dplyr::left_join(spiders.vector1, spiders.vector2,
+                     #                               by='julian')  %>% filter(julian!=184)
+  	# <position> <totalSpiders.x> <totalSpiders.y>
+  	#
+  	# stack the tibbles together
+  	spiders.vectors.stacked.df <- dplyr::bind_rows(spiders.vector1, spiders.vector2) %>% 
+  									mutate_at(vars(position), as.factor) %>% 
+  									as.data.frame()
+  	#<position> <totalSpiders> 
+  	#
+
+  	wt <- spiders.vectors.stacked.df  %>%
+    	rstatix::wilcox_test(totalSpiders ~ position, paired = TRUE) %>%
+    	rstatix::add_significance()
+
+  	w.effect <- spiders.vectors.stacked.df  %>%
+    	rstatix::wilcox_effsize(totalSpiders ~ position, paired = TRUE) 
+
+  	}
+
+  	stats <- list()
+  	stats[[1]] <- wt$p
+  	stats[[2]] <- w.effect$effsize
+  	stats[[3]] <- w.effect$magnitude	
+  
+  return(stats)
+  
+}
+
+
+chiSqStats <- function(groupSNH, groupControl) {
+
+  #
+  # create a tibble of SNH and control columns that are paired by position and day
+
+  # https://www.guru99.com/r-dplyr-tutorial.html
+  #
+  # reduce the dimensions of totalSpiders by time for each transect
+  
+  #pm <- thomisidae.night.control.tbl
+  #am <- thomisidae.day.control.tbl
+  
+  
+  #
+  # no pm collection on day 184
+  spiders.groups.wide.tbl <- dplyr::left_join(groupSNH, groupControl, by='position')  
+  # <position> <mean>
+  #
+
+  	countVector <- spiders.groups.wide.tbl$mean.x 
+	dispersionIndex.x <- var(countVector) / mean(countVector)
+
+	degreesFreedom.x <- length(countVector) - 1
+	chiSquare.x <- dispersionIndex.x * degreesFreedom.x
+
+	countVector <- spiders.groups.wide.tbl$mean.y 
+	dispersionIndex.y <- var(countVector) / mean(countVector)
+
+	degreesFreedom.y <- length(countVector) - 1
+	chiSquare.y <- dispersionIndex.y * degreesFreedom.y
+
+	# Pearson's Chi-squared test
+	pearson <- chisq.test(groupSNH$mean, groupControl$mean)
+
+
+
+
+
+  
+  	stats <- list()
+  	stats[[1]] <- dispersionIndex.x
+  	stats[[2]] <- degreesFreedom.x
+  	stats[[3]] <- chiSquare.x
+  	stats[[4]] <- dispersionIndex.y
+  	stats[[5]] <- degreesFreedom.y
+  	stats[[6]] <- chiSquare.y
+  	stats[[6]] <- pearson[[1]]
+  	stats[[7]] <- pearson[[2]]
+  	stats[[8]] <- pearson[[3]]
+
+
+  
+  	return(stats)
+  
+}
