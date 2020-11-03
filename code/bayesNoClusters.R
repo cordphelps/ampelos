@@ -129,6 +129,11 @@ generateLikelihoodV3 <- function(df, daytime, fromDisc, path, randomSeed,  hp) {
 
   inboundList <- list()
 
+   weekLabel.lst <- list()  # remember which cluster and seasonal timeframe
+   weekLabel.lst[[1]] <- "week 23-25"
+   weekLabel.lst[[2]] <- "week 26-30"
+   weekLabel.lst[[3]] <- "week 31-34"
+
 
   if (fromDisc==TRUE) {   # read the structure from disk
 
@@ -170,10 +175,6 @@ generateLikelihoodV3 <- function(df, daytime, fromDisc, path, randomSeed,  hp) {
     # build list of dataframes represting the seasonal population 
     # plus a variable log-population
     #
-    weekLabel.lst <- list()  # remember which cluster and seasonal timeframe
-    weekLabel.lst[[1]] <- "week 23-25"
-    weekLabel.lst[[2]] <- "week 26-30"
-    weekLabel.lst[[3]] <- "week 31-34"
 
 
     #
@@ -246,6 +247,8 @@ generateLikelihoodV3 <- function(df, daytime, fromDisc, path, randomSeed,  hp) {
           mutate(lambda_high = exp(b_Intercept + b_contact_high + (b_log_pop + `b_log_pop:contact_high`) * log(hPop) ),
                  lambda_low  = exp(b_Intercept + b_log_pop * log(hPop) ) ) %>% 
           mutate(diff        = lambda_high - lambda_low) 
+
+        post.df.list[[i]] <- temp.df
         
         like.df <- temp.df %>%
           summarise(sum = sum(diff > 0)/length(diff))  # 
@@ -353,14 +356,6 @@ generateLikelihoodV3 <- function(df, daytime, fromDisc, path, randomSeed,  hp) {
   
 
 
-    # cleanup
-
-    rm(inboundList)
-    rm(likelihood.df)
-    rm(modelInput)
-    rm(modelOutput)
-    rm(weekLabel.lst)
-    rm(post.df.list)
 
     #detach("package:rstan", unload=TRUE)  
     #detach("package:bayesplot", unload=TRUE)
@@ -1353,3 +1348,47 @@ chiSqStats <- function(vector1, vector2) {
   	return(stats)
   
 }
+
+
+examineModelOutput <- function(df, path,  daytime, hp) {
+
+
+  	weekLabel.lst <- list()  # remember which cluster and seasonal timeframe
+	weekLabel.lst[[1]] <- "week 23-25"
+	weekLabel.lst[[2]] <- "week 26-30"
+	weekLabel.lst[[3]] <- "week 31-34"
+
+
+	# read the structure from disk
+  	inboundList <- list()
+  	fileName.rds <- paste(path, "listV2-", daytime, ".rds", sep="")
+	inboundList <- readRDS(fileName.rds)
+
+	likelihood.df <- inboundList[[5]] 
+	modelInput <- inboundList[[7]]        # a list of the 9 data sources
+	modelOutput <- inboundList[[8]]       # a list of the 9 models
+	label.list <- inboundList[[9]]        # 
+	post.df.list <- inboundList[[10]]     # a list of the 9 posterior distributions
+
+
+    test.lst <- list()
+    # plot the likelihood for the 3 models
+    test.lst[[1]] <- plotLikelihoodV2(tibble=as_tibble(likelihood.df),  hypoPop=hp,
+                                  	cap=paste("(daylight hours)", sep=""))
+
+    test.lst[[2]] <- post.df.list 
+    test.lst[[3]] <- modelOutput
+    test.lst[[4]] <- post.df.list   	# contains lambda high, low, and diff
+
+
+    # cleanup
+
+    #detach("package:rstan", unload=TRUE)  
+    #detach("package:bayesplot", unload=TRUE)
+    #detach("package:brms", unload=TRUE) 
+
+  
+    return(test.lst)
+  
+}
+

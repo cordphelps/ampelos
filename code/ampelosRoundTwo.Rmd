@@ -1,6 +1,11 @@
 ---
 title: "ampelos V2"
 output: github_document
+# avoid background insertion of "TABLE X, FIGURE X" in output files
+# https://stackoverflow.com/questions/31182147/how-to-suppress-automatic-table-name-and-number-in-an-rmd-file-using-xtable-or
+#header-includes:
+#    - \usepackage[labelformat=empty]{caption}
+# that does not work
 ---
 
 ```{r setup, include=FALSE}
@@ -27,12 +32,14 @@ setwd("/Users/rcphelps/code/thesis/ampelos")
 library(tidyverse)
 library(dplyr)
 library(knitr)
+library(kableExtra)
+
 
 ```
 
 
 
-```{r makeTibbles, echo=FALSE}
+```{r makeTibbles, echo=FALSE, include=TRUE, results='asis', message=F, warning=T}
 
 
 # "weeks 23-25",  "weeks 26-31", "weeks 32-34"
@@ -188,9 +195,9 @@ ggsave(fileName, plot = gg, device = NULL, path = ggsave.path,
 
 ```
 
-```{r cohensCalc, echo=FALSE, include=FALSE, results='asis', message=F, warning=T}
+```{r cohensCalc, echo=FALSE, include=TRUE, results='asis', message=F, warning=T}
 
-# include=FALSE : unable to supress JGmisc::cohens.d output
+# include=FALSE : unable to suppress JGmisc::cohens.d output
 
 
 # summary of estimators, standardizers, and recommended use
@@ -210,9 +217,17 @@ period3.stats <- JGmisc::cohens.d(thomisidae.period3.SNH.tibl$totalSpiders, thom
 ################# for the hypothetical population
 ################# values used in the bayes analysis
 
-period1.mean <- period1.stats$m1
-period2.mean <- period2.stats$m1
-period3.mean <- period3.stats$m1
+trapEfficiency <- .1   
+
+# for the purposes of evaluating the model (and calculating an effect likelihood)
+# we suggest a hypothetical population (for each transect) which is the 
+# SNH trapped mean divided by 'trap efficiency'
+# (note that 'trap efficiency' does not have to be accurately known, we are just
+# using it to generate a hypothetical population)
+
+period1.hypoPopulation <- period1.stats$m1 / trapEfficiency 
+period2.hypoPopulation <- period2.stats$m1 / trapEfficiency 
+period3.hypoPopulation <- period3.stats$m1 / trapEfficiency 
 
 #################
 #################
@@ -221,6 +236,7 @@ period3.mean <- period3.stats$m1
 
 
 ```{r cohensStats, echo=FALSE, include=TRUE, results='asis', message=F, warning=T}
+
 
 stats.tbl <- tribble(~period, ~cohens.d, ~SNHmean, ~controlMean,
                      "weeks 23-25", 
@@ -237,10 +253,40 @@ stats.tbl <- tribble(~period, ~cohens.d, ~SNHmean, ~controlMean,
                      round(period3.stats$m2,2)
                       )
 
+
+# https://community.rstudio.com/t/sizing-tables-in-pdf-documents-using-knitr-and-kableextra/19285
+  knitr::kable(stats.tbl, 
+          caption="Comparison of SNH and control weekly daytime trapped\ncrab spider counts (Wilcoxon signed-rank test)",
+          col.names = linebreak(c("seasonal period", 
+                        "Cohen's d\neffect size", 
+                        "SNH transect\nmean spiders per week\n(across 30 traps)", 
+                        "control transect\nmean spiders per week\n(across 30 traps)")),
+          escape=FALSE,
+          align = "lccc",
+          row.names=FALSE,
+          format="latex", 
+          booktabs=TRUE ) %>%
+    
+          kableExtra::column_spec(1,width = "1in") %>%
+          kableExtra::column_spec(2,width = "1in") %>%
+          kableExtra::column_spec(3,width = "1in") %>%
+          kableExtra::column_spec(4,width = "1in") %>%
+    
+          kableExtra::save_kable(paste(ggsave.path, "table.cntlNight", ".pdf", sep=""))
+  
+
+
 # https://bookdown.org/yihui/rmarkdown-cookbook/kable.html#specify-column-alignment
-knitr::kable(stats.tbl, caption="Comparison of SNH and control weekly daytime trapped\ncrab spider counts (Wilcoxon signed-rank test)",
-             col.names = c("seasonal period", "Cohen's d effect size", "SNH transect mean spiders per week", "control transect mean spiders per week"),
-             align = "lccc")
+  
+  knitr::kable(stats.tbl, 
+            caption="Comparison of SNH and control weekly daytime trapped\ncrab spider counts (Wilcoxon signed-rank test)",
+            col.names = c("seasonal period", 
+                          "Cohen's d<br/>effect size", 
+                          "SNH transect<br/>mean spiders per week<br/>(across 30 traps)", 
+                          "control transect<br/>mean spiders per week<br/>(across 30 traps)"
+                          ),
+            escape=FALSE,
+            align = "lccc")
 
 # New Effect Size Rules of Thumb
 # Sawilowsky 2009
@@ -289,25 +335,57 @@ stats.tbl <- tribble(~period, ~cohens.d, ~sig.level, ~power,  ~actualSampleSize,
                      "weeks 23-25", 
                      round(period1.stats$d,2), 
                      0.05, 
-                     round(power.period1$power, 2),
                      power.period1$n1,
+                     round(power.period1$power, 2),
                      
                      "weeks 26-31", 
                      round(period2.stats$d,2), 
                      0.05, 
-                     round(power.period2$power, 2),
                      power.period2$n1,
+                     round(power.period2$power, 2),
                      
                      "weeks 32-34", 
                      round(period3.stats$d,2), 
                      0.05, 
-                     round(power.period3$power, 2),
-                     power.period3$n1
+                     power.period3$n1,
+                     round(power.period3$power, 2)
                       )
 
+# https://community.rstudio.com/t/sizing-tables-in-pdf-documents-using-knitr-and-kableextra/19285
+    
+    knitr::kable(stats.tbl, 
+               
+          caption="power analysis by seasonal period: two sample t test",
+          col.names = linebreak(c("seasonal period", 
+                        "Cohen's d effect size\n(calculated)", 
+                        "alpha\n(proposed)", 
+                        "sample size\n(actual)",
+                        "power\n(calculated)" 
+                        )),
+          escape=FALSE,
+          align = "lcccc",
+          row.names=FALSE,
+          format="latex", 
+          booktabs=TRUE ) %>%
+    
+          kableExtra::column_spec(1,width = "0.7in") %>%
+          kableExtra::column_spec(2,width = "0.7in") %>%
+          kableExtra::column_spec(3,width = "0.7in") %>%
+          kableExtra::column_spec(4,width = "0.7in") %>%
+          kableExtra::column_spec(4,width = "0.7in") %>%
+    
+          kableExtra::save_kable(paste(ggsave.path, "table.power", ".pdf", sep=""))
+  
+
+  
 knitr::kable(stats.tbl, caption="power analysis by seasonal period: two sample t test",
-             col.names = c("seasonal period", "Cohen's d effect size (calculated)", "alpha (proposed)", "power (calculated)", 
-                           "actual sample size"),
+             col.names = c("seasonal period", 
+                           "Cohen's d<br/>effect size<br/>(calculated)", 
+                           "alpha<br/>(proposed)", 
+                           "sample size<br/>(actual)",
+                           "power<br/>(calculated)" 
+                           ),
+             escape=FALSE,
              align = "lcccc")
 
 ```
@@ -320,45 +398,6 @@ plotRawWeeklyV2(day=thomisidae.day.SNH.tbl, night=thomisidae.night.SNH.tbl, wher
 
 plotRawWeeklyV2(day=thomisidae.day.control.tbl, night=thomisidae.night.control.tbl, where="control")
 
-
-```
-
-
-```{r chi-squared, echo=FALSE, include=FALSE, results='asis', message=F, warning=T}
-
-################ ignore: INSUFFICIENT SAMPLES and count magnitude (many zeros) FOR CHI_SQ
-################
-################
-
-# The Coefficient of Variation is the ratio of the standard deviation to the mean. It is always dimensionless (i.e. it is a plain number without a unit) and is scale invariant (in other words, you can make changes to the length, height or other scale factors without it affecting the result).
-# The Index of Dispersion is the ratio of the variance to the mean (hence the alternate name variance to mean ratio). I usually has a dimension (unless being applied to dimensionless counts) and it is not scale invariant.
-# https://www.statisticshowto.com/index-of-dispersion/
-
-# index of dispersion
-# Practical Statistics for Field Biology. Fowler, Cohen, Jarvis
-# Fowler, J., Cohen, L., & Jarvis, P. (1998). Practical statistics for field biology. Chichester: Wiley.
-#
-#
-
-
-
-# with df=29 and chisq statistic > 50 the significance level is
-# > 0.01. (appendix 3 ; Fowler, Cohen, Jarvis)
-
-# rcp> We conclude that if the control transect spider counts are distributed 
-# homogeneously, then a count difference of this magnitude would occur randomly 
-# in fewer than 1% of equivalent surveys.
-
-stats <- chiSqStats(thomisidae.period1.SNH.tibl, thomisidae.period1.control.tibl)
-
-stats.tbl <- tribble(~transect, ~dispersionIndex, ~degreesFreedom, ~chiSq,
-            "SNH", round(stats[[1]],3), round(stats[[2]],3), round(stats[[3]],3),
-            "control", round(stats[[4]],3), round(stats[[5]],3), round(stats[[6]],3)
-                      )
-
-knitr::kable(stats.tbl, caption="INSUFFICIENT SAMPLES FOR CHI_SQ\nComparison of SNH and Control trapped\nspider totals by position (Chi Squared test)",
-             col.names = c("transect", "dispersion index", "degrees of freedom", "chi squared"),
-             align = "lccc")
 
 ```
 
@@ -385,9 +424,33 @@ stats.tbl <- tribble(~transect, ~wilcox.p, ~effectSize, ~comment,
                      control.stats[[3]]
                       )
 
+  # https://community.rstudio.com/t/sizing-tables-in-pdf-documents-using-knitr-and-kableextra/19285
+  knitr::kable(stats.tbl, 
+               
+          caption="Comparison of daylight and night-time weekly trapped\nspider counts by transect (Wilcoxon signed-rank test)",
+          col.names = c("seasonal period", 
+                        "p value", 
+                        "effect metric", 
+                        "effect magnitude"),
+          align = "lccc",
+          row.names=FALSE,
+          format="latex", 
+          booktabs=TRUE ) %>%
+    
+          kableExtra::column_spec(1,width = "1in") %>%
+          kableExtra::column_spec(2,width = "1in") %>%
+          kableExtra::column_spec(3,width = "1in") %>%
+          kableExtra::column_spec(4,width = "1in") %>%
+    
+          kableExtra::save_kable(paste(ggsave.path, "table.dayNight", ".pdf", sep=""))
+  
+
 # https://bookdown.org/yihui/rmarkdown-cookbook/kable.html#specify-column-alignment
 knitr::kable(stats.tbl, caption="Comparison of daylight and night-time weekly trapped\nspider counts by transect (Wilcoxon signed-rank test)",
-             col.names = c("transect", "p value", "effect metric", "effect magnitude"),
+             col.names = c("transect", 
+                           "p value", 
+                           "effect metric", 
+                           "effect magnitude"),
              align = "lccc")
 
 # rcp: "We conclude that the daylight and nighttime rates of trapped spiders are
@@ -413,7 +476,7 @@ period3.stats <- wilcoxStats(vector1 = thomisidae.period3.SNH.tibl,
                          vector2 = thomisidae.period3.control.tibl, 
                          byTransect=TRUE)
 
-stats.tbl <- tribble(~transect, ~wilcox.p, ~effectSize, ~comment,
+stats.tbl <- tribble(~seasonalPeriod, ~wilcox.p, ~effectSize, ~comment,
                      "weeks 23-25", round(period1.stats[[1]],3), 
                      round(period1.stats[[2]],3), 
                      period1.stats[[3]],
@@ -425,9 +488,36 @@ stats.tbl <- tribble(~transect, ~wilcox.p, ~effectSize, ~comment,
                      period3.stats[[3]]
                       )
 
+  # output for pdf
+  # https://community.rstudio.com/t/sizing-tables-in-pdf-documents-using-knitr-and-kableextra/19285
+  knitr::kable(stats.tbl, 
+               
+          caption="Comparison of SNH and control weekly daytime trapped\nspider counts by seasonal period (Wilcoxon signed-rank test)",
+          col.names = c("seasonal period", 
+                        "p value", 
+                        "effect metric", 
+                        "effect magnitude"),
+          
+          align = "lccc",
+          row.names=FALSE,
+          format="latex", 
+          booktabs=TRUE ) %>%
+    
+          kableExtra::column_spec(1,width = "1in") %>%
+          kableExtra::column_spec(2,width = "1in") %>%
+          kableExtra::column_spec(3,width = "1in") %>%
+          kableExtra::column_spec(4,width = "1in") %>%
+    
+          kableExtra::save_kable(paste(ggsave.path, "table.SNHcontrol", ".pdf", sep=""))
+  
+  
+
 # https://bookdown.org/yihui/rmarkdown-cookbook/kable.html#specify-column-alignment
 knitr::kable(stats.tbl, caption="Comparison of SNH and control weekly daytime trapped\nspider counts by seasonal period (Wilcoxon signed-rank test)",
-             col.names = c("seasonal period", "p value", "effect metric", "effect magnitude"),
+             col.names = c("seasonal period", 
+                           "p value", 
+                           "effect metric", 
+                           "effect magnitude"),
              align = "lccc")
 
 
@@ -523,7 +613,9 @@ errorBars(tibble=combo3.means.tibl, periodString = "weeks 32-34", observations =
 seed <- 101
 
 # for each seasonal period
-hypotheticalPopulation <- c(period1.mean, period2.mean, period3.mean)
+hypotheticalPopulation <- c(period1.hypoPopulation, 
+                            period2.hypoPopulation, 
+                            period3.hypoPopulation)
 # hypotheticalPopulation <- c(58.13,15.93,6.67)
 
 
@@ -553,9 +645,96 @@ hypotheticalPopulation <- c(period1.mean, period2.mean, period3.mean)
     gg.likelihood.pm.lst <- list()
     
     gg.likelihood.pm.lst <- generateLikelihoodV3(df=filtered.df,
-              daytime='pm', fromDisc=FALSE, path= ggsave.path,
+              daytime='pm', fromDisc=TRUE, path= ggsave.path,
               randomSeed=seed, hp=hypotheticalPopulation)
     
+
+```
+
+```{r test, echo=FALSE, include=TRUE, results='asis', message=F, warning=T}
+
+if (TRUE) {
+  
+  source('/Users/rcphelps/code/thesis/ampelos/code/bayesNoClusters.R')
+  
+  test.lst <- examineModelOutput(df=filtered.df,
+              path= ggsave.path,
+              daytime = 'pm',
+              hp=hypotheticalPopulation)
+  
+  test.df <- test.lst[[4]] %>% as.data.frame()
+  #max(test.df$lambda_high)
+  #max(test.df$lambda_low)
+  
+  #period2.hypoPopulation
+  #period3.hypoPopulation
+  #hypotheticalPopulation
+  
+  
+  stats.tbl <- tribble(~seasonalPeriod, 
+                       ~hypoPop, 
+                       ~modelHighContactMean,
+                       ~modelLowContactMean,
+                       
+                     "weeks 23-25", 
+                     round(period1.hypoPopulation, 0), 
+                     round((mean(test.df$lambda_high) / period1.hypoPopulation) * 100, 1),
+                     round((mean(test.df$lambda_low) / period1.hypoPopulation) * 100, 1),
+                     
+                     "weeks 26-31", 
+                     round(period2.hypoPopulation, 0), 
+                     round((mean(test.df$lambda_high.1) / period2.hypoPopulation) * 100, 1),
+                     round((mean(test.df$lambda_low.1) / period2.hypoPopulation) * 100, 1),
+                     
+                     "weeks 31-34", 
+                     round(period3.hypoPopulation, 0), 
+                     round((mean(test.df$lambda_high.2) / period3.hypoPopulation) * 100, 1),
+                     round((mean(test.df$lambda_low.2) / period3.hypoPopulation) * 100, 1)
+                      )
+
+  # https://bookdown.org/yihui/rmarkdown-cookbook/kable.html#specify-column-alignment
+  
+  # output for pdf
+  # https://community.rstudio.com/t/sizing-tables-in-pdf-documents-using-knitr-and-kableextra/19285
+  knitr::kable(stats.tbl, 
+               
+          caption="interaction model statistics for a hypothetical population by time period",
+          col.names = linebreak(c("seasonal period", 
+                        "population exposed to the traps\n(as an example)",
+                        "SNH transect\nmodelled mean trapped spiders\n(percent)", 
+                        "control transect\nmodelled mean trapped spiders\n(percent)" )),
+          escape=FALSE,
+          align = "lcccc",
+          row.names=FALSE,
+          format="latex", 
+          booktabs=TRUE ) %>%
+    
+          kableExtra::column_spec(1,width = "1in") %>%
+          kableExtra::column_spec(2,width = "1in") %>%
+          kableExtra::column_spec(3,width = "1in") %>%
+          kableExtra::column_spec(4,width = "1in") %>%
+    
+          # add_indent(c(2:3)) %>%
+          # add_header_above(header="Header") %>%
+          #footnote(c("Source; 2000 Census",
+          #   "Source: 2010 Census",
+          #   "Really long footnote that increases the width of the table.")) %>%
+    
+          kableExtra::save_kable(paste(ggsave.path, "table.1", ".pdf", sep=""))
+  
+  
+    # output for markdown
+    knitr::kable(stats.tbl, 
+               
+          caption="<b>interaction model statistics for a hypothetical population by time period</b>",
+          col.names = c("seasonal period", 
+                           "population<br/>exposed to the traps<br/>(as an example)",
+                           "SNH transect<br/>modelled mean<br/>trapped spiders (percent)", 
+                           "control transect<br/>modelled mean<br/>trapped spiders (percent)" ),
+          escape=FALSE,
+          align = "lcccc") 
+  
+}
 
 ```
 
@@ -578,8 +757,6 @@ if (TRUE) {
 
 
 ```
-
-
 
 
 
@@ -662,5 +839,47 @@ if (TRUE) {
               units = c("in", "cm", "mm"))
       
     }
+```
+
+
+```{r chi-squared, echo=FALSE, include=FALSE, results='asis', message=F, warning=T}
+
+################ ignore: INSUFFICIENT SAMPLES and count magnitude (many zeros) FOR CHI_SQ
+################
+################
+
+# The Coefficient of Variation is the ratio of the standard deviation to the mean. It is always dimensionless (i.e. it is a plain number without a unit) and is scale invariant (in other words, you can make changes to the length, height or other scale factors without it affecting the result).
+# The Index of Dispersion is the ratio of the variance to the mean (hence the alternate name variance to mean ratio). I usually has a dimension (unless being applied to dimensionless counts) and it is not scale invariant.
+# https://www.statisticshowto.com/index-of-dispersion/
+
+# index of dispersion
+# Practical Statistics for Field Biology. Fowler, Cohen, Jarvis
+# Fowler, J., Cohen, L., & Jarvis, P. (1998). Practical statistics for field biology. Chichester: Wiley.
+#
+#
+
+
+
+# with df=29 and chisq statistic > 50 the significance level is
+# > 0.01. (appendix 3 ; Fowler, Cohen, Jarvis)
+
+# rcp> We conclude that if the control transect spider counts are distributed 
+# homogeneously, then a count difference of this magnitude would occur randomly 
+# in fewer than 1% of equivalent surveys.
+
+stats <- chiSqStats(thomisidae.period1.SNH.tibl, thomisidae.period1.control.tibl)
+
+stats.tbl <- tribble(~transect, ~dispersionIndex, ~degreesFreedom, ~chiSq,
+            "SNH", round(stats[[1]],3), round(stats[[2]],3), round(stats[[3]],3),
+            "control", round(stats[[4]],3), round(stats[[5]],3), round(stats[[6]],3)
+                      )
+
+knitr::kable(stats.tbl, caption="INSUFFICIENT SAMPLES FOR CHI_SQ\nComparison of SNH and Control trapped\nspider totals by position (Chi Squared test)",
+             col.names = c("transect", 
+                           "dispersion index", 
+                           "degrees of freedom", 
+                           "chi squared"),
+             align = "lccc")
+
 ```
 
