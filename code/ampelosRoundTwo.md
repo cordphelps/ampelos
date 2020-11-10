@@ -1,25 +1,11 @@
 ampelos V2
 ================
 
+
+
+
+
 <img src="ampelosRoundTwo_files/figure-gfm/bugs-1.png" width="50%" /><img src="ampelosRoundTwo_files/figure-gfm/bugs-2.png" width="50%" />
-
-    Cohen's d measure of effect size
-
-d: 0.348 data:
-thomisidae.period1.SNH.tibl\(totalSpiders thomisidae.period1.control.tibl\)totalSpiders
-m1 = 13.56 m2 = 17 sd1 = 9.59 sd2 = 10.17 pooled variance: 97.764
-
-    Cohen's d measure of effect size
-
-d: 0.0439 data:
-thomisidae.period2.SNH.tibl\(totalSpiders thomisidae.period2.control.tibl\)totalSpiders
-m1 = 4.12 m2 = 4 sd1 = 2.39 sd2 = 3.25 pooled variance: 8.125
-
-    Cohen's d measure of effect size
-
-d: 0.0893 data:
-thomisidae.period3.SNH.tibl\(totalSpiders thomisidae.period3.control.tibl\)totalSpiders
-m1 = 1.67 m2 = 1.5 sd1 = 1.86 sd2 = 1.87 pooled variance: 3.483
 
 <table>
 
@@ -42,19 +28,19 @@ seasonal period
 
 <th style="text-align:center;">
 
-Cohen’s d<br/>effect size
+Cohen’s d<br>effect size
 
 </th>
 
 <th style="text-align:center;">
 
-SNH transect<br/>mean spiders per week<br/>(across 30 traps)
+SNH transect<br>mean spiders per week<br>(across 30 traps)
 
 </th>
 
 <th style="text-align:center;">
 
-control transect<br/>mean spiders per week<br/>(across 30 traps)
+control transect<br>mean spiders per week<br>(across 30 traps)
 
 </th>
 
@@ -66,25 +52,25 @@ control transect<br/>mean spiders per week<br/>(across 30 traps)
 
 <tr>
 
-<td style="text-align:left;">
+<td style="text-align:left;width: 20%; ">
 
 weeks 23-25
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.35
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 13.56
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 17.0
 
@@ -94,25 +80,25 @@ weeks 23-25
 
 <tr>
 
-<td style="text-align:left;">
+<td style="text-align:left;width: 20%; ">
 
 weeks 26-31
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.04
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 4.12
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 4.0
 
@@ -122,25 +108,25 @@ weeks 26-31
 
 <tr>
 
-<td style="text-align:left;">
+<td style="text-align:left;width: 20%; ">
 
 weeks 32-34
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.09
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 1.67
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 1.5
 
@@ -172,25 +158,25 @@ seasonal period
 
 <th style="text-align:center;">
 
-Cohen’s d<br/>effect size<br/>(calculated)
+Cohen’s d<br>effect size<br>(calculated)
 
 </th>
 
 <th style="text-align:center;">
 
-alpha<br/>(proposed)
+alpha<br>(proposed)
 
 </th>
 
 <th style="text-align:center;">
 
-sample size<br/>(actual)
+sample size<br>(actual)
 
 </th>
 
 <th style="text-align:center;">
 
-power<br/>(calculated)
+power<br>(calculated)
 
 </th>
 
@@ -202,31 +188,31 @@ power<br/>(calculated)
 
 <tr>
 
-<td style="text-align:left;">
+<td style="text-align:left;width: 20%; ">
 
 weeks 23-25
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.35
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.05
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 270
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.98
 
@@ -236,31 +222,31 @@ weeks 23-25
 
 <tr>
 
-<td style="text-align:left;">
+<td style="text-align:left;width: 20%; ">
 
 weeks 26-31
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.04
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.05
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 480
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.10
 
@@ -270,31 +256,31 @@ weeks 26-31
 
 <tr>
 
-<td style="text-align:left;">
+<td style="text-align:left;width: 20%; ">
 
 weeks 32-34
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.09
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.05
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 180
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.13
 
@@ -353,25 +339,25 @@ effect magnitude
 
 <tr>
 
-<td style="text-align:left;">
+<td style="text-align:left;width: 20%; ">
 
 SNH
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.012
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.469
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 moderate
 
@@ -381,25 +367,25 @@ moderate
 
 <tr>
 
-<td style="text-align:left;">
+<td style="text-align:left;width: 20%; ">
 
 control
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.011
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.436
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 moderate
 
@@ -456,25 +442,25 @@ effect magnitude
 
 <tr>
 
-<td style="text-align:left;">
+<td style="text-align:left;width: 20%; ">
 
 weeks 23-25
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.043
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.695
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 large
 
@@ -484,25 +470,25 @@ large
 
 <tr>
 
-<td style="text-align:left;">
+<td style="text-align:left;width: 20%; ">
 
 weeks 26-31
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.797
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.071
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 small
 
@@ -512,25 +498,25 @@ small
 
 <tr>
 
-<td style="text-align:left;">
+<td style="text-align:left;width: 20%; ">
 
 weeks 31-34
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.890
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 0.131
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 small
 
@@ -567,19 +553,25 @@ seasonal period
 
 <th style="text-align:center;">
 
-population<br/>exposed to the traps<br/>(as an example)
+positive SNH effect<br>plausibility<br>(percent)
 
 </th>
 
 <th style="text-align:center;">
 
-SNH transect<br/>modelled mean<br/>trapped spiders (percent)
+population<br>exposed to the traps<br>(example)
 
 </th>
 
 <th style="text-align:center;">
 
-control transect<br/>modelled mean<br/>trapped spiders (percent)
+SNH transect<br>modelled mean<br>trapped spiders<br>(percent)
+
+</th>
+
+<th style="text-align:center;">
+
+control transect<br>modelled mean<br>trapped spiders<br>(percent)
 
 </th>
 
@@ -591,25 +583,31 @@ control transect<br/>modelled mean<br/>trapped spiders (percent)
 
 <tr>
 
-<td style="text-align:left;">
+<td style="text-align:left;width: 20%; ">
 
 weeks 23-25
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
+
+3.1
+
+</td>
+
+<td style="text-align:center;width: 20%; ">
 
 136
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 30.0
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 37.6
 
@@ -619,25 +617,31 @@ weeks 23-25
 
 <tr>
 
-<td style="text-align:left;">
+<td style="text-align:left;width: 20%; ">
 
 weeks 26-31
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
+
+46.8
+
+</td>
+
+<td style="text-align:center;width: 20%; ">
 
 41
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 28.6
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 29.1
 
@@ -647,25 +651,31 @@ weeks 26-31
 
 <tr>
 
-<td style="text-align:left;">
+<td style="text-align:left;width: 20%; ">
 
 weeks 31-34
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
+
+77.8
+
+</td>
+
+<td style="text-align:center;width: 20%; ">
 
 17
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 34.0
 
 </td>
 
-<td style="text-align:center;">
+<td style="text-align:center;width: 20%; ">
 
 26.0
 

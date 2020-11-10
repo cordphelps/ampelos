@@ -57,12 +57,15 @@ errorBars <- function(tibble, periodString, observations) {
   
   # http://www.cookbook-r.com/Graphs/Plotting_means_and_error_bars_(ggplot2)/
 
+  color = c("SNH" = "lightgreen", "control" = "lightblue")
+
   # The errorbars overlapped, so use position_dodge to move them horizontally
   pd <- position_dodge(1.5) # move them .05 to the left and right
 
-  gg <- ggplot(tibble, aes(x=positionX / 3.281, y=mean, colour=transect, group=transect)) + 
+  gg <- ggplot(tibble, aes(x=positionX / 3.281, y=mean, group=transect)) + 
     geom_errorbar(aes(ymin=mean-se, ymax=mean+se), colour="black", width=.1, position=pd) +
-    geom_line(position=pd) +
+    geom_line(position=pd, aes(colour=transect), size =2) +
+
     geom_point(position=pd, size=3, shape=21, fill="white") + # 21 is filled circle
   
     labs(title = paste("mean thomisidae collection rate: seasonal ",
@@ -72,11 +75,13 @@ errorBars <- function(tibble, periodString, observations) {
                        " observations\n at each trap position", sep=""),
        x = "trap distance from field edge (m)", 
        y = "mean rate +/- SE (count / 8 hrs)") +
+
+    scale_colour_manual(values=c("SNH" = "lightgreen", "control" = "lightblue")) +
   
-    scale_colour_hue(name="transect",    # Legend label, use darker colors
-                     breaks=c("oakMargin", "control"),
-                     labels=c("SNH", "control"),
-                     l=40) +            # Use darker colors, lightness=40
+    #scale_colour_hue(name="transect",    # Legend label, use darker colors
+          #           breaks=c("oakMargin", "control"),
+          #           labels=c("SNH", "control"),
+          #           l=40) +            # Use darker colors, lightness=40
 
     expand_limits(y=0) +                        # Expand y range
     scale_y_continuous() +
@@ -1379,6 +1384,7 @@ examineModelOutput <- function(df, path,  daytime, hp) {
     test.lst[[2]] <- post.df.list 
     test.lst[[3]] <- modelOutput
     test.lst[[4]] <- post.df.list   	# contains lambda high, low, and diff
+    test.lst[[5]] <- likelihood.df
 
 
     # cleanup
@@ -1392,3 +1398,10 @@ examineModelOutput <- function(df, path,  daytime, hp) {
   
 }
 
+remove_table_numbers = function(table){
+	# https://stackoverflow.com/questions/54545733/kable-produces-malformed-reference-links-within-lapply-function-in-blogdown
+  old_attributes = attributes(table)
+  table %<>% as.character() %>% gsub("\\(\\\\#tab:.*?\\)","",.)
+  attributes(table) = old_attributes
+  return(table)
+}
