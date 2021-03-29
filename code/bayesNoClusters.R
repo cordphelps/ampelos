@@ -1053,7 +1053,7 @@ plotBugPercentages <- function(list, spidersOnly) {
     
       #labs(title=paste("spider abundance", sep=""),
       #subtitle=paste("percent of total insects by week", sep=""), 
-      labs(y="percent of total insects", 
+      labs(y="percent of captured insects", 
           x="week", 
           caption = paste("spider abundance\n", "percent of total insects by week", sep="") ) +
     
@@ -1102,8 +1102,8 @@ plotBugPercentages <- function(list, spidersOnly) {
     
         #labs(title=paste("insect abundance by taxonometric Order", sep=""),
         # subtitle=paste("percent of total population by week", sep=""),
-        labs(y="percent of insect population", x="week", 
-          caption = paste("insect abundance by taxonometric Order\n", "percent of total population by week", sep="") ) +
+        labs(y="percent of captured insects", x="week", 
+          caption = paste("insect abundance by taxonometric Order\n", "percent of total insects by week", sep="") ) +
     
         theme_bw() +
     
@@ -1370,10 +1370,10 @@ examineModelOutput <- function(df, path,  daytime, hp) {
 	inboundList <- readRDS(fileName.rds)
 
 	likelihood.df <- inboundList[[5]] 
-	modelInput <- inboundList[[7]]        # a list of the 9 data sources
-	modelOutput <- inboundList[[8]]       # a list of the 9 models
+	modelInput <- inboundList[[7]]        # a list of the 3 data sources
+	modelOutput <- inboundList[[8]]       # a list of the 3 models
 	label.list <- inboundList[[9]]        # 
-	post.df.list <- inboundList[[10]]     # a list of the 9 posterior distributions
+	post.df.list <- inboundList[[10]]     # a list of the 3 posterior distributions
 
 
     test.lst <- list()
